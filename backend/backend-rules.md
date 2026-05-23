@@ -33,14 +33,36 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 ## Data Access And Persistence
 
 - Centralize database access behind project-owned table/repository/data-source adapters. Low-level ORM repositories, raw clients, and query builders should be used only inside the corresponding adapter.
-- For TypeORM, expose per-entity access through an `EntityNameTable` or equivalent adapter. Services should call adapter methods rather than injecting `Repository<Entity>` directly.
+- For TypeORM, expose per-entity access through an `EntityNameTable` or equivalent adapter. Services should inject and call adapter methods rather than injecting `Repository<Entity>` directly.
 - Apply the same wrapper rule to Prisma, Drizzle, Knex, Mongoose, Redis clients, search clients, object storage, and analytics stores.
 - Adapter methods should encode product defaults: pagination, filtering, sorting, tenant scoping, soft deletes, RBAC-aware predicates when appropriate, transactions, timeouts, query hints, and safe defaults.
 - Use transactions for multi-step writes that must be atomic. Make transaction boundaries visible and avoid hidden nested transaction behavior.
 - Design writes for idempotency where retries, webhooks, jobs, or distributed systems are involved.
 - Avoid unbounded queries. Use pagination, streaming, cursors, limits, projections, and indexes.
 - Check query plans for high-risk or high-volume reads/writes. Add indexes deliberately and document expected access patterns.
+- Do not default only to B-tree and composite indexes. Choose index strategy by query shape, data type, cardinality, sort/filter pattern, write cost, and database engine capability.
+- Consider the full index toolbox where appropriate: composite, covering/include, partial/filtered, unique, expression/function-based, hash, full-text, trigram, GIN, GiST, SP-GiST, BRIN, geospatial, vector/ANN, TTL/expiry, clustered, and engine-specific indexes.
+- For every new important query path, document the intended access pattern, expected selectivity, index choice, and tradeoff. Indexes improve reads but add write, storage, migration, and maintenance cost.
+- Use `EXPLAIN`, `EXPLAIN ANALYZE`, query profiling, or the database engine equivalent before and after index changes on non-trivial query paths.
 - Preserve data integrity with constraints, unique indexes, foreign keys where appropriate, optimistic/pessimistic locking when needed, and clear consistency rules.
+
+## Query Analysis And Indexing
+
+- Treat query performance as part of feature design, not as a late optimization pass.
+- Every table/collection that can grow meaningfully should have a documented access pattern: primary lookups, list queries, search queries, joins, ordering, tenant scoping, archival access, and admin/reporting access.
+- Match index type to behavior:
+  - B-tree for equality, ranges, ordering, and common relational lookups.
+  - Composite indexes for multi-column filters and sorts, ordered by real query predicates and selectivity.
+  - Covering/include indexes when avoiding table lookups materially improves hot reads.
+  - Partial/filtered indexes for sparse states, soft-delete filters, tenant subsets, queue states, or high-value conditional queries.
+  - Unique indexes for data integrity, idempotency keys, natural keys, and duplicate prevention.
+  - Expression/function indexes for normalized email, lowercased search keys, computed statuses, JSON paths, and date buckets.
+  - Full-text, trigram, search-engine, or vector indexes for search and semantic retrieval instead of forcing relational indexes to solve search problems.
+  - GIN/GiST/SP-GiST/BRIN/geospatial/hash or engine-specific indexes when the data shape and database support them.
+- Be careful with index ordering and left-prefix behavior. Ensure composite indexes match actual filter/sort order.
+- Avoid redundant, unused, or overlapping indexes. Review index usage metrics and remove only through an approved migration/cleanup plan.
+- For multi-tenant systems, confirm indexes support tenant scoping and do not enable expensive cross-tenant scans by default.
+- For soft-delete systems, indexes should account for active rows, deleted rows, uniqueness among active rows, and restore behavior.
 
 ## Migrations
 
@@ -83,6 +105,7 @@ Wrappers should enforce shared policy:
 - rate limits
 - test doubles
 - secure defaults
+- product-specific defaults that prevent unsafe direct library usage
 
 Prevent direct low-level client use by convention, lint rules, code ownership, module exports, or architectural tests where practical.
 
@@ -96,7 +119,10 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 - Make partial failure visible and recoverable.
 - Avoid hidden background work from request handlers unless it is durable, observable, and safe to retry.
 - Use locks, uniqueness constraints, idempotency keys, or compare-and-swap patterns to prevent duplicate side effects.
-- Include health checks and readiness checks for critical dependencies.
+- Prefer soft delete for user/business data unless legal, privacy, storage, or domain requirements demand hard deletion. Ensure uniqueness, queries, restore behavior, retention, and cleanup jobs handle soft-deleted records correctly.
+- Include health checks, readiness checks, and liveness checks for critical dependencies.
+- For NestJS services, use `@nestjs/terminus` or the project-approved NestJS health package to expose health endpoints. Health checks should cover the HTTP process, database, cache, queues, storage, external critical dependencies, disk/memory where relevant, and build/version metadata when safe.
+- Keep health endpoints safe: do not leak secrets, internal topology, credentials, customer data, or detailed dependency errors to public callers. Expose deeper diagnostics only behind appropriate auth/network controls.
 
 ## Security
 
@@ -117,6 +143,8 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 - Emit metrics for latency, throughput, errors, retries, queue depth, job age, dead letters, cache hit rate, dependency health, and business-critical events.
 - Use tracing across service boundaries and async workflows where supported.
 - Make operational states visible: pending, processing, retrying, failed, completed, cancelled, expired, and compensated.
+- Support environment-gated database query analysis. When enabled in development or staging, database adapters should log safe `EXPLAIN` or `EXPLAIN ANALYZE` output for relevant queries so engineers can debug plans, indexes, scans, joins, and cost regressions.
+- Query-analysis logs must be structured, correlated to request/job IDs, redacted, sampled or bounded, and disabled by default in production unless an incident/debug policy explicitly allows it.
 - Add alerts for user-impacting failures, saturation, SLO breaches, queue buildup, dependency failures, and security-sensitive anomalies.
 - Keep logs useful and bounded. Avoid noisy logs, high-cardinality metrics, and sensitive data leakage.
 
@@ -136,6 +164,8 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 - Fail fast on missing required configuration.
 - Avoid hardcoded URLs, credentials, timeouts, limits, feature flags, or environment names.
 - Prefer central config modules that expose typed values and shared defaults.
+- Add a typed database query-analysis config when the project has meaningful database usage. It should control whether query `EXPLAIN` wrapping/logging is enabled, which environments may use it, sampling rate, slow-query threshold, maximum logged payload size, redaction behavior, and whether `EXPLAIN ANALYZE` is allowed.
+- Never enable expensive query analysis globally in production by accident. Production use must be temporary, explicit, bounded, observable, and safe for sensitive data.
 - Document local, staging, production, and preview environment differences in `custom-agent-guide/environments-cloud-deployments.md`.
 
 ## Testing
@@ -161,9 +191,13 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 Before marking backend work complete, confirm:
 
 - contracts, DTOs, validation, controllers/routes, services, persistence, and generated/shared types are aligned
+- edge cases, blind spots are managed, abuse/malicious intents are prevented
 - auth/RBAC/tenant checks are correct
 - errors are translated into safe, documented responses
 - retries, timeouts, idempotency, and dead-letter behavior are defined where relevant
+- database indexes match real access patterns and query plans have been checked for high-risk paths
+- health/readiness endpoints exist for services with operational dependencies
+- query-analysis/EXPLAIN config is available when useful and safely disabled or bounded by environment
 - logs, metrics, traces, and audit events exist where useful
 - migrations are safe and non-destructive unless approved
 - tests cover happy paths, negative paths, and important failure modes

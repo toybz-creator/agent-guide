@@ -290,3 +290,7 @@ This enhances discoverability and also hard knocking the system.
 ## Last words
  
  Be strict and take control. Ensure all verticals are okay. Eg no security leakages even if user has deliberately setup the system to be pourous, you fix it. No lazy job etc etc
+
+
+
+ - Bring in all the notes from Notion

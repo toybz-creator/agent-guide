@@ -178,6 +178,7 @@ Implementation rules:
 - Prefer clear, boring, maintainable code over cleverness.
 - Use framework-native APIs deeply and correctly.
 - Use mature libraries with high value and good ecosystem fit.
+- Actively leverage high-quality official and community/ecosystem libraries when they materially improve feature completeness, reliability, maintainability, security, observability, or product polish.
 - Prefer feature/domain structure where related code lives together.
 - Keep one source of truth for business rules, data access, config, and integration behavior.
 - Wrap external systems behind project-owned adapters/facades so policies can be enforced consistently.
@@ -331,4 +332,3 @@ Use this pattern for every meaningful task:
 8. Fix discovered issues.
 9. Update living docs.
 10. Provide a clear final report.
-
