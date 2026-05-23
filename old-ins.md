@@ -87,7 +87,11 @@ There should be no invisble, hidden events ever. Then save preference to verdict
 - Always explain how to manually test after task is done
 - Always list considerations or directions when neccessary after task
 - For every code task, agents must also update or correct inline code documentation in the touched code paths. Inline docs must stay well detailed and comprehensive enough that a new developer can understand the purpose, boundaries, and runtime behavior of the affected class, function, method, module, service, entity, utility, controller, DTO, or helper directly from the code. 
+- Ensure to structure by feature as much as possible and use good project structuring. All items for a feature must always stay together
+- Ensure that System, Application, Cache, Database, feature etc configs allows for error handling, retries, logging, metrics, environment aware customization, production first approach, efficient, strict, secure, non blocking
+- We need to take advantage and work with the deep, advance, APIs of all libs and Framework we use, To make this easy, in the custom-agent-rule folder, create a folder called libraries-documentations, then create a folder for each of the libs we use, then fetch just the html content of all the API and usage guide of the libs. You must then consult the appropriate files for a feature that concerns this lib beofre any implementation. This ensures fast, deep, comprehensive and up to date use of APIs. Note you should not download the whole web  assset of the documentation, just the HTML file, however you should save them as .md files. This operation should only be done when a new library is added, or if the is-documentations-pulled config in the verdit file is false. When true, dont pull since this indicates that this ops is done. There should also be a config for if user want this feature.
 
+<!-- todo:  Add more items here that will make the system rigid -->
 
 ## Before task start
 
@@ -269,6 +273,8 @@ e.g Ensure implementation across all the stack meets our defination of Good soft
 
 - Cache
 
+<!-- todo -->
+<!-- List all other verticals and properties of a good software and product -->
 
 - For every task that is added, get the object. Then list what are the properties, items that makes task / feature like this solid and complete. You should cover as much breadth and leghth as possible. Then ask me the ones I would like to consider.
 

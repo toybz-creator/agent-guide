@@ -1,0 +1,36 @@
+{
+  "name": "production-coding-agent-skill-guide",
+  "version": "0.1.0",
+  "description": "A production-grade human language skill guide framework for AI coding agents.",
+  "type": "module",
+  "license": "MIT",
+  "author": "",
+  "keywords": [
+    "ai-agent",
+    "coding-agent",
+    "agent-rules",
+    "software-engineering",
+    "production",
+    "framework"
+  ],
+  "bin": {
+    "agent-guide": "bin/agent-guide.mjs"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "instructions.md",
+    "backend/",
+    "frontend/",
+    "computer-use/",
+    "bin/"
+  ],
+  "scripts": {
+    "pack": "npm pack --dry-run",
+    "publish:dry-run": "npm publish --dry-run",
+    "validate": "node bin/agent-guide.mjs doctor --package-root . --package-only"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
