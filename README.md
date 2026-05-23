@@ -9,6 +9,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Production-first execution:** agents consider correctness, security, reliability, observability, performance, maintainability, accessibility, operability, cost, and user experience.
 - **360 feature development:** agents look beyond the immediate prompt and surface edge cases, failure modes, negative paths, abuse cases, scale concerns, and future integrations.
 - **Better planning:** agents clarify ambiguity, research current framework/library practices, compare options, and lock an implementation plan before high-impact work.
+- **Packaged library references:** agents check matching files in `docs/` for in-depth library APIs and capabilities before implementing against supported libraries.
 - **Living project memory:** agents maintain PRDs, functional requirements, architecture notes, task history, verdicts, and file maps in a dedicated project guide folder.
 - **Safer customization:** teams can override decisions in `custom-agent-guide/verdicts.md` without editing this package.
 - **Stack-specific depth:** backend and frontend rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, and runtime operations.
@@ -93,9 +94,9 @@ For larger tasks, the agent should:
 
 1. Load base and custom rules.
 2. Classify the task as backend, frontend, full-stack, QA, infrastructure, documentation, or browser/computer-use.
-3. Read the relevant code and living docs before acting.
+3. Read the relevant code, living docs, and matching packaged `docs/` library reference files before acting.
 4. Clarify ambiguous intent and surface useful feature improvements.
-5. Research current library/framework practices when useful.
+5. Research current library/framework practices when useful or when no matching packaged docs file exists.
 6. Propose a plan with options and tradeoffs.
 7. Implement with production-grade architecture, tests, telemetry, and docs.
 8. Run a final cross-check for regressions, security, accessibility, reliability, and product fit.
@@ -123,6 +124,7 @@ When package rules conflict with project rules, the agent should ask for a decis
 - `backend/backend-rules.md`: backend and service engineering rules.
 - `frontend/frontend-rules.md`: frontend and product interface engineering rules.
 - `computer-use/computer-use-agent-rules.md`: browser/computer-use safety guidance.
+- `docs/`: packaged library API and capability references, such as NestJS and TypeORM.
 
 ## Publishing
 

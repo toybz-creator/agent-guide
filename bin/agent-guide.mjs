@@ -29,6 +29,7 @@ const packageFiles = [
   "backend/backend-rules.md",
   "frontend/frontend-rules.md",
   "computer-use/computer-use-agent-rules.md",
+  "docs",
   "bin/agent-guide.mjs",
   "package.json"
 ];

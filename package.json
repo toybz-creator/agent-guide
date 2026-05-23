@@ -23,6 +23,7 @@
     "backend/",
     "frontend/",
     "computer-use/",
+    "docs/",
     "bin/"
   ],
   "scripts": {
