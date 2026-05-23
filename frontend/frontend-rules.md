@@ -41,6 +41,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Avoid duplicating the same state in multiple stores. Derive where possible.
 - Keep stores small, typed, and feature-owned. Expose actions instead of allowing arbitrary mutation.
 - Persist client state only when there is a clear product reason. Version persisted state and handle migration/reset.
+- Aim for availability and consistency at the same time, with appropriate status, loading and indicators. So app has data, can fetch when neccessary and UX is optimal
 
 ## Routing And Navigation
 
@@ -50,6 +51,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Protect private routes on the server where possible, not only in client-side checks.
 - Ensure navigation is keyboard accessible and screen-reader understandable.
 - Show route-level loading and error states that preserve context and do not trap the user.
+- Ensure routing and events are fluid and instant
 
 ## Forms And Validation
 
@@ -125,6 +127,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Use correlation IDs or request IDs where available to connect frontend errors to backend traces.
 - Keep telemetry privacy-aware and avoid high-cardinality or sensitive fields.
 - Add logging/analytics through project-owned wrappers, not scattered vendor SDK calls.
+- Add configs to show or hide logs and log level
 
 ## Reliability
 
@@ -183,3 +186,4 @@ Before marking frontend work complete, confirm:
 - telemetry/error reporting is added where useful
 - tests cover important behavior and regressions
 - docs and handbooks are updated
+
