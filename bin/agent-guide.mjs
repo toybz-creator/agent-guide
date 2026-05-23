@@ -174,7 +174,7 @@ function parseArgs(argv) {
 
 function fail(message) {
   console.error(message);
-  process.exitCode = 1;
+  process.exit(1);
 }
 
 function snippet() {
@@ -273,6 +273,6 @@ switch (args.command) {
     printHelp();
     break;
   default:
-    fail(`Unknown command: ${args.command}`);
     printHelp();
+    fail(`Unknown command: ${args.command}`);
 }
