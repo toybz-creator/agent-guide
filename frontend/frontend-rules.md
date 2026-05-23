@@ -4,7 +4,7 @@
 
 These rules apply to frontend, product UI, browser-facing behavior, design systems, routing, forms, accessibility, client data, and frontend integration work.
 
-The default stack is TypeScript, React, Next.js, TanStack Query, Zustand, Zod, React Hook Form where useful, and mature accessibility-focused UI libraries. Prefer libraries that are easy to reason about, integrate well with the stack, and provide high value with low operational complexity.
+The default stack is TypeScript, React, Next.js, TanStack Query, Zustand, Zod, React Hook Form where useful, utility-first styling where it fits, and mature accessibility-focused UI libraries. Prefer libraries that are actively maintained, easy to reason about, integrate well with the stack, and provide high value with low operational complexity.
 
 ## Frontend Mission
 
@@ -15,6 +15,9 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Organize by feature/domain where practical. Keep feature UI, hooks, schemas, queries, mutations, state, tests, and docs close enough to understand the feature as a unit.
 - Keep shared UI primitives, design tokens, layout shells, API clients, telemetry, auth/session helpers, and utility infrastructure in clearly owned shared areas.
 - Prefer explicit server/client boundaries in Next.js. Use Server Components for server-only data and rendering where useful; use Client Components for interactivity, browser APIs, client state, and event handling.
+- Keep server-only clients, admin SDKs, privileged tokens, and secret-backed helpers in server-only modules. Browser clients must expose only the minimum public configuration and user-safe operations.
+- Keep route files thin. Move reusable behavior into feature modules, server actions, services, hooks, validation modules, stores, or shared UI components.
+- In Next.js projects, use Server Actions or route handlers for trusted mutations when they fit the product and framework version. Mutations must validate input server-side, read the authenticated user or session server-side, enforce authorization, and return typed success/error results.
 - Do not leak raw API response shapes throughout the UI. Normalize or validate at the boundary when needed.
 - Keep business rules in shared domain helpers or server APIs when they must be consistent across clients.
 - Avoid global state by default. Use URL state, server state, component state, or Zustand only where each is the right owner.
@@ -40,18 +43,21 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Treat URL/search params as the source of truth for shareable filters, pagination, sorting, tabs, and deep-linkable state.
 - Avoid duplicating the same state in multiple stores. Derive where possible.
 - Keep stores small, typed, and feature-owned. Expose actions instead of allowing arbitrary mutation.
+- Do not store session secrets, server-owned records, or persisted business data in client stores as the source of truth.
+- Clear sensitive or user-scoped client state on logout, tenant switch, account switch, or permission downgrade.
+- Use selectors or equivalent subscription patterns to avoid broad rerenders from shared stores.
 - Persist client state only when there is a clear product reason. Version persisted state and handle migration/reset.
-- Aim for availability and consistency at the same time, with appropriate status, loading and indicators. So app has data, can fetch when neccessary and UX is optimal
+- Balance availability and consistency with clear status, loading, stale-data, and refresh indicators so users understand what data is current and what is still updating.
 
 ## Routing And Navigation
 
 - Use framework-native routing and metadata APIs.
 - Preserve deep links for meaningful product states.
 - Keep redirects, auth gating, role gating, and onboarding gates centralized.
-- Protect private routes on the server where possible, not only in client-side checks.
+- Protect private routes on the server where possible, not only in client-side checks. In Next.js projects, use Middleware, server layouts, route handlers, or server actions as appropriate for route protection and authorization boundaries.
 - Ensure navigation is keyboard accessible and screen-reader understandable.
 - Show route-level loading and error states that preserve context and do not trap the user.
-- Ensure routing and events are fluid and instant
+- Keep routing and interaction feedback responsive. When work cannot complete immediately, show progress without blocking unrelated navigation.
 
 ## Forms And Validation
 
@@ -61,12 +67,25 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Make errors field-specific, accessible, and actionable.
 - Preserve user input on recoverable errors.
 - Prevent duplicate submissions and define idempotency for risky mutations.
+- Reject invalid numeric, date, email, enum, and identifier inputs at both client and server boundaries. Normalize data before persistence or API submission.
 - Handle slow networks, validation races, autosave conflicts, file upload progress, cancellation, and retry behavior where relevant.
+
+## Realtime, Streaming, And Live Data
+
+- Use a typed project-owned boundary for realtime, SSE, WebSocket, polling, broadcast-channel, or vendor SDK integrations.
+- Keep components decoupled from raw vendor event payloads. Convert events into feature-level contracts before they reach UI code.
+- Use SSE for one-way server-to-client event streams when it fits; use WebSockets only when bidirectional behavior is required; use polling when it is simpler, reliable enough, and cheaper to operate.
+- Expose feature-level hooks or services that report connected, reconnecting, disconnected, stale, and error states.
+- Filter or verify live events against the authenticated user, tenant, role, and currently visible resource before updating UI.
+- Clean up subscriptions on unmount, logout, account switch, route changes, and permission changes.
+- Define how live events refresh cached data: invalidate queries, patch cache with rollback, revalidate routes, or refetch affected resources.
+- Realtime must degrade gracefully. Core CRUD and navigation should still work when live updates are delayed or unavailable.
 
 ## UI, Semantics, And Design Systems
 
 - Use existing design system components before creating new primitives.
 - Prefer accessible headless/component libraries with strong React and Next.js support when the project lacks a component.
+- If a project declares local screenshots, prototypes, storybook stories, or design files as the UI source of truth, inspect the relevant reference before changing the mapped screen and compare the implemented UI against it during browser verification. Do not use a different design source unless project docs say to.
 - Use semantic HTML first: buttons for actions, links for navigation, headings in order, labels for controls, lists/tables where appropriate.
 - Use icons for familiar tool actions when available, with accessible labels and tooltips for ambiguous icons.
 - Keep UI density appropriate to the product. Enterprise tools should be scan-friendly, predictable, and efficient rather than decorative.
@@ -74,6 +93,11 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Keep text readable, responsive, and non-overlapping at supported viewport sizes.
 - Build complete states for components: default, hover, focus, active, disabled, loading, error, empty, selected, and readonly where relevant.
 - Keep design tokens, colors, spacing, typography, radii, shadows, and motion consistent.
+- Build actual usable screens, not placeholder landing pages, when the task is to create an app, dashboard, workflow, or tool.
+- Use framework image optimization APIs for meaningful images where available. In Next.js, prefer `next/image` unless a documented constraint requires a plain image element.
+- Tables and dense data views must include responsive behavior, empty/loading/error states, accessible controls, keyboard-friendly actions, and a mobile strategy.
+- Paginate, virtualize, or progressively load long lists instead of fetching and rendering unbounded datasets.
+- Charts and dashboards must use shared typed aggregation utilities for business calculations instead of duplicating ad hoc math inside component trees.
 
 ## Accessibility
 
@@ -84,6 +108,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Use ARIA only when semantic HTML is insufficient, and use it correctly.
 - Preserve focus management in modals, drawers, menus, route transitions, and async flows.
 - Announce important async updates with appropriate live regions.
+- Do not make toast notifications the only place critical errors, validation failures, or destructive-action outcomes appear.
 - Do not rely on color alone to communicate status.
 - Respect reduced-motion preferences.
 - Check contrast, hit targets, form labels, error associations, and screen-reader reading order.
@@ -107,6 +132,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Sanitize or safely render user-generated content. Avoid unsafe HTML unless it is sanitized and justified.
 - Protect against XSS, CSRF where relevant, open redirects, clickjacking-sensitive flows, token leakage, and insecure storage.
 - Store tokens and session data according to the project security model. Prefer secure HTTP-only cookies when appropriate.
+- Do not trust client-provided ownership fields, roles, computed totals, prices, permissions, or other authority-sensitive values. Recompute or verify them on the server.
 - Redact sensitive data from logs, telemetry, error reports, screenshots, and analytics.
 
 ## Performance
@@ -115,6 +141,8 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Use Next.js image, font, metadata, caching, streaming, and route segment features appropriately.
 - Split code by route/feature and avoid shipping large libraries to the client unnecessarily.
 - Keep Client Components small and intentional.
+- Lazy-load heavy components, charts, editors, maps, media, and rarely used panels when that reduces initial cost without harming core usability.
+- Monitor bundle size before release when adding large dependencies, charting libraries, editors, rich UI kits, or broad client-side imports.
 - Avoid unnecessary re-renders with stable props, memoization only where useful, and localized state.
 - Use pagination, virtualization, streaming, or progressive rendering for large lists/data.
 - Avoid layout shift by reserving stable dimensions for media, grids, tables, toolbars, and skeletons.
@@ -134,6 +162,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Gracefully handle API failures, timeouts, offline states, stale data, expired sessions, forbidden actions, and partial responses.
 - Use retries carefully. Retry safe reads more readily than writes; avoid retry storms.
 - Provide recovery actions: retry, refresh, edit, save draft, contact support, or navigate back.
+- Treat date, time, and timezone behavior as domain logic when it affects status, scheduling, deadlines, billing, or reporting. Test boundary cases explicitly.
 - Use error boundaries for route and component failures.
 - Ensure Suspense/loading boundaries are intentional and do not create blank screens.
 - Keep feature flags and experiments safe with defaults and fallback UI.
@@ -148,17 +177,21 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 ## Testing
 
 - Unit test pure helpers, schemas, stores, reducers, and complex component logic.
+- Unit test business-relevant client stores, validation schemas, data-formatting helpers, date/time logic, and aggregation utilities.
 - Component test important UI states, interactions, accessibility roles, keyboard behavior, and error/loading/empty states.
 - Integration test feature flows with realistic API mocks.
+- Integration test trusted mutation paths for server-side validation, authorization, cache invalidation, and user-visible success/failure states.
 - E2E test critical user journeys, auth/role behavior, forms, navigation, and high-risk regressions.
+- E2E tests must avoid production data. Use a dedicated test environment, seeded fixtures, mocked backend, or other deterministic strategy approved by the project.
 - Add accessibility checks using the project’s testing tools where available.
-- For visual/product UI changes, verify relevant desktop and mobile viewports.
+- For visual/product UI changes, verify relevant desktop and mobile viewports in a browser. When a project has declared design references, compare spacing, layout, hierarchy, responsive behavior, and visible states against the matching reference.
+- Manually exercise each developed user-facing feature when feasible, including happy path, validation failures, loading, empty, error, unauthorized/forbidden, and destructive-action paths.
 - Tests should assert user-visible behavior, not implementation trivia.
 
 ## Config And Tooling
 
 - Keep TypeScript strict and avoid `any` unless isolated and justified.
-- Use linting, formatting, import boundaries, and type checks to enforce consistency.
+- Use linting, formatting, import ordering, import boundaries, and type checks to enforce consistency.
 - Keep environment configuration typed and validated.
 - Use package choices that are actively maintained, widely adopted, and compatible with the framework.
 - Prefer Zustand over Redux for lightweight app state unless the project already has Redux or needs Redux-specific capabilities.
@@ -170,6 +203,7 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Update `frontend-handbook.md` after meaningful frontend changes.
 - Document routes, state ownership, data flow, design-system additions, accessibility notes, and integration contracts.
 - Update `development-history.md`, `tasks.md`, and `files-directories.md` when changes are meaningful.
+- Document new environment variables, browser verification requirements, design-reference gaps, realtime strategies, server/client boundaries, and test strategy changes.
 - Keep component docs concise and focused on purpose, props, states, accessibility, and integration cautions.
 
 ## Frontend Completion Checklist
@@ -186,4 +220,4 @@ Before marking frontend work complete, confirm:
 - telemetry/error reporting is added where useful
 - tests cover important behavior and regressions
 - docs and handbooks are updated
-
+- browser verification was performed for UI changes, or the final handoff names the blocker and remaining visual risk

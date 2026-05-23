@@ -287,10 +287,15 @@ E.g if task is to build an auth system
 - Then just about  10 or so items more  that even though are not added in the initial prompt, if added will make the feature solid.
 This enhances discoverability and also hard knocking the system.
 
-## Last words
- 
- Be strict and take control. Ensure all verticals are okay. Eg no security leakages even if user has deliberately setup the system to be pourous, you fix it. No lazy job etc etc
 
+ The rule above is copied from a NestJS FE project. Infer any rules in it we dont have in our instructions and frontend rules and insert them
 
+NB, discard any of the rule that talks about the product schema or AppWrite since thats jsut tailored for that product
+
+- Check if there is list of good software, expand that list if needed
+
+- Add the NestJS, TypeORM, NextJS etc full libs API overview from OpenAI
 
  - Bring in all the notes from Notion
+
+ - Bring in all notes from TickTick

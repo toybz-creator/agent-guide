@@ -178,6 +178,7 @@ Implementation rules:
 - Prefer clear, boring, maintainable code over cleverness.
 - Use framework-native APIs deeply and correctly.
 - Use mature libraries with high value and good ecosystem fit.
+- For greenfield work, choose current stable framework/library versions unless project constraints, compatibility, or risk require a pinned older version. Record the reason for non-current choices.
 - Actively leverage high-quality official and community/ecosystem libraries when they materially improve feature completeness, reliability, maintainability, security, observability, or product polish.
 - Prefer feature/domain structure where related code lives together.
 - Keep one source of truth for business rules, data access, config, and integration behavior.
@@ -186,6 +187,8 @@ Implementation rules:
 - Make state transitions explicit.
 - Treat concurrency, race conditions, partial failure, and retries as normal design concerns.
 - Keep configs environment-aware, typed, validated, secure, observable, and documented.
+- Implement complete production build that satisfies the task, including data contracts, security checks, edge cases, failure states, and user feedback appropriate to the risk.
+- When persistence changes, keep the full contract synchronized: schema/model, migration, service rules, API DTOs, authorization scope, tests, documentation, and operational rollout notes.
 - Avoid introducing hidden scope changes.
 
 ### 8. Verify
@@ -206,6 +209,7 @@ Run the checks that fit the change:
 - accessibility checks
 - security checks
 - performance checks
+- deployment smoke checks when runtime behavior, environment setup, routing, or infrastructure changed
 
 Full coverage is the target for important behavior. If full unit, integration, and E2E coverage is not feasible in the current task, state the gap, risk, and next step.
 
@@ -215,6 +219,7 @@ After implementation and before final response, review the work as if looking fo
 
 - Does it still match the PRD, FRD, and Non-FRD?
 - Are DTOs, validation, controller responses, events, persistence, generated types, and consumers aligned?
+- For data-layer work, do entities/models, migrations, indexes, backfills, transactions, DTOs, service invariants, authorization scope, and docs describe the same contract?
 - Are authorization, RBAC, validation, error handling, logging, metrics, and traceability correct?
 - Could this break nearby features, shared utilities, role handling, or existing flows?
 - Are there race conditions, stale assumptions, null/undefined paths, bad defaults, naming mismatches, or abuse paths?
@@ -238,6 +243,8 @@ Update custom guide docs when:
 - backend/frontend handbooks need new facts
 
 Keep docs clear, traceable, and consistent. Do not leave contradictory statements across docs. Add a short change note for significant updates.
+
+Every implementation task is also a documentation task. Do not mark work complete until relevant README sections, architecture notes, task tracking, handbooks, environment docs, or development history are updated, or until the final report names the documentation gap and the reason it could not be closed.
 
 ### 11. Final Report
 
@@ -270,6 +277,15 @@ All implementation should satisfy these verticals as far as the task reasonably 
 - **Cost Control:** efficient cloud/resource use, bounded retries, cache strategy, observability cost awareness, and right-sized dependencies.
 - **User Experience:** predictable flows, clear feedback, safe loading/error states, responsiveness, and humane communication.
 
+## Environment And Deployment Expectations
+
+- Keep environment variables typed, validated, documented, and separated by local, test, staging, preview, and production needs.
+- Never expose server-only keys through public frontend environment variable prefixes or browser bundles.
+- Document external service setup, required permissions, indexes/schemas/resources, and reproducible provisioning steps in the relevant architecture or environment guide.
+- Before deployment or handoff, confirm the local build passes when the change affects runtime behavior, package contents, environment config, or deployment settings.
+- Add or update a smoke test checklist for changed user journeys, APIs, background jobs, auth flows, or operational dependencies.
+- When using a managed host, follow that host's current documented deployment model without making the base guide depend on one provider.
+
 ## Conflict Resolution
 
 Rules may conflict between the base guide, project guide, codebase conventions, and user requests.
@@ -293,6 +309,8 @@ When the right choice is unclear, ask the user once and save the final decision 
 - Every significant feature directory should have enough documentation for a new developer to understand purpose, boundaries, data flow, cautions, and test approach.
 - Backend APIs should have OpenAPI/Swagger or equivalent docs.
 - Frontend APIs and shared client contracts should have typed, documented usage patterns.
+- Document required environment variables, external service setup, permissions, deployment requirements, and local verification steps whenever they affect setup, runtime behavior, or release safety.
+- Keep task files current enough for the next agent to resume without guessing what is done, blocked, risky, or intentionally deferred.
 
 ## Safety Rules
 
@@ -302,6 +320,7 @@ When the right choice is unclear, ask the user once and save the final decision 
 - Keep secrets out of code, logs, docs, screenshots, and final responses.
 - Prefer reversible, auditable changes.
 - If a dangerous operation appears necessary, explain the risk and ask for approval.
+- Use automated, hooked and manual scripts or tools to enforce conformitity, safety, security and complaince with all standards. 
 
 ## Anti-Patterns To Avoid
 
@@ -323,12 +342,16 @@ When the right choice is unclear, ask the user once and save the final decision 
 Use this pattern for every meaningful task:
 
 1. Clarify.
-2. Research when useful.
-3. Propose options and plan.
-4. Lock the plan.
-5. Build.
-6. Test.
-7. Review the implementation for faults.
-8. Fix discovered issues.
-9. Update living docs.
-10. Provide a clear final report.
+2. Reconcile source-of-truth docs, code, and task notes.
+3. Research when useful.
+4. Identify contracts, security requirements, edge cases, and test needs.
+5. Propose options and plan.
+6. Lock the plan when the risk or scope warrants it.
+7. Build.
+8. Test with the appropriate unit, integration, E2E, browser, accessibility, build, and deployment checks.
+9. Review the implementation for faults.
+10. Fix discovered issues.
+11. Run tests and checks again
+12. Update living docs and task status.
+13. Provide a clear final report.
+
