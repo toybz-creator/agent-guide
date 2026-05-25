@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -22,7 +22,13 @@ const requiredGuideFiles = [
   "custom-agent-guide/files-directories.md",
   "custom-agent-guide/backend-handbook.md",
   "custom-agent-guide/frontend-handbook.md",
-  "custom-agent-guide/environments-cloud-deployments.md"
+  "custom-agent-guide/environments-cloud-deployments.md",
+  "custom-agent-guide/prompt-template.md"
+];
+
+const requiredProjectFiles = [
+  ...requiredGuideFiles,
+  "scripts/supply-chain-audit.mjs"
 ];
 
 const packageFiles = [
@@ -32,6 +38,7 @@ const packageFiles = [
   "frontend/frontend-rules.md",
   "computer-use/computer-use-agent-rules.md",
   "docs",
+  "scripts/supply-chain-audit.mjs",
   "bin/agent-guide.mjs",
   "package.json"
 ];
@@ -144,6 +151,92 @@ Document frontend architecture, routes, state ownership, data flows, UI systems,
   "custom-agent-guide/environments-cloud-deployments.md": `# Environments, Cloud, And Deployments
 
 Document local and remote environments, infrastructure, secrets policy, deployment flows, rollback, monitoring, and support procedures.
+`,
+  "custom-agent-guide/prompt-template.md": `# Standard Production Task Prompt Template
+
+Use this template for meaningful implementation, review, refactor, security, infrastructure, and debugging work.
+
+## Task
+
+_Describe the requested outcome, users affected, current behavior, desired behavior, and explicit non-goals._
+
+## Acceptance Criteria
+
+| Criterion | How It Will Be Verified |
+| --- | --- |
+| _Expected product behavior_ | _Test, demo, or inspection method_ |
+| _Security/permission requirement_ | _Auth/RBAC/security test_ |
+| _Operational or non-functional requirement_ | _Metric, log, load test, or smoke check_ |
+
+## Context To Load
+
+- Read the base agent guide and relevant custom project guide files.
+- Read the code paths, tests, schemas, migrations, infrastructure, and docs affected by the task.
+- Check matching packaged library docs and current official docs when the task depends on framework, API, or security-sensitive behavior.
+
+## Planning Rules
+
+- Start with a plan when the task is non-trivial, risky, security-sensitive, data-sensitive, infrastructure-related, or ambiguous.
+- The plan must state the chosen approach, system structure, engineering norms, safeguards, alternatives considered, and open questions.
+- Simulate the solution globally before coding: data flow, permissions, failure modes, rollback, deployment, observability, scalability, and downstream effects.
+- Ask questions or pause for alignment when uncertainty could change product behavior, architecture, security, cost, migration safety, or user experience.
+
+## Non-Functional Requirements
+
+Document explicit targets or assumptions for:
+
+| Area | Requirement Or Assumption | Evidence Needed |
+| --- | --- | --- |
+| Latency | _Example: bulk initiation endpoint responds in milliseconds by enqueueing durable async work._ | _API/integration test and timing notes_ |
+| Throughput | _Example: supports 5k concurrent users without blocking critical request paths._ | _Load model, query plan, or stress test_ |
+| Availability | _Expected uptime, failover, graceful degradation, and retry behavior._ | _Health checks, alerts, fallback behavior_ |
+| Consistency | _Strong, eventual, or read-after-write needs._ | _Transaction, replica, cache, or reconciliation design_ |
+| Security | _Auth, RBAC, tenant scope, abuse prevention, supply-chain checks._ | _Unit/integration/security tests_ |
+| Operability | _Logs, metrics, traces, dashboards, runbook, rollback._ | _Observed telemetry and rollback notes_ |
+
+## Test Plan
+
+List planned tests before implementation:
+
+| Type | Scenario | Expected Result | Coverage Area |
+| --- | --- | --- | --- |
+| Unit | _Happy path domain behavior_ | _Correct state/output_ | Correctness |
+| Unit | _Invalid input or bad state_ | _Safe error/no mutation_ | Defensive coding |
+| Integration | _Endpoint with valid DTO and auth_ | _Expected response and persistence_ | API contract |
+| Integration | _RBAC/tenant denial_ | _Forbidden/no data leak_ | Security |
+| Integration | _Concurrency/idempotency/retry_ | _No duplicate side effects_ | Reliability |
+| E2E | _Critical user workflow_ | _User-visible success and recovery states_ | Regression |
+| Security | _Malicious input, dependency, or permission boundary_ | _Rejected, logged, or blocked_ | Security |
+| Performance | _Expected scale/load path_ | _Meets latency/resource target_ | Efficiency |
+
+## Implementation Rules
+
+- Preserve existing behavior unless a change is explicitly required.
+- Use defensive coding: validate inputs, reject impossible states, keep defaults safe, and treat external systems as unreliable.
+- Apply security first: least privilege, server-side authorization, tenant scoping, secrets protection, dependency hygiene, and safe logs.
+- Build for scale only where the requirement or foreseeable growth justifies it; leave simple extension points without over-engineering.
+- Keep persistence, schema, migrations, seed data, DTOs, tests, and docs synchronized.
+- Prefer async workflows, queues, caches, replicas, sharding, regional routing, or specialized data systems only when the non-functional requirements justify their complexity.
+- Add observability for critical paths, failures, retries, queues, security events, and business state transitions.
+
+## Final Review And Report
+
+After development, report:
+
+- What changed and what the new code means for the system.
+- Side effects introduced, compatibility changes, and how the system evolved.
+- Critical code paths created or changed that need human review.
+- Deployment, migration, rollback, production data, and operational risks.
+- Test results in table form:
+
+| Check | Command Or Method | Result | Notes |
+| --- | --- | --- | --- |
+| Unit | _command_ | _pass/fail/not run_ | _summary_ |
+| Integration | _command_ | _pass/fail/not run_ | _summary_ |
+| Security | _command_ | _pass/fail/not run_ | _summary_ |
+| Build | _command_ | _pass/fail/not run_ | _summary_ |
+
+- Remaining risks, follow-ups, and recommended monitoring after release.
 `
 };
 
@@ -157,8 +250,8 @@ Usage:
   agent-guide help
 
 Commands:
-  init      Create missing custom-agent-guide files without overwriting existing files.
-  doctor    Check framework package files and downstream custom-agent-guide files.
+  init      Create missing custom-agent-guide files and security scripts without overwriting existing files.
+  doctor    Check framework package files, downstream guide files, and security scripts.
   snippet   Print an activation snippet for AGENTS.md or equivalent agent rules files.
 `);
 }
@@ -218,7 +311,7 @@ function init({ root, dryRun }) {
   const created = [];
   const skipped = [];
 
-  for (const file of requiredGuideFiles) {
+  for (const file of requiredProjectFiles) {
     const absolutePath = join(root, file);
 
     if (existsSync(absolutePath)) {
@@ -230,7 +323,7 @@ function init({ root, dryRun }) {
 
     if (!dryRun) {
       mkdirSync(dirname(absolutePath), { recursive: true });
-      writeFileSync(absolutePath, templates[file], { flag: "wx" });
+      writeFileSync(absolutePath, getTemplate(file), { flag: "wx" });
     }
   }
 
@@ -259,7 +352,7 @@ function doctor({ root, packageRoot: guideRoot, packageOnly }) {
   const missingPackageFiles = packageFiles.filter((file) => !existsSync(join(guideRoot, file)));
   const missingCustomFiles = packageOnly
     ? []
-    : requiredGuideFiles.filter((file) => !existsSync(join(root, file)));
+    : requiredProjectFiles.filter((file) => !existsSync(join(root, file)));
 
   if (missingPackageFiles.length === 0) {
     console.log("Package files: ok");
@@ -284,6 +377,14 @@ function doctor({ root, packageRoot: guideRoot, packageOnly }) {
   if (missingPackageFiles.length > 0 || missingCustomFiles.length > 0) {
     process.exitCode = 1;
   }
+}
+
+function getTemplate(file) {
+  if (file === "scripts/supply-chain-audit.mjs") {
+    return readFileSync(join(packageRoot, "scripts/supply-chain-audit.mjs"), "utf8");
+  }
+
+  return templates[file];
 }
 
 const args = parseArgs(process.argv);

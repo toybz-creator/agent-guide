@@ -188,6 +188,8 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Component test important UI states, interactions, accessibility roles, keyboard behavior, and error/loading/empty states.
 - Integration test feature flows with realistic API mocks.
 - Integration test trusted mutation paths for server-side validation, authorization, cache invalidation, and user-visible success/failure states.
+- Include security and bad-request scenarios for forms, route guards, server actions, API clients, upload flows, redirects, auth expiry, role changes, tenant switches, and malformed or malicious server responses.
+- Treat no-regression coverage as part of feature work. Tests should protect existing supported behavior, not only the newly added happy path.
 - E2E test critical user journeys, auth/role behavior, forms, navigation, and high-risk regressions.
 - E2E tests must avoid production data. Use a dedicated test environment, seeded fixtures, mocked backend, or other deterministic strategy approved by the project.
 - Add accessibility checks using the project’s testing tools where available.

@@ -81,12 +81,28 @@ Required downstream files:
 - `custom-agent-guide/backend-handbook.md`
 - `custom-agent-guide/frontend-handbook.md`
 - `custom-agent-guide/environments-cloud-deployments.md`
+- `custom-agent-guide/prompt-template.md`
+- `scripts/supply-chain-audit.mjs`
 
 Check a project at any time:
 
 ```bash
 npx agent-guide doctor
 ```
+
+The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vulnerability test run. Add scripts like these to the downstream project `package.json` when they fit the local test workflow:
+
+```json
+{
+  "scripts": {
+    "security:supply-chain": "node scripts/supply-chain-audit.mjs",
+    "security:supply-chain:fix": "node scripts/supply-chain-audit.mjs --fix",
+    "test:vulnerability": "npm run security:supply-chain"
+  }
+}
+```
+
+The script checks reproducible installs, dependency specs, `npm audit`, install-time package scripts, and suspicious dependency behavior indicators. Use `--socket` when the project has approved Socket-style package behavior scanning; Socket documents `socket ci` for CI policy checks at https://docs.socket.dev/docs/socket-ci.
 
 ## Expected Agent Behavior
 
@@ -100,9 +116,10 @@ For larger tasks, the agent should:
 4. Clarify ambiguous intent and surface useful feature improvements.
 5. Research current library/framework practices when useful or when no matching packaged docs file exists.
 6. Propose a plan with options and tradeoffs, including reusable open-source or standards-based options when complex rules or architecture patterns are involved.
-7. Implement with production-grade architecture, tests, telemetry, and docs.
-8. Run a final cross-check for regressions, security, accessibility, reliability, and product fit.
-9. Update living docs and provide a concise review with test instructions.
+7. Include the chosen approach, expected system structure, engineering norms, safeguards, non-functional assumptions, and a table of planned tests for meaningful work.
+8. Implement with production-grade architecture, tests, telemetry, and docs.
+9. Run a final cross-check for regressions, security, accessibility, reliability, supply-chain risk, and product fit.
+10. Update living docs and provide a concise review with test results, system impact, side effects, rollback notes, and critical code paths for human review.
 
 This behavior is intentional. The goal is not just to make code work, but to make the product safer, clearer, and easier to evolve.
 
@@ -127,6 +144,7 @@ When package rules conflict with project rules, the agent should ask for a decis
 - `frontend/frontend-rules.md`: frontend and product interface engineering rules.
 - `computer-use/computer-use-agent-rules.md`: browser/computer-use safety guidance.
 - `docs/`: packaged library API and capability references, such as NestJS and TypeORM.
+- `scripts/supply-chain-audit.mjs`: dependency vulnerability and supply-chain behavior check scaffolded into downstream projects by `init`.
 
 ## Publishing
 

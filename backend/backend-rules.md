@@ -43,6 +43,7 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Never expose persistence entities or ORM models directly from public APIs. Map to DTOs/contracts that intentionally include public fields, hide internal metadata and secrets, and preserve backward-compatible response shapes.
 - Hide sensitive persisted columns from default ORM selection where the ORM supports it, and still require DTO mapping. Password hashes, token hashes, API keys, reset codes, private notes, and provider secrets must be explicitly selected only in services that need them.
 - Treat `undefined`, missing fields, and `null` as different update intents. Patch/update paths must define which fields can be omitted, which fields can be cleared, and which fields must be rejected.
+- Prefer nullable-first schema evolution for new persisted fields on existing data. Add the field nullable or with a safe default, backfill and validate it, update code and seed data, then enforce `NOT NULL` only when production data, rollout order, and rollback safety are proven.
 - Use database enums only when values are stable and database-level validity is worth the migration cost. For fast-moving domains, prefer text plus typed validation, transition guards, and tests until the domain settles.
 - Use timezone-aware instants for absolute event times and document domain-specific time semantics such as inclusive/exclusive ranges, venue timezones, payment windows, reporting boundaries, and recurring local schedules.
 - Use transactions for multi-step writes that must be atomic. Make transaction boundaries visible and avoid hidden nested transaction behavior.
@@ -78,6 +79,7 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Use CQRS when separate read/write models materially improve performance, search, reporting, or scaling. Writes should protect transactional integrity; reads may use optimized projections, replicas, search indexes, caches, or materialized views. Define lag tolerance, rebuild/replay strategy, stale-read UX, and reconciliation before adopting it.
 - Use event sourcing only when the product needs durable event history, auditability, replay, temporal queries, or complex state reconstruction. Define event schemas, ordering, snapshots, replay safety, PII handling, and migration/versioning strategy.
 - Keep seed data as part of the data layer. Seeds should be transactional where practical, deterministic, safe for the target environment, idempotent, realistic across domains, include unhappy states, and document the demo/test world they create.
+- Update seed data whenever schema, constraints, required relationships, roles, permissions, workflow states, or demo/test assumptions change. Seeds should prove the current schema can support realistic success, error, RBAC, empty, edge, and migration scenarios.
 
 ## Query Analysis And Indexing
 
@@ -112,6 +114,8 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Make backfills idempotent and rerunnable. They should process bounded batches, log progress, resume after failure, avoid long transactions/table-wide locks, support dry-run when risky, include a verification query, and avoid duplicate external side effects.
 - Use application-level backfill or repair jobs when data changes require domain services, side effects, media generation, search indexing, notifications, audit metadata, or queue orchestration.
 - Add automated migration safety checks where practical to block obvious destructive operations such as new drops, truncates, and broad deletes, while still requiring human review for subtle risks.
+- For production databases, document backup, restore, point-in-time recovery, replication, and rollback expectations with every significant schema or data migration. Verify that backups exist before risky migrations and that rollback code remains compatible with the live data shape.
+- Ensure to point these out and offer to be a guardian during migration and deployment points or processes.
 
 ## Wrappers And Policy Enforcement
 
@@ -219,8 +223,10 @@ For high-risk domains, wrappers should become policy gateways, not thin pass-thr
 - Watch for N+1 queries, unbounded joins, large payloads, synchronous external calls, and memory-heavy transformations.
 - Use connection pools, timeouts, and resource limits deliberately.
 - Treat cost as an engineering concern: retries, logs, traces, storage, queues, and external API calls must be bounded.
+- For high-traffic or region-sensitive systems, design the full serving path, not only application code: load balancing, regional routing, database topology, read replicas, sharding or partitioning, cache layers, queue backpressure, rate limits, failover, data residency, and operational runbooks. Use infrastructure-as-code when infrastructure changes are in scope.
 - For search-heavy workflows, prefer CQRS-style search indexes or dedicated search services when relational queries become slow, broad, or user-facing at scale. Update indexes asynchronously through events, outbox, CDC, or jobs; define lag, rebuild, deletion, authorization, and backfill behavior.
-- Use specialized data systems only when the workload justifies them: Examples: Redis for cache/streams/coordination, Kafka or equivalent for event streaming, Flink or equivalent for stream processing, Cassandra or wide-column stores for high-scale write/read patterns, CockroachDB or distributed SQL for multi-region consistency needs, and object/CDN storage for large immutable assets. Document the operational cost and team ownership before adopting. NB: These are examples, not base-guide mandates. Point is suggest or use the best optimal tool when it benefits the system
+- Use replication for read efficiency, failover, reporting, analytics, or backups only when the consistency and operational tradeoffs are explicit. Define replica lag tolerance, primary-read paths, promotion/failover behavior, backup validation, restore testing, monitoring, and stale-read user experience.
+- Use specialized data systems only when the workload justifies them: Examples: Redis for cache/streams/coordination, Kafka or equivalent for event streaming, Apache Spark or equivalent for large batch analytics, Flink or equivalent for stream processing, Neo4j or graph databases for relationship-heavy graph traversal, Cassandra or wide-column stores for high-scale write/read patterns, CockroachDB or distributed SQL for multi-region consistency needs, and object/CDN storage for large immutable assets. Document the operational cost and team ownership before adopting. These are examples, not base-guide mandates; choose the tool that best fits the workload and constraints.
 
 ## Config And Environment
 
@@ -240,6 +246,8 @@ For high-risk domains, wrappers should become policy gateways, not thin pass-thr
 - Integration test database access, API endpoints, auth/RBAC, queues, cache, webhooks, and external integration wrappers.
 - E2E test critical user and admin flows.
 - Include negative tests for validation, authorization, missing resources, duplicate requests, concurrency, and dependency failures.
+- Include security and bad-request tests at the same layers that enforce behavior: DTO/schema validation, middleware, guards, policies, controllers/routes, services, persistence adapters, and external integration boundaries.
+- Test endpoints directly when API behavior changes so transport parsing, DTO validation, middleware, guards, interceptors, filters, auth/RBAC, response mapping, and error contracts are verified together.
 - For persistence changes, test the contract that can break in production: migration builds a fresh schema, relation mappings match real columns, unique constraints reject duplicates, authorization scopes filter rows, soft-delete behavior is consistent, status transitions write audit records, backfills repair legacy rows, and DTOs do not leak internal columns.
 - Use multi-tenant or multi-owner fixtures when testing scoped access. Single-tenant test data cannot prove isolation.
 - Use deterministic fixtures and test data builders.

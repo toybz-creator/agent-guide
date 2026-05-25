@@ -24,11 +24,14 @@
     "frontend/",
     "computer-use/",
     "docs/",
+    "scripts/",
     "bin/"
   ],
   "scripts": {
     "pack": "npm pack --dry-run",
     "publish:dry-run": "npm publish --dry-run",
+    "security:supply-chain": "node scripts/supply-chain-audit.mjs",
+    "security:supply-chain:fix": "node scripts/supply-chain-audit.mjs --fix",
     "validate": "node bin/agent-guide.mjs doctor --package-root . --package-only"
   },
   "engines": {

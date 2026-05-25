@@ -45,6 +45,9 @@ Every project using this framework should have `custom-agent-guide/`. Create mis
 - `backend-handbook.md`: backend architecture, dependencies, modules, data access, service flows, and operations handbook.
 - `frontend-handbook.md`: frontend architecture, dependencies, routes, state, data flows, UI systems, and integration handbook.
 - `environments-cloud-deployments.md`: local/remote environments, cloud infrastructure, secrets, deployment flows, operational notes, and support procedures.
+- `prompt-template.md`: reusable task prompt structure covering planning, non-functional requirements, no-regression rules, test matrix, security, scalability, observability, and final reporting.
+
+The `agent-guide init` command also creates `scripts/supply-chain-audit.mjs`. Keep it wired into the project vulnerability test flow so dependency risk is checked with the same seriousness as unit, integration, and build failures.
 
 All custom guide files are living docs. Update them when new facts, requirements, architecture decisions, tasks, or risks appear.
 
@@ -208,6 +211,17 @@ Before significant implementation, propose a practical plan:
 - docs to update
 - rollout, migration, or compatibility notes
 
+The plan must make the direction reviewable before code changes. Include:
+
+- the chosen approach and why it fits the current system
+- the expected system structure after the change, including boundaries, data flow, persistence, integrations, infrastructure, and ownership
+- engineering norms that will govern the implementation, such as no-regression behavior, defensive coding, least privilege, idempotency, observability, and test strategy
+- safeguards for security, data integrity, rollback, feature flags, migration order, operational visibility, and user impact
+- non-functional requirements and assumptions, including latency, throughput, availability, consistency, scalability, security, cost, deployment, and production data state
+- a test matrix in table form covering success and negative paths, errors, validation, RBAC/auth, security abuse cases, concurrency, efficiency/performance, reliability, migration behavior, and regression risk
+
+For high-impact work, effectively simulate the whole solution within the framework before implementation. Reason through how requests, jobs, events, caches, replicas, databases, users, operators, attackers, and failure modes interact. Use that global view to uncover technical risks, edge cases, loopholes, rollback needs, and missing requirements before coding.
+
 For small, low-risk fixes, a brief plan is enough. For high-impact tasks, wait for user alignment before changing code.
 
 ### 7. Build
@@ -260,6 +274,8 @@ Full coverage is the target for important behavior. If full unit, integration, a
 After implementation and before final response, review the work as if looking for faults:
 
 - Does it still match the PRD, FRD, and Non-FRD?
+- Does the change make sense for the system as a whole, not only the touched files?
+- What behavior, data flow, permissions, dependencies, deployment assumptions, scale limits, or operational duties changed because of this work?
 - Are DTOs, validation, controller responses, events, persistence, generated types, and consumers aligned?
 - For data-layer work, do entities/models, migrations, indexes, backfills, transactions, DTOs, service invariants, authorization scope, and docs describe the same contract?
 - Are authorization, RBAC, validation, error handling, logging, metrics, and traceability correct?
@@ -294,7 +310,11 @@ After each task, provide:
 
 - what changed
 - why it changed
+- what the new code means for the system, how the system evolved, and which behavior, contracts, data flows, permissions, or operational assumptions changed
+- side effects introduced, compatibility implications, deployment and rollback notes, production data risks, and any case where rollback may require data repair or a staged release
+- critical code paths that deserve human review, especially edge cases, failure handling, core business rules, security boundaries, data migrations, infrastructure permissions, and points of failure
 - verification run and results
+- test results in table form for meaningful work, including command or method, result, and notes
 - manual test instructions
 - docs updated
 - remaining concerns or follow-ups
@@ -366,10 +386,14 @@ When the right choice is unclear, ask the user once and save the final decision 
 - If a dangerous operation appears necessary, explain the risk and ask for approval.
 - Use automated hooks, scripts, scanners, tests, tools like (socket etc) and manual review to enforce conformity, safety, security, and compliance standards.
 - For npm and other package ecosystems, treat dependencies as supply-chain risk. Prefer least privilege, minimal dependency surface, lockfiles, package provenance where available, vulnerability/malware scanning, Dependabot or equivalent update automation, and network egress restrictions for runtime machines.
+- For Node/npm projects, ensure and run package manager commands with least privilege. Disable install scripts by default where the project can support it, avoid global installs in normal workflows, prefer `npm ci` from committed lockfiles, keep tokens read-only unless publishing is required, and allow lifecycle scripts only after explicit package review.
 - Apply least privilege to code, dependencies, infrastructure, service accounts, database users, object storage policies, CI tokens, and runtime network access.
+- Default every infrastructure permission to denied unless explicitly enabled. Apply the same least-privilege rule to CI jobs, cloud IAM, Kubernetes service accounts, database roles, cache users, object storage buckets, message queues, webhooks, third-party API keys, and runtime network egress.
 - Restrict production server egress to approved hosts where the deployment environment supports it. Whitelisted outbound access limits damage if a dependency, server-side request, or supply-chain package is compromised.
 - Scan dependencies for known vulnerabilities and suspicious behavior with project-approved tools. Standard options include `npm audit`, GitHub Dependabot, Snyk, OWASP scanners, Socket-style package behavior scanners, or AI-assisted scanners when approved. Treat scanner output as input to human review, not automatic permission to upgrade blindly.
-- Safety script and ops must be applied in project roots, in sub project folders, in environements, in system and across all exposure surfaces.
+- The scaffolded `scripts/supply-chain-audit.mjs` must run as part of vulnerability test runs for Node projects unless a project-specific verdict replaces it with an equivalent or stronger toolchain. It checks lockfile presence, dependency specs, `npm audit`, install-time lifecycle scripts, and suspicious dependency behavior indicators. Use `--fix` only after reviewing dependency changes, release notes, and regression risk.
+- Socket-style package behavior scanning should be enabled in Dev and CI when the project has access to an approved Socket token or equivalent tool. Packages that execute install scripts, open network connections, spawn processes, or use raw sockets need explicit review, allow-listing, or replacement.
+- Safety scripts and operational checks must be applied in repository roots, subproject folders, environments, CI, deployment pipelines, and all exposure surfaces where dependencies, infrastructure, credentials, or runtime policies can change.
 
 ## Anti-Patterns To Avoid
 
