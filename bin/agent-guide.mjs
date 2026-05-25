@@ -11,6 +11,8 @@ const requiredGuideFiles = [
   "custom-agent-guide/PRD.md",
   "custom-agent-guide/FRD.md",
   "custom-agent-guide/Non-FRD.md",
+  "custom-agent-guide/constraints.md",
+  "custom-agent-guide/git-workflow.md",
   "custom-agent-guide/architectural-guide.md",
   "custom-agent-guide/project-guide.md",
   "custom-agent-guide/verdicts.md",
@@ -59,7 +61,35 @@ _Describe feature behavior, workflows, roles, inputs, outputs, edge cases, and n
 
 ## Requirements
 
-_Capture scale, availability, latency, reliability, security, privacy, compliance, observability, support, and deployment expectations._
+_Capture scalability, request rate, data volume, availability, latency, reliability, consistency, security, privacy, compliance, observability, KPIs, SLEs, support, and deployment expectations._
+`,
+  "custom-agent-guide/constraints.md": `# Constraints
+
+## Technical Constraints
+
+_Capture required stacks, hosting limits, data stores, integrations, environments, performance ceilings, migration limits, and compatibility requirements._
+
+## Business Constraints
+
+_Capture budget, timeline, market, support, operational ownership, vendor, and staffing constraints._
+
+## Legal And Compliance Constraints
+
+_Capture privacy, retention, data residency, accessibility, audit, security, regulatory, and contractual constraints._
+`,
+  "custom-agent-guide/git-workflow.md": `# Git Workflow
+
+## Branching And Commits
+
+_Document branch naming, commit style, review expectations, and merge strategy._
+
+## Hooks And Local Gates
+
+_Document pre-commit, pre-push, lint, format, typecheck, test, security scan, and generated-file checks._
+
+## Release And Rollback
+
+_Document CI gates, deployment promotion, versioning, database migration order, rollback safety, and emergency procedures._
 `,
   "custom-agent-guide/architectural-guide.md": `# Architectural Guide
 

@@ -18,6 +18,7 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Prefer dependency injection and interfaces for integrations that may change, need testing, or require policy enforcement.
 - Use event-driven, queue-based, streaming, or scheduled architectures when they fit the workflow better than synchronous request/response.
 - Do not create unnecessary abstraction layers. Add wrappers when they enforce product policy, improve testability, centralize risk, or match existing architecture.
+- For complex business rules, first check whether a reputable open-source library, official standard, or mature reference implementation already exists. Use or adapt it when it is well maintained, licensed acceptably, secure, testable, and aligned with project constraints. Do not hand-roll large standards-heavy rule systems without researching existing options.
 
 ## API And Communication Contracts
 
@@ -49,6 +50,9 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - When a database change and an external side effect must both happen reliably, prefer an outbox, durable job, or event handoff written inside the same transaction as the business change. Process the side effect after commit with retries, idempotency, and visible status.
 - Design writes for idempotency where retries, webhooks, jobs, or distributed systems are involved.
 - Back idempotency with database uniqueness or another durable constraint when duplicate side effects would harm correctness. Application-only idempotency checks are not enough under concurrency.
+- Assume retries happen. Duplicate HTTP requests, user double-clicks, webhook redelivery, queue reprocessing, job restarts, and client reconnects must not create duplicate records or unintended side effects unless the product explicitly requires it.
+- Prefer deterministic operation IDs, idempotency keys, unique constraints, natural keys, compare-and-swap checks, or version columns for important writes. If a record or operation already exists, return the existing durable result or a safe no-op response instead of repeating side effects.
+- For versioned domain records, use optimistic concurrency where stale updates would corrupt data: clients send the last known version, the server rejects mismatches with a clear conflict response, successful writes increment the version, and clients refetch or reconcile before retrying.
 - Avoid unbounded queries. Use pagination, streaming, cursors, limits, projections, and indexes.
 - For list endpoints, enforce a default limit, maximum limit, stable ordering, and deterministic tie-breaker. Use cursor pagination for high-volume ordered histories or feeds where offset pagination becomes unreliable or expensive.
 - Use query builders or equivalent explicit query APIs when filtering, joins, projections, aggregates, authorization scope, pagination, or performance shape matters. Avoid hidden eager/lazy relation loading and N+1 behavior in production endpoints.
@@ -70,7 +74,9 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Keep truly universal fields in base entities/models only when they apply to every table. Do not force business-specific fields such as tenant ID, status, owner ID, or lifecycle state into a base class unless the project contract requires them everywhere.
 - Prefer soft delete for records needed for audit, support, reconciliation, reporting, undo, retention, or legal reasons. Define how soft-deleted records affect uniqueness, default queries, restores, indexes, retention, and cleanup jobs.
 - Use hard delete for ephemeral records only when retention and audit requirements allow it, such as expired one-time tokens, temporary uploads, draft-only children, or short-lived locks.
-- Consider CQRS pattern with appropriate handling across edge cases, failures, unhappy paths, reconciliation  when and if it benefits the systems.
+- Consider CQRS only when it materially benefits the system, and include edge cases, failure modes, unhappy paths, stale reads, and reconciliation in the design.
+- Use CQRS when separate read/write models materially improve performance, search, reporting, or scaling. Writes should protect transactional integrity; reads may use optimized projections, replicas, search indexes, caches, or materialized views. Define lag tolerance, rebuild/replay strategy, stale-read UX, and reconciliation before adopting it.
+- Use event sourcing only when the product needs durable event history, auditability, replay, temporal queries, or complex state reconstruction. Define event schemas, ordering, snapshots, replay safety, PII handling, and migration/versioning strategy.
 - Keep seed data as part of the data layer. Seeds should be transactional where practical, deterministic, safe for the target environment, idempotent, realistic across domains, include unhappy states, and document the demo/test world they create.
 
 ## Query Analysis And Indexing
@@ -144,6 +150,12 @@ Wrappers should enforce shared policy:
 
 Prevent direct low-level client use by convention, lint rules, code ownership, module exports, or architectural tests where practical.
 
+For high-risk domains, wrappers should become policy gateways, not thin pass-throughs. Examples:
+
+- Custom repositories should enforce tenant scope, RBAC predicates, allowed ordering/filtering, pagination, version checks, soft-delete behavior, projections, cache invalidation, audit metadata, and safe errors.
+- Request/service clients should enforce timeouts, retries, exponential backoff with jitter, circuit breakers, correlation IDs, rate limits, redaction, and typed error translation.
+- Security and authorization wrappers should expose intention-revealing checks so services cannot accidentally bypass the project policy model.
+
 ## Reliability And Async Work
 
 - Model async/stateful flows with explicit states and transitions.
@@ -153,6 +165,11 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 - Use exponential backoff with jitter for retriable failures. Do not retry validation errors, auth errors, or known permanent failures.
 - Use dead-letter queues or failure tables for work that cannot be safely dropped.
 - Protect downstream systems with rate limits, bulkheads, queue concurrency, circuit breakers, and timeouts.
+- Use saga/compensating transaction patterns for multi-service workflows where distributed transactions are not available or not appropriate. Define each step, durable state, retry behavior, compensation action, timeout, manual repair path, and audit trail.
+- Use the outbox pattern when database changes must reliably publish events. Write domain state and the outbox record in the same transaction, publish after commit, mark delivery status, and make consumers idempotent.
+- Use competing consumers for scalable queue processing, dead-letter queues for poison messages, and backpressure/concurrency controls so slow downstream systems do not exhaust memory or connection pools.
+- Use the bulkhead pattern to isolate critical resource pools such as database connections, external provider clients, job queues, and expensive workflows so one failing area does not starve the whole system.
+- For NestJS projects, evaluate project-approved resilience libraries and patterns such as `@nestjs/terminus` for health checks, `@nestjs/schedule` or queue libraries for durable work, `@nestjs/cqrs` where CQRS fits, resilience helpers for retries/circuit breakers, and Effect/Effect-TS style workflows when they improve typed error handling, retries, and composition. Add these only when they fit the team and reduce risk.
 - Make partial failure visible and recoverable.
 - Avoid hidden background work from request handlers unless it is durable, observable, and safe to retry.
 - Use locks, uniqueness constraints, idempotency keys, or compare-and-swap patterns to prevent duplicate side effects.
@@ -174,9 +191,11 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 - Avoid SSRF, path traversal, SQL injection, command injection, insecure deserialization, confused deputy problems, and privilege escalation.
 - Maintain audit logs for sensitive actions, permission changes, data exports, admin actions, auth events, and destructive operations.
 
+
 ## Observability And Operations
 
 - Use structured logs with stable event names, severity, request/correlation IDs, actor IDs when safe, tenant IDs when safe, and important domain identifiers.
+- Log thrown and handled errors with stack traces in trusted server logs when available, while redacting secrets and returning safe error responses to clients. Preserve the cause chain when wrapping errors.
 - Emit metrics for latency, throughput, errors, retries, queue depth, job age, dead letters, cache hit rate, dependency health, and business-critical events.
 - Use tracing across service boundaries and async workflows where supported.
 - Make operational states visible: pending, processing, retrying, failed, completed, cancelled, expired, and compensated.
@@ -185,16 +204,23 @@ Prevent direct low-level client use by convention, lint rules, code ownership, m
 - Query-analysis logs must be structured, correlated to request/job IDs, redacted, sampled or bounded, and disabled by default in production unless an incident/debug policy explicitly allows it.
 - Add alerts for user-impacting failures, saturation, SLO breaches, queue buildup, dependency failures, and security-sensitive anomalies.
 - Keep logs useful and bounded. Avoid noisy logs, high-cardinality metrics, and sensitive data leakage.
+- Use project-owned observability wrappers around product analytics, bug capture, monitoring, and DevOps tools. Examples may include Amplitude for product analytics, Jam.dev for user bug reports and console/network context, Lens or Kubernetes-native tools for operations, and OpenTelemetry-compatible logging/metrics/tracing. These are examples, not base-guide mandates; record the chosen tools in `verdicts.md` and environment docs.
 
 ## Performance And Efficiency
 
 - Avoid blocking operations in hot paths.
 - Use caching deliberately with clear keys, TTLs, invalidation strategy, stampede protection, and tenant/user scoping.
 - Cache keys must include every query dimension that changes the result, such as tenant, user, role, filters, date range, timezone, page/cursor, inventory item, and permission scope. The service that owns a write should own or trigger invalidation for affected read models.
+- Design caching as part of the workflow contract. Define which reads can be client cached, CDN cached, server cached, materialized, or realtime-refreshed; define when writes update local state, invalidate caches, publish events, or require refetch.
+- For client-aware version caching, key domain models can expose monotonically increasing version fields. On app or workflow load, clients may compare local versions with server versions before fetching full data. Mutations should send the expected version when stale writes would be unsafe; successful writes return the new version and emit the relevant cache/realtime update.
+- For realtime read models, the backend can update a reactive store, pub/sub channel, SSE stream, or document database projection while the frontend subscribes to scoped changes. Keep the transactional source of truth server-owned and define replay, authorization, backfill, and stale-data behavior.
+- Use cache-aside, write-through, write-behind, refresh-ahead, read replicas, CDC, Redis streams, or search indexes only when their consistency and failure tradeoffs are documented. For Redis multi-key independent reads, consider pipelining or batching to reduce round trips.
 - Prefer batching, pagination, projections, streaming, compression, and background processing when they reduce load safely.
 - Watch for N+1 queries, unbounded joins, large payloads, synchronous external calls, and memory-heavy transformations.
 - Use connection pools, timeouts, and resource limits deliberately.
 - Treat cost as an engineering concern: retries, logs, traces, storage, queues, and external API calls must be bounded.
+- For search-heavy workflows, prefer CQRS-style search indexes or dedicated search services when relational queries become slow, broad, or user-facing at scale. Update indexes asynchronously through events, outbox, CDC, or jobs; define lag, rebuild, deletion, authorization, and backfill behavior.
+- Use specialized data systems only when the workload justifies them: Examples: Redis for cache/streams/coordination, Kafka or equivalent for event streaming, Flink or equivalent for stream processing, Cassandra or wide-column stores for high-scale write/read patterns, CockroachDB or distributed SQL for multi-region consistency needs, and object/CDN storage for large immutable assets. Document the operational cost and team ownership before adopting. NB: These are examples, not base-guide mandates. Point is suggest or use the best optimal tool when it benefits the system
 
 ## Config And Environment
 

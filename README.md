@@ -69,6 +69,8 @@ Required downstream files:
 - `custom-agent-guide/PRD.md`
 - `custom-agent-guide/FRD.md`
 - `custom-agent-guide/Non-FRD.md`
+- `custom-agent-guide/constraints.md`
+- `custom-agent-guide/git-workflow.md`
 - `custom-agent-guide/architectural-guide.md`
 - `custom-agent-guide/project-guide.md`
 - `custom-agent-guide/verdicts.md`
@@ -88,7 +90,7 @@ npx agent-guide doctor
 
 ## Expected Agent Behavior
 
-After activation, expect the agent to be more deliberate. It may ask more questions, especially for requirements, non-functional needs, scale, security, deployment, observability, and unclear edge cases.
+After activation, expect the agent to be more deliberate. It may ask more questions, especially for requirements, non-functional needs, constraints, scale, security, deployment, observability, and unclear edge cases.
 
 For larger tasks, the agent should:
 
@@ -97,7 +99,7 @@ For larger tasks, the agent should:
 3. Read the relevant code, living docs, and matching packaged `docs/` library reference files before acting.
 4. Clarify ambiguous intent and surface useful feature improvements.
 5. Research current library/framework practices when useful or when no matching packaged docs file exists.
-6. Propose a plan with options and tradeoffs.
+6. Propose a plan with options and tradeoffs, including reusable open-source or standards-based options when complex rules or architecture patterns are involved.
 7. Implement with production-grade architecture, tests, telemetry, and docs.
 8. Run a final cross-check for regressions, security, accessibility, reliability, and product fit.
 9. Update living docs and provide a concise review with test instructions.

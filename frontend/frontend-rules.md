@@ -33,7 +33,11 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Use stable query keys and colocated query/mutation definitions.
 - Define cache invalidation rules when adding mutations.
 - Use optimistic updates only when rollback is safe, user expectations are clear, and conflict handling is defined.
+- For workflows with versioned backend models, include the known record/workflow version in mutations when stale writes would be unsafe. Handle version-conflict responses by showing a recoverable conflict state, refetching current data, and asking the user to retry or merge when needed.
+- When the server returns a successful mutation response with enough data to update the current view safely, patch the client cache/state instead of reflexively refetching every related query. Still invalidate or refetch when derived data, permissions, server-calculated totals, or other users' changes could make local computation unsafe.
+- For groups of related requests such as dashboard data after a transaction, define a cache dependency map: which queries can be patched, which must be invalidated, which can wait for a realtime event, and which should refetch with jitter to avoid thundering herds.
 - Handle empty, loading, success, error, unauthorized, forbidden, offline, stale, and partial-data states intentionally.
+- In as much we use aggressive core cache, we must ensure that accuracy and cosistency stay supreme.
 
 ## State Management
 
@@ -79,6 +83,8 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Filter or verify live events against the authenticated user, tenant, role, and currently visible resource before updating UI.
 - Clean up subscriptions on unmount, logout, account switch, route changes, and permission changes.
 - Define how live events refresh cached data: invalidate queries, patch cache with rollback, revalidate routes, or refetch affected resources.
+- When many clients receive the same realtime update, avoid synchronized refetch storms. Use scoped invalidation, local patching where safe, server-provided versions, random client-side refetch jitter, and cache headers/server cache so the first cold request can warm shared cache.
+- Realtime read models may use Firestore-like reactive stores, SSE, WebSockets, broadcast channels, or polling. Keep the backend as the authority for writes, versioning, authorization, and reconciliation; the frontend subscribes to scoped read data and treats live updates as eventually consistent unless the product contract says otherwise.
 - Realtime must degrade gracefully. Core CRUD and navigation should still work when live updates are delayed or unavailable.
 
 ## UI, Semantics, And Design Systems
@@ -155,7 +161,8 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 - Use correlation IDs or request IDs where available to connect frontend errors to backend traces.
 - Keep telemetry privacy-aware and avoid high-cardinality or sensitive fields.
 - Add logging/analytics through project-owned wrappers, not scattered vendor SDK calls.
-- Add configs to show or hide logs and log level
+- Add configs to show or hide logs and log levels.
+- Use project-owned wrappers for analytics, product events, session replay, bug capture, and console/network log collection. Examples may include Amplitude for analytics and Jam.dev for user-submitted bug context, but the chosen provider must be recorded in project docs and must respect consent, privacy, retention, and environment boundaries.
 
 ## Reliability
 

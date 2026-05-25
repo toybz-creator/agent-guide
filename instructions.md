@@ -33,6 +33,8 @@ Every project using this framework should have `custom-agent-guide/`. Create mis
 - `PRD.md`: product requirements, users, jobs-to-be-done, goals, non-goals, success metrics, user journeys, and product constraints.
 - `FRD.md`: functional requirements, feature behavior, workflows, roles, permissions, inputs, outputs, edge cases, negative paths, and acceptance criteria.
 - `Non-FRD.md`: non-functional requirements including scale, performance, availability, consistency, reliability, security, privacy, compliance, observability, support, and deployment expectations.
+- `constraints.md`: technical, business, legal, budget, deployment, team, compliance, and vendor constraints that shape architecture and implementation choices.
+- `git-workflow.md`: branching, commit, PR, review, hook, CI, release, rollback, and deployment gate rules.
 - `architectural-guide.md`: system architecture, domain boundaries, key decisions, service contracts, data flow, infrastructure, CI/CD, and deployment topology.
 - `project-guide.md`: project background, current state, roadmap notes, important links, conventions, and context that does not fit elsewhere.
 - `verdicts.md`: persistent agent settings and final decisions for conflicts, preferences, and optional framework behaviors.
@@ -54,15 +56,19 @@ On the first meaningful project task:
 2. If not, ask the user for non-functional expectations that cannot be inferred from the repository:
    - deployment environments
    - expected users and traffic
+   - expected request rate, data volume, peak usage, and growth assumptions
    - availability and latency targets
+   - service level expectations, KPIs, and user-impacting failure thresholds
    - data consistency needs
+   - workflows that could become slow, expensive, inconsistent, or hard to recover
    - security, privacy, and compliance expectations
    - observability, metrics, tracing, and alerting preferences
    - storage, backup, disaster recovery, and retention requirements
    - cost constraints
    - operational ownership and support expectations
 3. Write the answers to `custom-agent-guide/Non-FRD.md`.
-4. Record `is-non-frd-options-set: true` in `custom-agent-guide/verdicts.md`.
+4. Write durable technical, business, legal, budget, deployment, and vendor constraints to `custom-agent-guide/constraints.md`.
+5. Record `is-non-frd-options-set: true` in `custom-agent-guide/verdicts.md`.
 
 Do not repeatedly ask the same setup questions once a verdict is recorded.
 
@@ -141,6 +147,21 @@ For example, an auth task may require considering:
 
 Present the relevant options and tradeoffs. Do not bloat the implementation with unnecessary features without user agreement, but do protect the product from obvious security, data integrity, reliability, and UX failures.
 
+### 4a. Expand Minimal Prompts Into Architecture Questions
+
+When a task affects system design, backend behavior, core data, deployment, security, cost, or reliability, do not treat it as "just CRUD" or "just wire the endpoint." Translate the task into explicit product and system questions:
+
+- What throughput, latency, availability, and data volume must this support now and at the next known growth stage?
+- Which workflow steps can become slow, expensive, inconsistent, or user-blocking?
+- Which operations must be idempotent because retries, duplicate clicks, webhook redelivery, job restarts, or network failures are normal?
+- Which data needs strong consistency, optimistic version checks, transactions, durable events, reconciliation, or compensating actions?
+- Which reads can be cached, materialized, replicated, searched, prebuilt, local cached,  streamed, or refreshed asynchronously?
+- Which actors, tenants, roles, malicious inputs, and abuse paths must be rejected at the server boundary?
+- Which metrics, logs, traces, audit events, dashboards, alerts, SLEs, and support actions prove the system is healthy?
+- Which open-source libraries, standards, or reference implementations already solve this class of business rule, protocol, resiliency pattern, or compliance requirement?
+
+Capture the answers in `PRD.md`, `FRD.md`, `Non-FRD.md`, `constraints.md`, `git-workflow.md`, `architectural-guide.md`, and handbooks as appropriate. If the repository lacks these docs, create the missing scaffold before or during significant project setup.
+
 ### 5. Research When Useful
 
 Use current documentation, official framework docs, package docs, and reputable examples when:
@@ -149,7 +170,10 @@ Use current documentation, official framework docs, package docs, and reputable 
 - using unfamiliar APIs
 - making architecture decisions
 - implementing security-sensitive, data-sensitive, or high-scale behavior
+- implementing business rules that involve many checks, standards, protocols, compliance rules, financial flows, retries, idempotency, authorization, or state transitions
 - the codebase’s current approach is unclear or outdated
+
+Before inventing a complex business-rule engine, validation framework, resiliency helper, workflow pattern, or security scanner, check whether a reputable open-source project, official standard, or mature reference implementation exists. Prefer using or adapting proven implementations when licensing, maintenance, fit, and project constraints are acceptable.
 
 ### 5a. Use Packaged Library Docs
 
@@ -303,6 +327,8 @@ All implementation should satisfy these verticals as far as the task reasonably 
 - Before deployment or handoff, confirm the local build passes when the change affects runtime behavior, package contents, environment config, or deployment settings.
 - Add or update a smoke test checklist for changed user journeys, APIs, background jobs, auth flows, or operational dependencies.
 - When using a managed host, follow that host's current documented deployment model without making the base guide depend on one provider.
+- For Kubernetes/GitOps projects, prefer declarative deployment management through the project-approved tool, such as Argo CD, Flux, or a managed platform equivalent. Document sync policy, promotion flow, rollback strategy, secrets handling, health checks, and drift detection.
+- Treat rollback as a code-and-data operation, not only a Git revert. Before rolling production code back across schema changes, confirm the live database remains compatible, add a safe migration or backfill when needed, adjust environment/config changes, and verify the old code can read/write the current schema.
 
 ## Conflict Resolution
 
@@ -338,7 +364,12 @@ When the right choice is unclear, ask the user once and save the final decision 
 - Keep secrets out of code, logs, docs, screenshots, and final responses.
 - Prefer reversible, auditable changes.
 - If a dangerous operation appears necessary, explain the risk and ask for approval.
-- Use automated, hooked and manual scripts or tools to enforce conformitity, safety, security and complaince with all standards. 
+- Use automated hooks, scripts, scanners, tests, tools like (socket etc) and manual review to enforce conformity, safety, security, and compliance standards.
+- For npm and other package ecosystems, treat dependencies as supply-chain risk. Prefer least privilege, minimal dependency surface, lockfiles, package provenance where available, vulnerability/malware scanning, Dependabot or equivalent update automation, and network egress restrictions for runtime machines.
+- Apply least privilege to code, dependencies, infrastructure, service accounts, database users, object storage policies, CI tokens, and runtime network access.
+- Restrict production server egress to approved hosts where the deployment environment supports it. Whitelisted outbound access limits damage if a dependency, server-side request, or supply-chain package is compromised.
+- Scan dependencies for known vulnerabilities and suspicious behavior with project-approved tools. Standard options include `npm audit`, GitHub Dependabot, Snyk, OWASP scanners, Socket-style package behavior scanners, or AI-assisted scanners when approved. Treat scanner output as input to human review, not automatic permission to upgrade blindly.
+- Safety script and ops must be applied in project roots, in sub project folders, in environements, in system and across all exposure surfaces.
 
 ## Anti-Patterns To Avoid
 
