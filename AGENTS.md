@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository builds `production-coding-agent-skill-guide`, a reusable rule framework for AI coding agents. The project exists to make coding agents more production-minded, context-aware, safe, thorough, and useful across many downstream software projects.
+This repository builds `the-production-agent-skill`, a reusable rule framework for AI coding agents. The project exists to make coding agents more production-minded, context-aware, safe, thorough, and useful across many downstream software projects.
 
 Agents working here must treat this repository as both:
 
@@ -18,7 +18,7 @@ Because the package teaches agents how to behave, every change must be unusually
 - `backend/backend-rules.md`: production backend, API, data, reliability, observability, security, and operations rules.
 - `frontend/frontend-rules.md`: production frontend, UI, accessibility, state, integration, performance, and testing rules.
 - `computer-use/computer-use-agent-rules.md`: browser automation, screenshots, desktop interaction, and UI verification rules.
-- `bin/agent-guide.mjs`: CLI entrypoint for `init`, `doctor`, `snippet`, and `help`.
+- `bin/the-production-agent-skill.mjs`: CLI entrypoint for `init`, `doctor`, `snippet`, and `help`.
 - `package.json`: npm metadata, package files, binary mapping, scripts, and engine requirement.
 - `old-ins.md`: legacy or reference instruction content. Do not treat it as active behavior unless the user explicitly asks to revive or compare it.
 
@@ -46,12 +46,12 @@ For this repository, that usually means:
 - Read `backend/backend-rules.md` when changing backend guidance.
 - Read `frontend/frontend-rules.md` when changing frontend guidance.
 - Read `computer-use/computer-use-agent-rules.md` when changing browser, desktop, screenshot, or UI verification guidance.
-- Read `bin/agent-guide.mjs` and `package.json` before changing CLI commands, package files, scripts, or npm metadata.
+- Read `bin/the-production-agent-skill.mjs` and `package.json` before changing CLI commands, package files, scripts, or npm metadata.
 
 ### Preserve The Package Contract
 
 - The base guide should remain reusable across many projects.
-- Project-specific preferences belong in downstream `custom-agent-guide/`, not in this package.
+- Project-specific preferences belong in downstream `harness/`, not in this package.
 - Do not hardcode one company, product, deployment provider, database, auth provider, or cloud vendor as the only path unless the rule is explicitly framed as an example.
 - If adding a default, explain when it applies and how a project can override it.
 - Keep the package installable and usable by copying the folder or installing from npm.
@@ -103,7 +103,7 @@ Do not silently perform large unrelated changes. Surface meaningful scope expans
 
 ### For CLI Changes
 
-1. Read `bin/agent-guide.mjs`, `README.md`, and `package.json`.
+1. Read `bin/the-production-agent-skill.mjs`, `README.md`, and `package.json`.
 2. Keep commands non-destructive by default.
 3. Never overwrite existing downstream project files during `init`.
 4. Keep `doctor` checks clear and actionable.
@@ -124,9 +124,9 @@ Use the checks that fit the change:
 npm run validate
 npm run pack
 npm run publish:dry-run
-node bin/agent-guide.mjs help
-node bin/agent-guide.mjs snippet
-node bin/agent-guide.mjs doctor --package-root . --package-only
+node bin/the-production-agent-skill.mjs help
+node bin/the-production-agent-skill.mjs snippet
+node bin/the-production-agent-skill.mjs doctor --package-root . --package-only
 ```
 
 Minimum expectation:
@@ -186,23 +186,23 @@ When the user asks for suggestions, package hardening, or quality improvements, 
 - Add a rule quality rubric so contributors can evaluate whether instructions are clear enough.
 - Add examples of strong and weak agent instructions.
 - Add explicit rules for preserving user work in dirty repositories.
-- Add a framework versioning and migration policy for downstream custom guides.
+- Add a framework versioning and migration policy for downstream harnesses.
 - Add guidance for monorepos, polyrepos, libraries, CLIs, SaaS apps, mobile apps, and infrastructure repos.
 
 ### CLI Improvements
 
-- Add `agent-guide doctor --json` for machine-readable checks.
-- Add `agent-guide init --profile <library|saas|api|frontend|fullstack>` to scaffold more relevant custom guide templates.
-- Add `agent-guide upgrade` to detect newly added required guide files and create only missing files.
-- Add `agent-guide explain` to print which files an agent should read for a task type.
-- Add `agent-guide validate-docs` to detect missing headings, stale file references, and contradictory guide settings.
+- Add `the-production-agent-skill doctor --json` for machine-readable checks.
+- Add `the-production-agent-skill init --profile <library|saas|api|frontend|fullstack>` to scaffold more relevant harness templates.
+- Add `the-production-agent-skill upgrade` to detect newly added required guide files and create only missing files.
+- Add `the-production-agent-skill explain` to print which files an agent should read for a task type.
+- Add `the-production-agent-skill validate-docs` to detect missing headings, stale file references, and contradictory guide settings.
 - Add tests for CLI commands using temporary directories.
 
 ### Documentation Improvements
 
 - Add `CONTRIBUTING.md` with guide-writing standards, validation steps, and release workflow.
 - Add `CHANGELOG.md` so downstream users can understand behavior changes.
-- Add examples under `examples/` showing recommended downstream `custom-agent-guide/` contents.
+- Add examples under `examples/` showing recommended downstream `harness/` contents.
 - Add a release checklist covering validation, packaging, README review, and version bumping.
 - Add a security policy describing how to report unsafe agent guidance or package issues.
 - Add troubleshooting docs for common install, `npx`, package path, and activation problems.

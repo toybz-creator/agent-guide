@@ -6,4 +6,5 @@
 
  - Bring in all notes from TickTick
 
- 
+ - Create system architecture specs for most features and bring it in
+ - Bring in some of the rules from Cal.com

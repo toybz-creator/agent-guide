@@ -1,8 +1,8 @@
-# Production Coding Agent Skill Guide
+# The Production Agent Skill
 
-Production Coding Agent Skill Guide is a reusable rule framework for AI coding agents. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
+The Production Agent Skill is a reusable rule framework for AI coding agents. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
 
-Use it as the stable base layer for your agent behavior. Put project-specific decisions, preferences, and product context in `custom-agent-guide/` so this package can be updated without losing your custom rules.
+Use it as the stable base layer for your agent behavior. Put project-specific decisions, preferences, and product context in `harness/` so this package can be updated without losing your project rules.
 
 ## What It Gives You
 
@@ -11,7 +11,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Better planning:** agents clarify ambiguity, research current framework/library practices, compare options, and lock an implementation plan before high-impact work.
 - **Packaged library references:** agents check matching files in `docs/` for in-depth library APIs and capabilities before implementing against supported libraries.
 - **Living project memory:** agents maintain PRDs, functional requirements, architecture notes, task history, verdicts, and file maps in a dedicated project guide folder.
-- **Safer customization:** teams can override decisions in `custom-agent-guide/verdicts.md` without editing this package.
+- **Safer customization:** teams can override decisions in `harness/verdicts.md` without editing this package.
 - **Stack-specific depth:** backend and frontend rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, and runtime operations.
 
 ## Install
@@ -19,39 +19,35 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 Install from the registry when published:
 
 ```bash
-npm install --save-dev production-coding-agent-skill-guide
+npm install --save-dev the-production-agent-skill
 ```
 
 Use a local checkout during development:
 
 ```bash
-npm install --save-dev /path/to/production-coding-agent-skill-guide
+npm install --save-dev /path/to/the-production-agent-skill
 ```
 
-You can also copy this folder into a repository as `agent-guide/`, but package installation is preferred because it is easier to update.
+You can also copy this folder into a repository as `the-production-agent-skill/`, but package installation is preferred because it is easier to update.
 
 ## Activate In A Project
 
 Add this to your `AGENTS.md`, `.cursorrules`, Codex instructions, or equivalent agent rule file:
 
 ```markdown
-Before every task, read and follow `node_modules/production-coding-agent-skill-guide/instructions.md`.
-
-This file is the director for the AI coding agent. Follow it strictly, then load any project-specific rules from `custom-agent-guide/`.
+Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in `node_modules/the-production-agent-skill/instructions.md`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the `harness/` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review  to ensure full alignment with the established standards.
 ```
 
 If you copied the guide into the repository instead of installing it, use:
 
 ```markdown
-Before every task, read and follow `agent-guide/instructions.md`.
-
-This file is the director for the AI coding agent. Follow it strictly, then load any project-specific rules from `custom-agent-guide/`.
+Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in `the-production-agent-skill/instructions.md`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the `harness/` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review  to ensure full alignment with the established standards.
 ```
 
 The CLI can print this snippet:
 
 ```bash
-npx agent-guide snippet
+npx the-production-agent-skill snippet
 ```
 
 ## Project Setup
@@ -59,35 +55,35 @@ npx agent-guide snippet
 Create the project-specific guide scaffold:
 
 ```bash
-npx agent-guide init
+npx the-production-agent-skill init
 ```
 
 The command is non-destructive. It creates missing files only and never overwrites your existing project rules.
 
 Required downstream files:
 
-- `custom-agent-guide/PRD.md`
-- `custom-agent-guide/FRD.md`
-- `custom-agent-guide/Non-FRD.md`
-- `custom-agent-guide/constraints.md`
-- `custom-agent-guide/git-workflow.md`
-- `custom-agent-guide/architectural-guide.md`
-- `custom-agent-guide/project-guide.md`
-- `custom-agent-guide/verdicts.md`
-- `custom-agent-guide/mcp-rules.md`
-- `custom-agent-guide/tasks.md`
-- `custom-agent-guide/development-history.md`
-- `custom-agent-guide/files-directories.md`
-- `custom-agent-guide/backend-handbook.md`
-- `custom-agent-guide/frontend-handbook.md`
-- `custom-agent-guide/environments-cloud-deployments.md`
-- `custom-agent-guide/prompt-template.md`
+- `harness/PRD.md`
+- `harness/FRD.md`
+- `harness/Non-FRD.md`
+- `harness/constraints.md`
+- `harness/git-workflow.md`
+- `harness/architectural-guide.md`
+- `harness/project-guide.md`
+- `harness/verdicts.md`
+- `harness/mcp-rules.md`
+- `harness/tasks.md`
+- `harness/development-history.md`
+- `harness/files-directories.md`
+- `harness/backend-handbook.md`
+- `harness/frontend-handbook.md`
+- `harness/environments-cloud-deployments.md`
+- `harness/prompt-template.md`
 - `scripts/supply-chain-audit.mjs`
 
 Check a project at any time:
 
 ```bash
-npx agent-guide doctor
+npx the-production-agent-skill doctor
 ```
 
 The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vulnerability test run. Add scripts like these to the downstream project `package.json` when they fit the local test workflow:
@@ -110,7 +106,7 @@ After activation, expect the agent to be more deliberate. It may ask more questi
 
 For larger tasks, the agent should:
 
-1. Load base and custom rules.
+1. Load base and harness rules.
 2. Classify the task as backend, frontend, full-stack, QA, infrastructure, documentation, or browser/computer-use.
 3. Read the relevant code, living docs, and matching packaged `docs/` library reference files before acting.
 4. Clarify ambiguous intent and surface useful feature improvements.
@@ -125,9 +121,9 @@ This behavior is intentional. The goal is not just to make code work, but to mak
 
 ## Customization
 
-Do not edit files inside this package for project-specific behavior. Add decisions and overrides to `custom-agent-guide/`.
+Do not edit files inside this package for project-specific behavior. Add decisions and overrides to `harness/`.
 
-Use `custom-agent-guide/verdicts.md` as the persistent settings and conflict-resolution file. Examples:
+Use `harness/verdicts.md` as the persistent settings and conflict-resolution file. Examples:
 
 - whether linting/formatting hooks should be configured
 - preferred observability provider

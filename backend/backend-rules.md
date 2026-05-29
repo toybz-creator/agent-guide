@@ -238,7 +238,7 @@ For high-risk domains, wrappers should become policy gateways, not thin pass-thr
 - If read replicas are used, document read-after-write expectations. Use the primary for flows that require fresh reads after writes, such as payments, booking confirmation, token rotation, idempotency checks, and scarce-inventory updates.
 - Add a typed database query-analysis config when the project has meaningful database usage. It should control whether query `EXPLAIN` wrapping/logging is enabled, which environments may use it, sampling rate, slow-query threshold, maximum logged payload size, redaction behavior, and whether `EXPLAIN ANALYZE` is allowed.
 - Never enable expensive query analysis globally in production by accident. Production use must be temporary, explicit, bounded, observable, and safe for sensitive data.
-- Document local, staging, production, and preview environment differences in `custom-agent-guide/environments-cloud-deployments.md`.
+- Document local, staging, production, and preview environment differences in `harness/environments-cloud-deployments.md`.
 
 ## Testing
 
@@ -257,7 +257,7 @@ For high-risk domains, wrappers should become policy gateways, not thin pass-thr
 ## Documentation
 
 - Keep Swagger/OpenAPI docs accurate for all controllers/routes and public backend interfaces.
-- Document feature architecture, data model, events/jobs, operational behavior, and failure modes in the relevant custom guide files.
+- Document feature architecture, data model, events/jobs, operational behavior, and failure modes in the relevant harness files.
 - Update `backend-handbook.md` after meaningful backend changes.
 - Update `development-history.md` with what changed and why.
 - Update `tasks.md` with status and verification steps.

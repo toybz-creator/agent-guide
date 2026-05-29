@@ -8,22 +8,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(__dirname, "..");
 
 const requiredGuideFiles = [
-  "custom-agent-guide/PRD.md",
-  "custom-agent-guide/FRD.md",
-  "custom-agent-guide/Non-FRD.md",
-  "custom-agent-guide/constraints.md",
-  "custom-agent-guide/git-workflow.md",
-  "custom-agent-guide/architectural-guide.md",
-  "custom-agent-guide/project-guide.md",
-  "custom-agent-guide/verdicts.md",
-  "custom-agent-guide/mcp-rules.md",
-  "custom-agent-guide/tasks.md",
-  "custom-agent-guide/development-history.md",
-  "custom-agent-guide/files-directories.md",
-  "custom-agent-guide/backend-handbook.md",
-  "custom-agent-guide/frontend-handbook.md",
-  "custom-agent-guide/environments-cloud-deployments.md",
-  "custom-agent-guide/prompt-template.md"
+  "harness/PRD.md",
+  "harness/FRD.md",
+  "harness/Non-FRD.md",
+  "harness/constraints.md",
+  "harness/git-workflow.md",
+  "harness/architectural-guide.md",
+  "harness/project-guide.md",
+  "harness/verdicts.md",
+  "harness/mcp-rules.md",
+  "harness/tasks.md",
+  "harness/development-history.md",
+  "harness/files-directories.md",
+  "harness/backend-handbook.md",
+  "harness/frontend-handbook.md",
+  "harness/environments-cloud-deployments.md",
+  "harness/prompt-template.md"
 ];
 
 const requiredProjectFiles = [
@@ -39,12 +39,12 @@ const packageFiles = [
   "computer-use/computer-use-agent-rules.md",
   "docs",
   "scripts/supply-chain-audit.mjs",
-  "bin/agent-guide.mjs",
+  "bin/the-production-agent-skill.mjs",
   "package.json"
 ];
 
 const templates = {
-  "custom-agent-guide/PRD.md": `# Product Requirements Document
+  "harness/PRD.md": `# Product Requirements Document
 
 ## Product Goal
 
@@ -58,19 +58,19 @@ _List primary users, roles, and jobs-to-be-done._
 
 _Capture product requirements, non-goals, success metrics, and acceptance criteria._
 `,
-  "custom-agent-guide/FRD.md": `# Functional Requirements Document
+  "harness/FRD.md": `# Functional Requirements Document
 
 ## Functional Scope
 
 _Describe feature behavior, workflows, roles, inputs, outputs, edge cases, and negative paths._
 `,
-  "custom-agent-guide/Non-FRD.md": `# Non-Functional Requirements Document
+  "harness/Non-FRD.md": `# Non-Functional Requirements Document
 
 ## Requirements
 
 _Capture scalability, request rate, data volume, availability, latency, reliability, consistency, security, privacy, compliance, observability, KPIs, SLEs, support, and deployment expectations._
 `,
-  "custom-agent-guide/constraints.md": `# Constraints
+  "harness/constraints.md": `# Constraints
 
 ## Technical Constraints
 
@@ -84,7 +84,7 @@ _Capture budget, timeline, market, support, operational ownership, vendor, and s
 
 _Capture privacy, retention, data residency, accessibility, audit, security, regulatory, and contractual constraints._
 `,
-  "custom-agent-guide/git-workflow.md": `# Git Workflow
+  "harness/git-workflow.md": `# Git Workflow
 
 ## Branching And Commits
 
@@ -98,19 +98,19 @@ _Document pre-commit, pre-push, lint, format, typecheck, test, security scan, an
 
 _Document CI gates, deployment promotion, versioning, database migration order, rollback safety, and emergency procedures._
 `,
-  "custom-agent-guide/architectural-guide.md": `# Architectural Guide
+  "harness/architectural-guide.md": `# Architectural Guide
 
 ## System Architecture
 
 _Document architecture decisions, domain boundaries, data flow, infrastructure, CI/CD, and deployment topology._
 `,
-  "custom-agent-guide/project-guide.md": `# Project Guide
+  "harness/project-guide.md": `# Project Guide
 
 ## Context
 
 _Capture project history, current state, roadmap notes, links, conventions, and useful context._
 `,
-  "custom-agent-guide/verdicts.md": `# Agent Verdicts
+  "harness/verdicts.md": `# Agent Verdicts
 
 This file stores final decisions, project preferences, and conflict resolutions for AI coding agents.
 
@@ -122,37 +122,37 @@ This file stores final decisions, project preferences, and conflict resolutions 
 - lint-format-hooks: unset
 - observability-provider: unset
 `,
-  "custom-agent-guide/mcp-rules.md": `# MCP Rules
+  "harness/mcp-rules.md": `# MCP Rules
 
 ## Available Tools
 
 _List available MCPs, plugins, credentials boundaries, safety rules, and when to use each tool._
 `,
-  "custom-agent-guide/tasks.md": `# Tasks
+  "harness/tasks.md": `# Tasks
 
 Keep this file forward-only where practical. Add task status, implementation notes, verification steps, and resumable context.
 `,
-  "custom-agent-guide/development-history.md": `# Development History
+  "harness/development-history.md": `# Development History
 
 Record meaningful technical changes, decisions, dates, reasoning, and verification notes.
 `,
-  "custom-agent-guide/files-directories.md": `# Files And Directories
+  "harness/files-directories.md": `# Files And Directories
 
 Document the current codebase map grouped by feature or domain.
 `,
-  "custom-agent-guide/backend-handbook.md": `# Backend Handbook
+  "harness/backend-handbook.md": `# Backend Handbook
 
 Document backend architecture, dependencies, modules, data access, service flows, and operational notes.
 `,
-  "custom-agent-guide/frontend-handbook.md": `# Frontend Handbook
+  "harness/frontend-handbook.md": `# Frontend Handbook
 
 Document frontend architecture, routes, state ownership, data flows, UI systems, and integration notes.
 `,
-  "custom-agent-guide/environments-cloud-deployments.md": `# Environments, Cloud, And Deployments
+  "harness/environments-cloud-deployments.md": `# Environments, Cloud, And Deployments
 
 Document local and remote environments, infrastructure, secrets policy, deployment flows, rollback, monitoring, and support procedures.
 `,
-  "custom-agent-guide/prompt-template.md": `# Standard Production Task Prompt Template
+  "harness/prompt-template.md": `# Standard Production Task Prompt Template
 
 Use this template for meaningful implementation, review, refactor, security, infrastructure, and debugging work.
 
@@ -170,7 +170,7 @@ _Describe the requested outcome, users affected, current behavior, desired behav
 
 ## Context To Load
 
-- Read the base agent guide and relevant custom project guide files.
+- Read the base agent guide and relevant harness files.
 - Read the code paths, tests, schemas, migrations, infrastructure, and docs affected by the task.
 - Check matching packaged library docs and current official docs when the task depends on framework, API, or security-sensitive behavior.
 
@@ -241,16 +241,16 @@ After development, report:
 };
 
 function printHelp() {
-  console.log(`Production Coding Agent Skill Guide
+  console.log(`The Production Agent Skill
 
 Usage:
-  agent-guide init [--dry-run] [--root <path>]
-  agent-guide doctor [--root <path>] [--package-root <path>] [--package-only]
-  agent-guide snippet
-  agent-guide help
+  the-production-agent-skill init [--dry-run] [--root <path>]
+  the-production-agent-skill doctor [--root <path>] [--package-root <path>] [--package-only]
+  the-production-agent-skill snippet
+  the-production-agent-skill help
 
 Commands:
-  init      Create missing custom-agent-guide files and security scripts without overwriting existing files.
+  init      Create missing harness files and security scripts without overwriting existing files.
   doctor    Check framework package files, downstream guide files, and security scripts.
   snippet   Print an activation snippet for AGENTS.md or equivalent agent rules files.
 `);
@@ -302,9 +302,7 @@ function fail(message) {
 }
 
 function snippet() {
-  console.log(`Before every task, read and follow \`node_modules/production-coding-agent-skill-guide/instructions.md\`.
-
-This file is the director for the AI coding agent. Follow it strictly, then load any project-specific rules from \`custom-agent-guide/\`.`);
+  console.log(`Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in \`node_modules/the-production-agent-skill/instructions.md\`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the \`harness/\` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review  to ensure full alignment with the established standards.`);
 }
 
 function init({ root, dryRun }) {
@@ -337,7 +335,7 @@ function init({ root, dryRun }) {
       console.log(`  - ${file}`);
     }
   } else {
-    console.log("All custom-agent-guide files already exist.");
+    console.log("All harness files already exist.");
   }
 
   if (skipped.length > 0) {
@@ -364,11 +362,11 @@ function doctor({ root, packageRoot: guideRoot, packageOnly }) {
   }
 
   if (packageOnly) {
-    console.log("custom-agent-guide: skipped");
+    console.log("harness: skipped");
   } else if (missingCustomFiles.length === 0) {
-    console.log("custom-agent-guide: ok");
+    console.log("harness: ok");
   } else {
-    console.log("custom-agent-guide: missing");
+    console.log("harness: missing");
     for (const file of missingCustomFiles) {
       console.log(`  - ${file}`);
     }
