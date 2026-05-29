@@ -237,6 +237,8 @@ Implementation rules:
 - For greenfield work, choose current stable framework/library versions unless project constraints, compatibility, or risk require a pinned older version. Record the reason for non-current choices.
 - Actively leverage high-quality official and community/ecosystem libraries when they materially improve feature completeness, reliability, maintainability, security, observability, or product polish.
 - Prefer feature/domain structure where related code lives together.
+- Use bounded feature modules for workflows that have multiple cooperating responsibilities, services, adapters, jobs, policies, events, or UI/data surfaces. A bounded feature module owns the workflow's public interface, internal services, contracts, tests, and documentation so the behavior can evolve as one unit instead of being scattered across unrelated helpers.
+- Promote a bounded feature module to a package, workspace library, or separately deployable service only when reuse, ownership, deployment cadence, scaling needs, security isolation, or runtime boundaries justify the extra integration cost.
 - Keep one source of truth for business rules, data access, config, and integration behavior.
 - Wrap external systems behind project-owned adapters/facades so policies can be enforced consistently.
 - Build non-blocking, timeout-aware, retriable, traceable workflows where appropriate.

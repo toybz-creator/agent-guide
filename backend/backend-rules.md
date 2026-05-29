@@ -14,6 +14,8 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 
 - Organize by domain/feature when possible. Keep controllers/routes, DTOs, services, policies, persistence adapters, tests, and feature docs close enough to understand the feature as a unit.
 - Keep boundaries explicit: controllers handle transport concerns, services handle use cases, domain modules handle business rules, persistence adapters handle storage, and infrastructure modules handle external systems.
+- Use bounded feature modules for substantial workflows such as notifications, billing, onboarding, fulfillment, moderation, scheduling, or audit logging when the workflow needs multiple services, adapters, jobs, policies, events, templates, or persistence models. The module should expose a small public API and keep orchestration, invariants, internal data access, retry/idempotency rules, tests, and runbook notes together.
+- Promote a bounded feature module to a package, workspace library, or separately deployable service only when the project needs independent reuse, ownership, deployment cadence, scaling, security isolation, or runtime failure isolation. Do not split a workflow only because it might grow; start with a clear module boundary and extract later when the boundary proves stable.
 - Avoid leaking persistence models, framework request objects, external SDK objects, or low-level client details across module boundaries.
 - Prefer dependency injection and interfaces for integrations that may change, need testing, or require policy enforcement.
 - Use event-driven, queue-based, streaming, or scheduled architectures when they fit the workflow better than synchronous request/response.

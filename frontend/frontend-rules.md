@@ -14,6 +14,8 @@ Build interfaces that are correct, accessible, fast, resilient, secure, observab
 
 - Organize by feature/domain where practical. Keep feature UI, hooks, schemas, queries, mutations, state, tests, and docs close enough to understand the feature as a unit.
 - Keep shared UI primitives, design tokens, layout shells, API clients, telemetry, auth/session helpers, and utility infrastructure in clearly owned shared areas.
+- Use bounded feature modules for substantial user workflows that need multiple screens, components, hooks, client/server actions, schemas, stores, realtime bindings, or API integrations. The module should expose a small public surface and keep workflow-specific UI, state ownership, validation, data contracts, tests, and docs together.
+- Promote a bounded feature module to a shared package or workspace library only when reuse across apps, design-system ownership, independent release cadence, security isolation, or bundle/runtime constraints justify the extra dependency boundary.
 - Prefer explicit server/client boundaries in Next.js. Use Server Components for server-only data and rendering where useful; use Client Components for interactivity, browser APIs, client state, and event handling.
 - Keep server-only clients, admin SDKs, privileged tokens, and secret-backed helpers in server-only modules. Browser clients must expose only the minimum public configuration and user-safe operations.
 - Keep route files thin. Move reusable behavior into feature modules, server actions, services, hooks, validation modules, stores, or shared UI components.
