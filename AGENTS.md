@@ -18,9 +18,11 @@ Because the package teaches agents how to behave, every change must be unusually
 - `backend/backend-rules.md`: production backend, API, data, reliability, observability, security, and operations rules.
 - `frontend/frontend-rules.md`: production frontend, UI, accessibility, state, integration, performance, and testing rules.
 - `computer-use/computer-use-agent-rules.md`: browser automation, screenshots, desktop interaction, and UI verification rules.
+- `docs/`: packaged library and framework references for supported stacks such as NextJS, NestJS, React, and TypeORM and so on.
+- `scripts/supply-chain-audit.mjs`: built-in and agent auto generated script files to perform tasks and automations.
 - `bin/the-production-agent-skill.mjs`: CLI entrypoint for `init`, `doctor`, `snippet`, and `help`.
 - `package.json`: npm metadata, package files, binary mapping, scripts, and engine requirement.
-- `old-ins.md`: legacy or reference instruction content. Do not treat it as active behavior unless the user explicitly asks to revive or compare it.
+- `ignore.md`: reference material that is not part of the active package contract unless the user explicitly asks to inspect it.
 
 ## Core Agent Mission In This Repo
 
@@ -46,6 +48,8 @@ For this repository, that usually means:
 - Read `backend/backend-rules.md` when changing backend guidance.
 - Read `frontend/frontend-rules.md` when changing frontend guidance.
 - Read `computer-use/computer-use-agent-rules.md` when changing browser, desktop, screenshot, or UI verification guidance.
+- Read the matching file under `docs/` before changing packaged library or framework guidance.
+- Read `scripts/supply-chain-audit.mjs` before changing dependency, vulnerability, install-script, Socket, or audit workflow guidance.
 - Read `bin/the-production-agent-skill.mjs` and `package.json` before changing CLI commands, package files, scripts, or npm metadata.
 
 ### Preserve The Package Contract
@@ -105,10 +109,18 @@ Do not silently perform large unrelated changes. Surface meaningful scope expans
 
 1. Read `bin/the-production-agent-skill.mjs`, `README.md`, and `package.json`.
 2. Keep commands non-destructive by default.
-3. Never overwrite existing downstream project files during `init`.
+3. Never overwrite existing downstream project files during `init`; use `init --dry-run --root <path>` to preview scaffold changes when needed.
 4. Keep `doctor` checks clear and actionable.
 5. Update help text, README usage, and package file lists when behavior changes.
 6. Run validation after changes.
+
+### For Supply-Chain Audit Changes
+
+1. Read `scripts/supply-chain-audit.mjs`, `README.md`, and `package.json`.
+2. Keep `security:supply-chain` as the report-only default.
+3. Treat `security:supply-chain:fix` and `--fix` as review-required because they can change dependencies.
+4. Preserve documented options for `--root`, `--json`, `--socket`, `--audit-level`, `--allow-install-scripts`, and `--allow-network-packages`.
+5. Keep downstream script recommendations synchronized with the README and the audit report output.
 
 ### For Package Metadata Changes
 
@@ -124,9 +136,12 @@ Use the checks that fit the change:
 npm run validate
 npm run pack
 npm run publish:dry-run
+npm run security:supply-chain
 node bin/the-production-agent-skill.mjs help
+node bin/the-production-agent-skill.mjs init --dry-run --root /tmp/the-production-agent-skill-check
 node bin/the-production-agent-skill.mjs snippet
 node bin/the-production-agent-skill.mjs doctor --package-root . --package-only
+node scripts/supply-chain-audit.mjs --root . --json
 ```
 
 Minimum expectation:
