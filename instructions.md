@@ -45,11 +45,34 @@ Every project using this framework should have `harness/`. Create missing files 
 - `backend-handbook.md`: backend architecture, dependencies, modules, data access, service flows, and operations handbook.
 - `frontend-handbook.md`: frontend architecture, dependencies, routes, state, data flows, UI systems, and integration handbook.
 - `environments-cloud-deployments.md`: local/remote environments, cloud infrastructure, secrets, deployment flows, operational notes, and support procedures.
+- `project-product-runbook.md`: product and project operating runbook covering ownership, user journeys, core workflows, support paths, release readiness, and day-to-day operating procedures.
+- `deployment-book.md`: deployment procedures, environment promotion, release gates, rollback, smoke tests, migration order, verification, and emergency deployment handling.
+- `ci-book.md`: CI providers, jobs, required checks, cache behavior, secrets boundaries, failure triage, flaky-test handling, and branch protection expectations.
+- `workflow-book.md`: product, engineering, QA, release, incident, support, and automation workflows with owners, inputs, outputs, triggers, and completion evidence.
+- `dictionary.md`: product, project, domain, technical, business, support, and acronym terms with plain-language definitions, canonical names, aliases, and source links.
+- `incident-response-book.md`: incident severity, detection, escalation, communication, mitigation, rollback, recovery, post-incident review, and follow-up tracking.
+- `observability-book.md`: logs, metrics, traces, dashboards, alerts, SLOs/SLEs, audit events, runbook links, and signal ownership.
 - `prompt-template.md`: reusable task prompt structure covering planning, non-functional requirements, no-regression rules, test matrix, security, scalability, observability, and final reporting.
+- `skills.md`: registry of project skill commands, descriptions, and the skill files that define their required workflows.
+- `skills/`: skill workflow files. Each listed skill must have a matching Markdown file in this folder.
 
 The `the-production-agent-skill init` command also creates `scripts/supply-chain-audit.mjs`. Keep it wired into the project vulnerability test flow so dependency risk is checked with the same seriousness as unit, integration, and build failures.
 
-All harness files are living docs. Update them when new facts, requirements, architecture decisions, tasks, or risks appear.
+All harness files are living docs. Update them when new facts, requirements, architecture decisions, tasks, workflows, operational procedures, incidents, terminology, ownership, tools, environments, deployment behavior, CI behavior, or risks appear.
+
+### Living Documentation Standards
+
+Create and maintain living docs as part of normal project work:
+
+- Add a missing living doc before or during meaningful work when the task reveals a product, project, CI, deployment, workflow, operations, incident, observability, or terminology gap.
+- Update the smallest relevant doc when behavior changes. Do not leave new project facts only in chat, commits, tickets, or code comments when future agents need them.
+- Prefer structured docs that are easy to scan: summary blocks, ownership tables, decision tables, status tables, checklists, timelines, release gates, incident steps, support paths, glossary tables, and verification matrices.
+- Use Mermaid diagrams when they clarify architecture, request flow, data flow, deployment flow, CI flow, workflow state, incident response, ownership boundaries, or dependency relationships. Keep diagrams textual, versionable, and readable in Markdown.
+- Use tables for terms, owners, environments, commands, CI jobs, deployment steps, rollback steps, alerts, dashboards, workflows, acceptance criteria, risks, open questions, and follow-ups.
+- Use ordered steps for operational procedures where sequence matters, especially deployment, rollback, incident response, data repair, release certification, and support escalation.
+- Keep diagrams, tables, and checklists synchronized with the code, configuration, CI, infrastructure, docs, and project verdicts. If exact information is unknown, mark it as `Unknown` or `TBD` with a short owner or discovery note instead of inventing.
+- Keep docs useful for multiple roles: engineering, product, QA, DevOps/SRE, support, security, marketing, business analysis, and future agents. Explain domain terms in `dictionary.md` before relying on them heavily elsewhere.
+- Treat documentation updates as completion evidence. A meaningful change is not complete until affected living docs are updated or the final report explicitly names the missing doc update and why it could not be safely made.
 
 ## Update Harness Command
 
@@ -66,10 +89,36 @@ Follow this workflow:
 5. Pull current official textual documentation for the important libraries that need cached reference material. Capture the full relevant docs set for each selected library, including API references, configuration options, CLI commands, guides, how-tos, integration notes, and version-specific caveats. Save it as structured Markdown under `harness/libraries-documentations/<library-name>/`.
 6. Keep documentation caches useful, not bloated. Do not save asset bundles, images, videos, analytics scripts, duplicated generated pages, irrelevant site chrome, marketing pages, or docs for unimportant dependencies. Each saved docs set must include source URLs, detected package/version when available, retrieval date, and section structure compatible with the packaged `docs/` style.
 7. Self-heal the harness by auditing whether active project rules are being followed. Do not override or erase `harness/verdicts.md`; verdicts are the project-specific source of final decisions. If required rules are missing, weak, contradictory, or not enforced, update `AGENTS.md`, `.cursorrules`, custom instruction files, or the appropriate `harness/` file with direct mandatory language that tells future agents what to do, when to do it, what to avoid, and how to prove compliance.
-8. Grow agent capability by studying the codebase, docs, scripts, tests, CI, tools, MCPs, templates, reports, and current workflow pain points. Add or update useful scripts, commands, checklists, prompt templates, report templates, MCP/tool guidance, file maps, handbooks, task notes, automation recommendations, and workflow safeguards when they materially improve future agent performance.
-9. Record any useful improvement that cannot be safely automated or completed in the current run in `harness/tasks.md`, with enough context, rationale, and verification guidance for a future session to resume.
-10. Verify the harness changes with the relevant doctor, lint, docs, script, test, or dry-run commands. If a check cannot run, record the reason and residual risk.
-11. Finish with a comprehensive report covering what changed, how to use the new or updated harness capabilities, why they help, edge cases, limitations, verification results, remaining risks, and recommended next steps.
+8. Grow agent capability by studying the codebase, docs, scripts, tests, CI, tools, MCPs, templates, reports, skills, and current workflow pain points. Add or update useful scripts, commands, checklists, prompt templates, report templates, MCP/tool guidance, file maps, handbooks, skill workflows, task notes, automation recommendations, and workflow safeguards when they materially improve future agent performance.
+9. When adding or updating a skill, keep `harness/skills.md` and the referenced file under `harness/skills/` synchronized. Do not leave a skill command documented without a file, and do not leave a skill file unlisted unless it is explicitly marked as a draft that agents must not execute.
+10. Record any useful improvement that cannot be safely automated or completed in the current run in `harness/tasks.md`, with enough context, rationale, and verification guidance for a future session to resume.
+11. Verify the harness changes with the relevant doctor, lint, docs, script, test, or dry-run commands. If a check cannot run, record the reason and residual risk.
+12. Finish with a comprehensive report covering what changed, how to use the new or updated harness capabilities, why they help, edge cases, limitations, verification results, remaining risks, and recommended next steps.
+
+## Skill Commands
+
+Skill commands are mandatory agent workflows triggered by user prompts. They are not shell commands. They tell the agent which project-specific workflow to load and follow.
+
+Recognize skill commands case-insensitively when the user message starts with or clearly invokes:
+
+- `pag-{{skill-name}}`
+- `pag-git-assist- {{git-command:with_options}}`
+
+The baked-in skills are `pag-review`, `pag-optimise`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, and `pag-git-assist- {{git-command:with_options}}`. Keep the British spelling `pag-optimise`; do not silently rename it to `pag-optimize`.
+
+When a skill command is invoked:
+
+1. Read `harness/skills.md` before doing the requested work.
+2. Find the command in the skills registry and identify its referenced file.
+3. Verify the referenced file exists under `harness/skills/`.
+4. Read the referenced skill file and treat its preflight questions, workflow, output requirements, and completion evidence as binding for that task.
+5. Read the base guide, relevant harness files, code, docs, configs, manifests, tests, and package docs needed by the skill.
+6. Before starting the skill work, ask for any missing target, feature, module, scope, vertical, optimization goal, audience, output-document preference, or safety decision that the skill requires and that cannot be discovered from repository evidence.
+7. If the user wants the result written to a document, create or update the agreed document with a richer report, including code references, tables, Mermaid diagrams, and clear connections across the codebase where useful.
+8. If `harness/skills.md` is missing, the command is missing from the registry, the referenced file is missing, or the registry and file disagree, stop and report a harness setup issue. Ask before proceeding with an inferred workflow unless the user explicitly tells you to repair the harness first.
+9. If a project-specific skill conflicts with the base guide, use the normal conflict-resolution order. Safety, security, data integrity, and non-destructive operation still take priority.
+
+For `pag-git-assist- {{git-command:with_options}}`, treat the appended git command as untrusted input. Read `harness/git-workflow.md`, inspect git status, branch, remotes, staged changes, and relevant workflow rules before running anything. Run only commands that are safe, compliant, and appropriate for the current repository state. Refuse, ask for approval, or suggest a safer alternative for commands that can discard work, rewrite history, force push, delete branches or tags, bypass review, skip hooks, expose secrets, or violate the documented workflow.
 
 ## First-Run Setup
 
