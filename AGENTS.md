@@ -19,8 +19,9 @@ Because the package teaches agents how to behave, every change must be unusually
 - `frontend/frontend-rules.md`: production frontend, UI, accessibility, state, integration, performance, and testing rules.
 - `computer-use/computer-use-agent-rules.md`: browser automation, screenshots, desktop interaction, and UI verification rules.
 - `docs/`: packaged library and framework references for supported stacks such as NextJS, NestJS, React, and TypeORM and so on.
-- `scripts/supply-chain-audit.mjs`: built-in and agent auto generated script files to perform tasks and automations.
-- `bin/the-production-agent-skill.mjs`: CLI entrypoint for `init`, `doctor`, `snippet`, and `help`; it defines required downstream `harness/` files, skill templates, and scaffold/doctor behavior.
+- `scripts/supply-chain-audit.mjs`: built-in supply-chain audit scaffold copied into downstream projects.
+- `scripts/codebase-consistency-codemod.mjs`: built-in consistency codemod scaffold copied into downstream projects.
+- `bin/the-production-agent-skill.mjs`: CLI entrypoint for `init`, `doctor`, `recommend`, `snippet`, and `help`; it defines required downstream `harness/` files, skill templates, and scaffold/doctor behavior.
 - `package.json`: npm metadata, package files, binary mapping, scripts, and engine requirement.
 - `ignore.md`: reference material that is not part of the active package contract unless the user explicitly asks to inspect it.
 
@@ -83,6 +84,7 @@ Examples:
 - If the user asks to add a new custom-guide file, update the CLI `requiredGuideFiles`, templates, README file list, doctor behavior if needed, and any related instructions.
 - If the user asks to add a new task lifecycle rule, check whether README expected behavior, backend/frontend checklists, or CLI templates should mention it.
 - If the user asks to add or rename a `pag-*` skill, update `harness/skills.md` templates, the matching `harness/skills/<name>.md` template, activation snippets, README skill-command text, and doctor/init required-file behavior.
+- If a feature behavior, package behavior, CLI command, scaffold, skill, public rule, or downstream workflow changes, update README and any other appropriate docs in the same change unless there is a clear reason not to; report the documentation gap explicitly if it cannot be done.
 - If the user asks to improve frontend rules, consider accessibility, state ownership, API contracts, error/loading states, responsive verification, and docs.
 - If the user asks to improve backend rules, consider validation, authorization, data integrity, observability, migrations, health checks, async behavior, and tests.
 
@@ -113,7 +115,7 @@ Do not silently perform large unrelated changes. Surface meaningful scope expans
 2. Keep commands non-destructive by default.
 3. Never overwrite existing downstream project files during `init`; use `init --dry-run --root <path>` to preview scaffold changes when needed.
 4. Keep `doctor` checks clear and actionable.
-5. Keep `requiredGuideFiles`, `requiredProjectFiles`, scaffold templates, activation snippets, README file lists, and `instructions.md` workflows synchronized.
+5. Keep `requiredGuideFiles`, `requiredProjectFiles`, scaffold templates, activation snippets, README file lists, `instructions.md` workflows, and generated script documentation synchronized.
 6. Update help text, README usage, and package file lists when behavior changes.
 7. Run validation after changes.
 
@@ -122,7 +124,7 @@ Do not silently perform large unrelated changes. Surface meaningful scope expans
 1. Read the `Skill Commands` section in `instructions.md`, README activation and customization text, and the template map in `bin/the-production-agent-skill.mjs`.
 2. Keep skill commands in the `pag-{{skill-name}}` format unless the user explicitly changes the contract.
 3. Keep `harness/skills.md` and every referenced `harness/skills/*.md` template synchronized; a documented skill must have a file, and a runnable file must be listed in the registry.
-4. Preserve the documented baked-in skills unless intentionally changing the contract: `pag-review`, `pag-optimise`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, and `pag-git-assist- {{git-command:with_options}}`.
+4. Preserve the documented baked-in skills unless intentionally changing the contract: `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, and `pag-git-assist- {{git-command:with_options}}`.
 5. For `pag-git-assist- {{git-command:with_options}}`, keep the appended git command treated as untrusted input and preserve the safety checks for status, branch, remotes, staged changes, destructive operations, and project git workflow rules.
 6. Update `snippet`, README expected behavior, and CLI `init`/`doctor` required files when skill behavior or required skill files change.
 
@@ -152,6 +154,7 @@ npm run security:supply-chain
 node bin/the-production-agent-skill.mjs help
 node bin/the-production-agent-skill.mjs init --root /tmp/the-production-agent-skill-check
 node bin/the-production-agent-skill.mjs doctor --root /tmp/the-production-agent-skill-check --package-root .
+node bin/the-production-agent-skill.mjs recommend --root /tmp/the-production-agent-skill-check --agent codex
 node bin/the-production-agent-skill.mjs snippet
 node bin/the-production-agent-skill.mjs doctor --package-root . --package-only
 node scripts/supply-chain-audit.mjs --root . --json

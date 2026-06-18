@@ -52,11 +52,12 @@ Every project using this framework should have `harness/`. Create missing files 
 - `dictionary.md`: product, project, domain, technical, business, support, and acronym terms with plain-language definitions, canonical names, aliases, and source links.
 - `incident-response-book.md`: incident severity, detection, escalation, communication, mitigation, rollback, recovery, post-incident review, and follow-up tracking.
 - `observability-book.md`: logs, metrics, traces, dashboards, alerts, SLOs/SLEs, audit events, runbook links, and signal ownership.
+- `features/`: feature-level documentation folders. Each substantial feature gets its own folder with PRD, FRD, SystemsArchitecture, tasks, workflow, runbook, observability, and decision docs, even when product-wide docs already exist.
 - `prompt-template.md`: reusable task prompt structure covering planning, non-functional requirements, no-regression rules, test matrix, security, scalability, observability, and final reporting.
 - `skills.md`: registry of project skill commands, descriptions, and the skill files that define their required workflows.
 - `skills/`: skill workflow files. Each listed skill must have a matching Markdown file in this folder.
 
-The `the-production-agent-skill init` command also creates `scripts/supply-chain-audit.mjs`. Keep it wired into the project vulnerability test flow so dependency risk is checked with the same seriousness as unit, integration, and build failures.
+The `the-production-agent-skill init` command also creates `scripts/supply-chain-audit.mjs` and `scripts/codebase-consistency-codemod.mjs`. Keep supply-chain audit wired into the project vulnerability test flow, and use the consistency codemod only after confirming the project's established formatting standard or asking the user when the standard is unclear.
 
 All harness files are living docs. Update them when new facts, requirements, architecture decisions, tasks, workflows, operational procedures, incidents, terminology, ownership, tools, environments, deployment behavior, CI behavior, or risks appear.
 
@@ -69,10 +70,40 @@ Create and maintain living docs as part of normal project work:
 - Prefer structured docs that are easy to scan: summary blocks, ownership tables, decision tables, status tables, checklists, timelines, release gates, incident steps, support paths, glossary tables, and verification matrices.
 - Use Mermaid diagrams when they clarify architecture, request flow, data flow, deployment flow, CI flow, workflow state, incident response, ownership boundaries, or dependency relationships. Keep diagrams textual, versionable, and readable in Markdown.
 - Use tables for terms, owners, environments, commands, CI jobs, deployment steps, rollback steps, alerts, dashboards, workflows, acceptance criteria, risks, open questions, and follow-ups.
+- Use relevant images, screenshots, short video links, or other rich media where they make product behavior, UI states, operational procedures, or architecture easier to understand. Keep external media links stable and describe what the media proves.
 - Use ordered steps for operational procedures where sequence matters, especially deployment, rollback, incident response, data repair, release certification, and support escalation.
 - Keep diagrams, tables, and checklists synchronized with the code, configuration, CI, infrastructure, docs, and project verdicts. If exact information is unknown, mark it as `Unknown` or `TBD` with a short owner or discovery note instead of inventing.
 - Keep docs useful for multiple roles: engineering, product, QA, DevOps/SRE, support, security, marketing, business analysis, and future agents. Explain domain terms in `dictionary.md` before relying on them heavily elsewhere.
 - Treat documentation updates as completion evidence. A meaningful change is not complete until affected living docs are updated or the final report explicitly names the missing doc update and why it could not be safely made.
+
+### Feature Documentation Standard
+
+For every substantial feature, create or maintain a folder under `harness/features/<feature-name>/` even when product-wide PRD, FRD, and architecture docs already exist.
+
+Each feature folder should include, unless the feature is too small and the final report explains why:
+
+- `PRD.md`: feature goal, users, jobs-to-be-done, non-goals, success metrics, release scope, dependencies, and acceptance criteria.
+- `FRD.md`: functional behavior, roles, permissions, inputs, outputs, edge cases, negative paths, validation rules, state transitions, and acceptance tests.
+- `SystemsArchitecture.md`: components, APIs, data model, storage, caches, queues, events, integrations, infrastructure, Terraform/IaC notes, rollout, rollback, and failure modes.
+- `tasks.md`: implementation tasks, dependencies, status, owners, verification, risks, and resumable context.
+- `workflow.md`: user, product, engineering, QA, support, incident, release, and automation workflows.
+- `runbook.md`: support, incident, deployment, rollback, data repair, operational commands, and escalation procedures.
+- `observability.md`: feature KPIs, SLOs/SLEs, endpoint hit-rate assumptions, database/query budgets, dashboards, alerts, logs, traces, audit events, and owner.
+- `decisions.md`: architecture decisions, rejected options, tradeoffs, source links, and follow-ups.
+
+Use Mermaid diagrams, tables, checklists, images, screenshots, videos, and examples wherever they make the feature easier for junior developers, QA, product, support, DevOps/SRE, and future agents to understand. Keep feature docs synchronized with product-wide PRD, FRD, Non-FRD, architecture, deployment, CI, workflow, dictionary, runbook, observability, and task docs.
+
+### Strictness Levels
+
+Projects may set `strict-level` in `harness/verdicts.md`:
+
+| Level | Agent Behavior |
+| --- | --- |
+| `advisory` | Explain production concerns and recommend safeguards, but do not block small low-risk work when the user accepts the risk. |
+| `standard` | Default. Apply all relevant safety, quality, docs, verification, security, and non-functional rules unless a project verdict or explicit user instruction safely narrows scope. |
+| `strict` | Enforce the full framework: require relevant questions, KPI capture, feature docs, security/privacy review, optimization considerations, tests, docs, rollout/rollback notes, and verification before marking meaningful work complete. Refuse to skip precautions unless the user explicitly accepts the risk and the decision is recorded in `verdicts.md`. |
+
+When strictness is unset, treat it as `standard`. Never let strictness reduce safety, security, data integrity, or non-destructive operation.
 
 ## Update Harness Command
 
@@ -88,12 +119,13 @@ Follow this workflow:
 4. Before changing files, tell the user what will be updated, what documentation may be downloaded, which harness files or activation files may change, what automation may be added, and what verification will run. Wait for clear user agreement before implementation unless the user already gave explicit approval in the same request.
 5. Pull current official textual documentation for the important libraries that need cached reference material. Capture the full relevant docs set for each selected library, including API references, configuration options, CLI commands, guides, how-tos, integration notes, and version-specific caveats. Save it as structured Markdown under `harness/libraries-documentations/<library-name>/`.
 6. Keep documentation caches useful, not bloated. Do not save asset bundles, images, videos, analytics scripts, duplicated generated pages, irrelevant site chrome, marketing pages, or docs for unimportant dependencies. Each saved docs set must include source URLs, detected package/version when available, retrieval date, and section structure compatible with the packaged `docs/` style.
-7. Self-heal the harness by auditing whether active project rules are being followed. Do not override or erase `harness/verdicts.md`; verdicts are the project-specific source of final decisions. If required rules are missing, weak, contradictory, or not enforced, update `AGENTS.md`, `.cursorrules`, custom instruction files, or the appropriate `harness/` file with direct mandatory language that tells future agents what to do, when to do it, what to avoid, and how to prove compliance.
-8. Grow agent capability by studying the codebase, docs, scripts, tests, CI, tools, MCPs, templates, reports, skills, and current workflow pain points. Add or update useful scripts, commands, checklists, prompt templates, report templates, MCP/tool guidance, file maps, handbooks, skill workflows, task notes, automation recommendations, and workflow safeguards when they materially improve future agent performance.
-9. When adding or updating a skill, keep `harness/skills.md` and the referenced file under `harness/skills/` synchronized. Do not leave a skill command documented without a file, and do not leave a skill file unlisted unless it is explicitly marked as a draft that agents must not execute.
-10. Record any useful improvement that cannot be safely automated or completed in the current run in `harness/tasks.md`, with enough context, rationale, and verification guidance for a future session to resume.
-11. Verify the harness changes with the relevant doctor, lint, docs, script, test, or dry-run commands. If a check cannot run, record the reason and residual risk.
-12. Finish with a comprehensive report covering what changed, how to use the new or updated harness capabilities, why they help, edge cases, limitations, verification results, remaining risks, and recommended next steps.
+7. If the project installed this package through a package manager, update the harness library to the latest allowed version before or during the harness refresh, using the local package manager and lockfile rules. For npm projects, prefer `npm update the-production-agent-skill --save-dev` when it fits the project; use the equivalent Yarn, pnpm, or bun command when that is the established manager. Do not overwrite local copied package folders without user approval.
+8. Self-heal the harness by auditing whether active project rules are being followed. Do not override or erase `harness/verdicts.md`; verdicts are the project-specific source of final decisions. If required rules are missing, weak, contradictory, or not enforced, update `AGENTS.md`, `.cursorrules`, custom instruction files, or the appropriate `harness/` file with direct mandatory language that tells future agents what to do, when to do it, what to avoid, and how to prove compliance.
+9. Grow agent capability by studying the codebase, docs, scripts, tests, CI, tools, MCPs, templates, reports, skills, and current workflow pain points. Add or update useful scripts, commands, checklists, prompt templates, report templates, MCP/tool guidance, file maps, handbooks, skill workflows, task notes, automation recommendations, and workflow safeguards when they materially improve future agent performance.
+10. When adding or updating a skill, keep `harness/skills.md` and the referenced file under `harness/skills/` synchronized. Do not leave a skill command documented without a file, and do not leave a skill file unlisted unless it is explicitly marked as a draft that agents must not execute.
+11. Record any useful improvement that cannot be safely automated or completed in the current run in `harness/tasks.md`, with enough context, rationale, and verification guidance for a future session to resume.
+12. Verify the harness changes with the relevant doctor, lint, docs, script, test, or dry-run commands. If a check cannot run, record the reason and residual risk.
+13. Finish with a comprehensive report covering what changed, how to use the new or updated harness capabilities, why they help, edge cases, limitations, verification results, remaining risks, and recommended next steps.
 
 ## Skill Commands
 
@@ -104,7 +136,7 @@ Recognize skill commands case-insensitively when the user message starts with or
 - `pag-{{skill-name}}`
 - `pag-git-assist- {{git-command:with_options}}`
 
-The baked-in skills are `pag-review`, `pag-optimise`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, and `pag-git-assist- {{git-command:with_options}}`. Keep the British spelling `pag-optimise`; do not silently rename it to `pag-optimize`.
+The baked-in skills are `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, and `pag-git-assist- {{git-command:with_options}}`. Keep the British spelling `pag-optimise`; do not silently rename it to `pag-optimize`.
 
 When a skill command is invoked:
 
@@ -233,6 +265,19 @@ When a task affects system design, backend behavior, core data, deployment, secu
 - Which open-source libraries, standards, or reference implementations already solve this class of business rule, protocol, resiliency pattern, or compliance requirement?
 
 Capture the answers in `PRD.md`, `FRD.md`, `Non-FRD.md`, `constraints.md`, `git-workflow.md`, `architectural-guide.md`, and handbooks as appropriate. If the repository lacks these docs, create the missing scaffold before or during significant project setup.
+
+### 4b. Set KPIs And Architect Toward Them
+
+For meaningful product, API, database, infrastructure, or workflow work, agents must ask for or infer measurable non-functional targets and record assumptions when the user cannot answer yet. Include:
+
+- API latency targets such as p50, p95, p99, timeout budget, and maximum synchronous work per request.
+- Expected endpoint hit rate, peak throughput, concurrent users, job volume, webhook volume, queue depth, and growth assumptions.
+- Database budgets such as query latency, expected row counts, write frequency, index selectivity, connection-pool limits, replica-lag tolerance, backup/restore targets, and migration lock tolerance.
+- Availability, error-rate, durability, consistency, recovery-time, recovery-point, observability, and cost targets.
+
+Architect and code toward those targets. Consider out-of-code and infrastructure options when code alone cannot meet the KPI: load balancing, CDN/edge caching, read replicas, sharding or partitioning, CQRS/read models, outbox pattern, queues, event streams, async jobs, message brokers, materialized views, search indexes, cache layers, bulkheads, rate limits, regional routing, autoscaling, Terraform/IaC, SLO dashboards, and alerts.
+
+Do not stay at the bare minimum when the product requirements, expected growth, or risk profile call for stronger architecture. Present stronger options with tradeoffs and costs. If the user rejects extra safeguards or scalability work, record the decision and the risk in `verdicts.md`, `tasks.md`, or the relevant feature docs.
 
 ### 5. Research When Useful
 
@@ -439,6 +484,7 @@ When the right choice is unclear, ask the user once and save the final decision 
 ## Documentation Rules
 
 - Keep docs accurate and synchronized with implementation.
+- Update README files, feature docs, architecture docs, runbooks, deployment docs, CI docs, workflow docs, dictionary entries, and other appropriate docs whenever a feature or public behavior changes.
 - Document all public APIs, service contracts, feature behavior, operational requirements, and unusual implementation decisions.
 - Add or update inline comments only where they reduce real confusion.
 - For code tasks, update documentation in touched paths when behavior, boundaries, runtime expectations, or integration details changed.

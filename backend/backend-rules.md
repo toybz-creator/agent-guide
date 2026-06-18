@@ -22,6 +22,7 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Use event-driven, queue-based, streaming, or scheduled architectures when they fit the workflow better than synchronous request/response.
 - Do not create unnecessary abstraction layers. Add wrappers when they enforce product policy, improve testability, centralize risk, or match existing architecture.
 - For complex business rules, first check whether a reputable open-source library, official standard, or mature reference implementation already exists. Use or adapt it when it is well maintained, licensed acceptably, secure, testable, and aligned with project constraints. Do not hand-roll large standards-heavy rule systems without researching existing options.
+- Keep changes small and reviewable where possible. When a backend task naturally spans schema, API, jobs, UI, and infrastructure, split the plan by dependency order and explain which pieces can land separately.
 
 ## API And Communication Contracts
 
@@ -44,6 +45,7 @@ Build backend systems that are correct, secure, observable, resilient, efficient
 - Keep raw foreign-key scalar fields visible beside ORM relation fields for important business relations. Pin relation mappings to the stored column name, index lookup/join keys, and document unusual mappings that prevent the ORM from inventing unsafe names.
 - Default application-owned foreign keys to restrictive delete behavior such as `NO ACTION` or intentional `SET NULL`. Use cascade delete only for child data that is private to the parent, unaudited, not financially or legally meaningful, and safe to erase as one unit.
 - Never expose persistence entities or ORM models directly from public APIs. Map to DTOs/contracts that intentionally include public fields, hide internal metadata and secrets, and preserve backward-compatible response shapes.
+- Prefer explicit projections/selects for public reads instead of broad relation loading. Fetch only the fields the contract needs, especially when related records may contain secrets, credentials, private notes, internal metadata, or large payloads.
 - Hide sensitive persisted columns from default ORM selection where the ORM supports it, and still require DTO mapping. Password hashes, token hashes, API keys, reset codes, private notes, and provider secrets must be explicitly selected only in services that need them.
 - Treat `undefined`, missing fields, and `null` as different update intents. Patch/update paths must define which fields can be omitted, which fields can be cleared, and which fields must be rejected.
 - Prefer nullable-first schema evolution for new persisted fields on existing data. Add the field nullable or with a safe default, backfill and validate it, update code and seed data, then enforce `NOT NULL` only when production data, rollout order, and rollback safety are proven.
@@ -228,6 +230,8 @@ For high-risk domains, wrappers should become policy gateways, not thin pass-thr
 - Use connection pools, timeouts, and resource limits deliberately.
 - Treat cost as an engineering concern: retries, logs, traces, storage, queues, and external API calls must be bounded.
 - For high-traffic or region-sensitive systems, design the full serving path, not only application code: load balancing, regional routing, database topology, read replicas, sharding or partitioning, cache layers, queue backpressure, rate limits, failover, data residency, and operational runbooks. Use infrastructure-as-code when infrastructure changes are in scope.
+- Tie every meaningful performance or scale design to a KPI. Record expected endpoint hit rate, latency budget, database/query budget, queue/job volume, cache expectations, and alert thresholds in `harness/Non-FRD.md`, the feature `observability.md`, or the relevant runbook.
+- If code changes alone cannot meet the KPI, propose infrastructure or architecture work instead of pretending the code path is enough. Consider sharding, partitioning, read replicas, load balancing, CDN/edge caches, async queues, event streams, outbox, materialized views, CQRS, search indexes, bulkheads, rate limits, autoscaling, and Terraform/IaC changes.
 - For search-heavy workflows, prefer CQRS-style search indexes or dedicated search services when relational queries become slow, broad, or user-facing at scale. Update indexes asynchronously through events, outbox, CDC, or jobs; define lag, rebuild, deletion, authorization, and backfill behavior.
 - Use replication for read efficiency, failover, reporting, analytics, or backups only when the consistency and operational tradeoffs are explicit. Define replica lag tolerance, primary-read paths, promotion/failover behavior, backup validation, restore testing, monitoring, and stale-read user experience.
 - Use specialized data systems only when the workload justifies them: Examples: Redis for cache/streams/coordination, Kafka or equivalent for event streaming, Apache Spark or equivalent for large batch analytics, Flink or equivalent for stream processing, Neo4j or graph databases for relationship-heavy graph traversal, Cassandra or wide-column stores for high-scale write/read patterns, CockroachDB or distributed SQL for multi-region consistency needs, and object/CDN storage for large immutable assets. Document the operational cost and team ownership before adopting. These are examples, not base-guide mandates; choose the tool that best fits the workload and constraints.
@@ -262,6 +266,7 @@ For high-risk domains, wrappers should become policy gateways, not thin pass-thr
 
 - Keep Swagger/OpenAPI docs accurate for all controllers/routes and public backend interfaces.
 - Document feature architecture, data model, events/jobs, operational behavior, and failure modes in the relevant harness files.
+- Comments should explain why a decision exists, not restate what the code already says. Use comments for domain constraints, security concerns, non-obvious performance choices, workarounds, and operational gotchas.
 - Update `backend-handbook.md` after meaningful backend changes.
 - Update `development-history.md` with what changed and why.
 - Update `tasks.md` with status and verification steps.
@@ -282,3 +287,4 @@ Before marking backend work complete, confirm:
 - migrations are safe and non-destructive unless approved
 - tests cover happy paths, negative paths, and important failure modes
 - docs and handbooks are updated
+- feature-level docs under `harness/features/<feature-name>/` are updated for substantial backend features

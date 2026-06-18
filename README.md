@@ -11,7 +11,11 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Better planning:** agents clarify ambiguity, research current framework/library practices, compare options, and lock an implementation plan before high-impact work.
 - **Packaged library references:** agents check matching files in `docs/` for in-depth library APIs and capabilities before implementing against supported libraries.
 - **Living project memory:** agents maintain PRDs, functional requirements, architecture notes, runbooks, deployment/CI/workflow books, dictionaries, incident and observability books, task history, verdicts, and file maps in a dedicated project guide folder.
-- **Skill commands:** agents treat commands such as `pag-review`, `pag-guide`, and `pag-git-assist- ...` as binding workflows loaded from `harness/skills.md` and `harness/skills/`.
+- **Feature-level docs:** substantial features get their own `harness/features/<feature-name>/` folders with PRD, FRD, SystemsArchitecture, tasks, workflow, runbook, observability, and decision docs.
+- **Strictness levels:** projects can choose `advisory`, `standard`, or `strict` in `harness/verdicts.md`; strict mode requires full precautions, docs, KPI capture, tests, security review, rollout/rollback notes, and explicit risk acceptance for skipped safeguards.
+- **KPI-driven architecture:** agents ask for endpoint hit rates, latency, database/query budgets, queue volume, availability, observability, and growth targets, then plan code and infrastructure toward those targets.
+- **Skill commands:** agents treat commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-automations`, and `pag-git-assist- ...` as binding workflows loaded from `harness/skills.md` and `harness/skills/`.
+- **Automation recommendations:** the `recommend` CLI command and `pag-automations` skill suggest skills, plugins, hooks, monitors, CI checks, alerts, and agent-specific setup for Codex, Claude, Cursor, Antigravity, and similar tools.
 - **Harness growth command:** agents treat `Update harness` as a binding workflow to refresh project memory, cache important official library docs, strengthen local instructions, and add useful automation.
 - **Safer customization:** teams can override decisions in `harness/verdicts.md` without editing this package.
 - **Stack-specific depth:** backend and frontend rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, and runtime operations.
@@ -37,13 +41,13 @@ You can also copy this folder into a repository as `the-production-agent-skill/`
 Add this to your `AGENTS.md`, `.cursorrules`, Codex instructions, or equivalent agent rule file:
 
 ```markdown
-Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in `node_modules/the-production-agent-skill/instructions.md`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the `harness/` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as `pag-review`, `pag-optimise`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, or `pag-git-assist- {{git-command:with_options}}`, you must follow the `Skill Commands` workflow in `instructions.md`: read `harness/skills.md`, verify and read the referenced file in `harness/skills/`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says `Update harness` or a clear variant, you must follow the `Update Harness Command` workflow in `instructions.md`: inspect the project and harness, brief the user on planned updates, wait for agreement, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.
+Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in `node_modules/the-production-agent-skill/instructions.md`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the `harness/` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, or `pag-git-assist- {{git-command:with_options}}`, you must follow the `Skill Commands` workflow in `instructions.md`: read `harness/skills.md`, verify and read the referenced file in `harness/skills/`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says `Update harness` or a clear variant, you must follow the `Update Harness Command` workflow in `instructions.md`: inspect the project and harness, brief the user on planned updates, wait for agreement, update this harness library to the latest allowed version when package-managed, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.
 ```
 
 If you copied the guide into the repository instead of installing it, use:
 
 ```markdown
-Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in `the-production-agent-skill/instructions.md`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the `harness/` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as `pag-review`, `pag-optimise`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, or `pag-git-assist- {{git-command:with_options}}`, you must follow the `Skill Commands` workflow in `instructions.md`: read `harness/skills.md`, verify and read the referenced file in `harness/skills/`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says `Update harness` or a clear variant, you must follow the `Update Harness Command` workflow in `instructions.md`: inspect the project and harness, brief the user on planned updates, wait for agreement, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.
+Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in `the-production-agent-skill/instructions.md`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the `harness/` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, or `pag-git-assist- {{git-command:with_options}}`, you must follow the `Skill Commands` workflow in `instructions.md`: read `harness/skills.md`, verify and read the referenced file in `harness/skills/`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says `Update harness` or a clear variant, you must follow the `Update Harness Command` workflow in `instructions.md`: inspect the project and harness, brief the user on planned updates, wait for agreement, update this harness library to the latest allowed version when package-managed, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.
 ```
 
 The CLI can print this snippet:
@@ -86,22 +90,33 @@ Required downstream files:
 - `harness/dictionary.md`
 - `harness/incident-response-book.md`
 - `harness/observability-book.md`
+- `harness/features/README.md`
 - `harness/prompt-template.md`
 - `harness/skills.md`
 - `harness/skills/review.md`
 - `harness/skills/optimise.md`
+- `harness/skills/security.md`
+- `harness/skills/deployment.md`
 - `harness/skills/guide.md`
 - `harness/skills/discovery.md`
 - `harness/skills/compare.md`
 - `harness/skills/shield.md`
 - `harness/skills/idea.md`
+- `harness/skills/automations.md`
 - `harness/skills/git-assist.md`
 - `scripts/supply-chain-audit.mjs`
+- `scripts/codebase-consistency-codemod.mjs`
 
 Check a project at any time:
 
 ```bash
 npx the-production-agent-skill doctor
+```
+
+Get project-aware recommendations for agent skills, plugins, hooks, monitors, CI checks, alerts, and automation setup:
+
+```bash
+npx the-production-agent-skill recommend --agent codex
 ```
 
 The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vulnerability test run. Add scripts like these to the downstream project `package.json` when they fit the local test workflow:
@@ -118,6 +133,13 @@ The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vuln
 
 The script checks reproducible installs, dependency specs, `npm audit`, install-time package scripts, and suspicious dependency behavior indicators. Use `--socket` when the project has approved Socket-style package behavior scanning; Socket documents `socket ci` for CI policy checks at https://docs.socket.dev/docs/socket-ci.
 
+The scaffolded `scripts/codebase-consistency-codemod.mjs` helps standardize quote style without broad formatter churn. It is dry-run by default, requires an explicit `--quote single` or `--quote double`, and should only be run with `--write` after confirming the established project standard or asking the user:
+
+```bash
+node scripts/codebase-consistency-codemod.mjs --quote single
+node scripts/codebase-consistency-codemod.mjs --quote single --write
+```
+
 ## Expected Agent Behavior
 
 After activation, expect the agent to be more deliberate. It may ask more questions, especially for requirements, non-functional needs, constraints, scale, security, deployment, observability, and unclear edge cases.
@@ -125,18 +147,18 @@ After activation, expect the agent to be more deliberate. It may ask more questi
 For larger tasks, the agent should:
 
 1. Load base and harness rules.
-2. Detect skill commands such as `pag-review`, `pag-optimise`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, and `pag-git-assist- ...`; load `harness/skills.md` and the referenced file in `harness/skills/` before acting.
+2. Detect skill commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, and `pag-git-assist- ...`; load `harness/skills.md` and the referenced file in `harness/skills/` before acting.
 3. Classify the task as backend, frontend, full-stack, QA, infrastructure, documentation, or browser/computer-use.
 4. Read the relevant code, living docs, and matching packaged `docs/` library reference files before acting.
 5. Clarify ambiguous intent and surface useful feature improvements.
 6. Research current library/framework practices when useful or when no matching packaged docs file exists.
 7. Propose a plan with options and tradeoffs, including reusable open-source or standards-based options when complex rules or architecture patterns are involved.
 8. Include the chosen approach, expected system structure, engineering norms, safeguards, non-functional assumptions, and a table of planned tests for meaningful work.
-9. Implement with production-grade architecture, tests, telemetry, and docs.
+9. Implement with production-grade architecture, tests, telemetry, KPI-aware scale assumptions, and docs.
 10. Run a final cross-check for regressions, security, accessibility, reliability, supply-chain risk, and product fit.
 11. Update living docs, using Mermaid diagrams, tables, checklists, and clear procedures where they improve comprehension, then provide a concise review with test results, system impact, side effects, rollback notes, and critical code paths for human review.
 
-When the user says `Update harness` or a clear variant, the agent must run the dedicated harness-growth workflow from `instructions.md`. It inspects the project, package manifests, current harness, activation files, docs, scripts, tools, skills, and codebase; identifies important direct frameworks and platform libraries; briefs the user and waits for agreement; caches full relevant official textual docs under `harness/libraries-documentations/`; self-heals missing or weak agent rules outside `harness/verdicts.md`; adds useful automation, templates, reports, MCP/tool guidance, skill workflows, and workflow safeguards; keeps `harness/skills.md` synchronized with `harness/skills/`; records deferred work in `harness/tasks.md`; verifies the updates; and reports exactly what changed and how to use it.
+When the user says `Update harness` or a clear variant, the agent must run the dedicated harness-growth workflow from `instructions.md`. It inspects the project, package manifests, current harness, activation files, docs, scripts, tools, skills, and codebase; identifies important direct frameworks and platform libraries; briefs the user and waits for agreement; updates `the-production-agent-skill` to the latest allowed package-managed version when applicable; caches full relevant official textual docs under `harness/libraries-documentations/`; self-heals missing or weak agent rules outside `harness/verdicts.md`; adds useful automation, templates, reports, MCP/tool guidance, skill workflows, and workflow safeguards; keeps `harness/skills.md` synchronized with `harness/skills/`; records deferred work in `harness/tasks.md`; verifies the updates; and reports exactly what changed and how to use it.
 
 This behavior is intentional. The goal is not just to make code work, but to make the product safer, clearer, and easier to evolve.
 

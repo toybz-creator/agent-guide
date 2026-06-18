@@ -30,21 +30,26 @@ const requiredGuideFiles = [
   "harness/dictionary.md",
   "harness/incident-response-book.md",
   "harness/observability-book.md",
+  "harness/features/README.md",
   "harness/prompt-template.md",
   "harness/skills.md",
   "harness/skills/review.md",
   "harness/skills/optimise.md",
+  "harness/skills/security.md",
+  "harness/skills/deployment.md",
   "harness/skills/guide.md",
   "harness/skills/discovery.md",
   "harness/skills/compare.md",
   "harness/skills/shield.md",
   "harness/skills/idea.md",
+  "harness/skills/automations.md",
   "harness/skills/git-assist.md"
 ];
 
 const requiredProjectFiles = [
   ...requiredGuideFiles,
-  "scripts/supply-chain-audit.mjs"
+  "scripts/supply-chain-audit.mjs",
+  "scripts/codebase-consistency-codemod.mjs"
 ];
 
 const packageFiles = [
@@ -55,6 +60,7 @@ const packageFiles = [
   "computer-use/computer-use-agent-rules.md",
   "docs",
   "scripts/supply-chain-audit.mjs",
+  "scripts/codebase-consistency-codemod.mjs",
   "bin/the-production-agent-skill.mjs",
   "package.json"
 ];
@@ -136,6 +142,7 @@ This file stores final decisions, project preferences, and conflict resolutions 
 - web-research: optional
 - cached-library-documentation: optional
 - lint-format-hooks: unset
+- strict-level: standard
 - observability-provider: unset
 `,
   "harness/mcp-rules.md": `# MCP Rules
@@ -381,6 +388,47 @@ flowchart LR
 - Keep alert thresholds tied to user impact or operational risk.
 - Link alerts to deployment, incident, and product runbooks where possible.
 `,
+  "harness/features/README.md": `# Feature Documentation Index
+
+Every substantial feature must have its own folder under this directory, even when product-wide PRD, FRD, and architecture docs already exist.
+
+## Folder Contract
+
+Use kebab-case feature folders:
+
+\`\`\`text
+harness/features/<feature-name>/
+  PRD.md
+  FRD.md
+  SystemsArchitecture.md
+  tasks.md
+  workflow.md
+  runbook.md
+  observability.md
+  decisions.md
+\`\`\`
+
+## Required Coverage
+
+| Document | Purpose | Required Rich Media |
+| --- | --- | --- |
+| PRD.md | User problem, goals, non-goals, personas, success metrics, release scope. | User journey table, acceptance matrix, optional screenshots or product images. |
+| FRD.md | Functional behavior, roles, permissions, inputs, outputs, edge cases, negative paths. | Requirement tables, state diagrams, workflow diagrams. |
+| SystemsArchitecture.md | Components, APIs, data model, events, jobs, queues, caches, infrastructure, rollout and rollback. | Mermaid architecture, sequence, data-flow, and deployment diagrams. |
+| tasks.md | Implementation plan, owners, dependencies, verification, status, risks. | Task tables and dependency diagrams when useful. |
+| workflow.md | Product, engineering, QA, support, and operational workflows. | Mermaid flowcharts or state diagrams. |
+| runbook.md | Support, incident, deployment, rollback, data repair, and operator procedures. | Ordered checklists, escalation tables, diagrams. |
+| observability.md | KPIs, SLOs/SLEs, logs, metrics, traces, dashboards, alerts, audit events. | KPI tables, signal maps, alert matrices. |
+| decisions.md | Architecture decisions, rejected options, tradeoffs, constraints, source links. | Decision tables and comparison matrices. |
+
+## Writing Standard
+
+- Write for junior developers, QA, product, support, DevOps/SRE, and future agents.
+- Use plain language first, then precise technical details.
+- Use Mermaid diagrams, tables, checklists, screenshots, image links, short video links, or other useful media when they make behavior clearer.
+- Mark unknown facts as TBD with an owner or discovery note.
+- Keep feature docs synchronized with product-wide PRD, FRD, architecture, deployment, CI, workflow, dictionary, observability, and runbook docs.
+`,
   "harness/prompt-template.md": `# Standard Production Task Prompt Template
 
 Use this template for meaningful implementation, review, refactor, security, infrastructure, and debugging work.
@@ -480,11 +528,14 @@ When the user sends a command matching pag-{{skill-name}}, read this registry, c
 | --- | --- | --- | --- |
 | Review | pag-review | harness/skills/review.md | Reviews a project, feature, module, section, workflow, or implementation in depth. |
 | Optimise | pag-optimise | harness/skills/optimise.md | Optimises a target feature or workflow against a stated goal such as speed, cost, reliability, UX, or maintainability. |
+| Security | pag-security | harness/skills/security.md | Threat-models and hardens a target against security, privacy, abuse, and compliance risks. |
+| Deployment | pag-deployment | harness/skills/deployment.md | Plans or reviews deployment, release, rollback, infrastructure, CI/CD, and production readiness. |
 | Guide | pag-guide | harness/skills/guide.md | Explains the codebase or a feature end to end for junior developers and non-technical stakeholders. |
 | Discovery | pag-discovery | harness/skills/discovery.md | Studies the product, code, docs, dependencies, and ecosystem to produce broad upgrade and improvement recommendations. |
 | Compare | pag-compare | harness/skills/compare.md | Compares the project or feature against five strong open-source references and extracts actionable insights. |
 | Shield | pag-shield | harness/skills/shield.md | Assesses abuse, misuse, leakage, security, operational, and supply-chain protection across system layers. |
 | Idea | pag-idea | harness/skills/idea.md | Generates practical next-step ideas for product, engineering, refactoring, hardening, optimization, and operations. |
+| Automations | pag-automations | harness/skills/automations.md | Recommends agent skills, plugins, hooks, monitors, and automations for the project and AI agent surface. |
 | Git Assist | pag-git-assist- {{git-command:with_options}} | harness/skills/git-assist.md | Reviews and, only when safe, runs the appended git command according to repository state and git workflow rules. |
 
 ## Extending Skills
@@ -579,6 +630,87 @@ Before starting, ask for missing optimization inputs:
 - Target and goal were clarified.
 - Baseline and verification method were recorded.
 - The final report states what improved, what did not change, and what remains risky or unmeasured.
+`,
+  "harness/skills/security.md": `# Security Skill
+
+## Command
+
+pag-security
+
+## Purpose
+
+Threat-model, review, and improve a project, feature, API, data flow, dependency surface, infrastructure path, CI/CD path, or operational workflow for security, privacy, abuse resistance, and compliance.
+
+## Preflight Questions
+
+Ask before doing security work when the answer cannot be discovered from repository evidence:
+
+- What target should be assessed or hardened: whole system, feature, API, auth, payments, uploads, webhooks, admin tooling, AI features, infrastructure, CI/CD, dependencies, or another area?
+- Which risk model matters most: external attacker, malicious tenant, insider misuse, accidental leakage, compliance failure, supply-chain compromise, or operational abuse?
+- Should the output be a threat model, prioritized hardening plan, implementation, tests, or a richer document?
+- Are there known regulations, incidents, sensitive data classes, or business constraints?
+
+## Workflow
+
+1. Read the skill registry and this file before starting.
+2. Load relevant harness rules, code, schemas, auth paths, permissions, logs, deployment files, CI, dependencies, secrets handling, and supply-chain tooling.
+3. Map assets, actors, roles, tenants, trust boundaries, sensitive data, secrets, external systems, and privileged workflows.
+4. Identify risks across authentication, authorization, validation, injection, data leakage, tenant isolation, rate limits, dependency risk, logging, CI/CD, infrastructure permissions, and operational access.
+5. Propose layered mitigations with verification steps before implementing.
+6. If implementing, make focused changes and add tests or checks that prove the boundary is safer.
+
+## Output
+
+- Include a risk table with severity, likelihood, evidence, impact, mitigation, owner, and verification.
+- Include trust-boundary or abuse-flow diagrams where useful.
+- Separate confirmed risks from inferred risks.
+- Name any destructive or high-risk actions that require approval before execution.
+
+## Completion Evidence
+
+- Assets, actors, and trust boundaries were mapped.
+- Recommendations are tied to repo evidence, standards, or clearly labeled inference.
+- Verification steps are concrete and appropriate for the risk.
+`,
+  "harness/skills/deployment.md": `# Deployment Skill
+
+## Command
+
+pag-deployment
+
+## Purpose
+
+Plan, review, or improve deployment, release, rollback, CI/CD, infrastructure, environment configuration, smoke testing, and production readiness.
+
+## Preflight Questions
+
+Ask before deployment work when missing:
+
+- What target is in scope: whole app, service, feature, migration, environment, CI workflow, infrastructure module, or release?
+- Which environment matters: local, preview, staging, production, disaster recovery, or multi-region?
+- Is the request for advice, a deployment plan, implementation, infrastructure documentation, or release support?
+- What risk tolerance, downtime tolerance, rollback expectation, KPI/SLO target, and approval path apply?
+
+## Workflow
+
+1. Read the skill registry and this file before starting.
+2. Load deployment book, CI book, environment docs, architecture docs, package scripts, workflow files, infrastructure files, migrations, feature flags, secrets docs, and relevant code paths.
+3. Map the release path from code change to production: build, test, package, provision, deploy, migrate, smoke test, monitor, rollback, and incident response.
+4. Check environment parity, secrets boundaries, least-privilege infrastructure, config validation, migration order, rollback compatibility, observability, smoke checks, and support handoff.
+5. Propose a deployment or hardening plan with commands, gates, owners, risks, rollback, and verification.
+6. If implementing, keep infrastructure as code where the project uses it and document Terraform, Kubernetes, cloud, or platform changes in the relevant harness docs.
+
+## Output
+
+- Include a deployment checklist, environment matrix, risk table, rollback plan, and verification plan.
+- Use Mermaid diagrams for deployment flow, CI flow, or rollback flow when useful.
+- Call out manual approvals, irreversible operations, and data repair risks.
+
+## Completion Evidence
+
+- Deployment path and rollback path are explicit.
+- CI, environment, infrastructure, docs, and smoke checks are synchronized where changed.
+- Final report states what was verified and what remains risky.
 `,
   "harness/skills/guide.md": `# Guide Skill
 
@@ -786,6 +918,46 @@ Ask for missing ideation scope:
 - Assumptions are labeled.
 - The final response gives the user a clear shortlist of best next actions.
 `,
+  "harness/skills/automations.md": `# Automations Skill
+
+## Command
+
+pag-automations
+
+## Purpose
+
+Recommend the best agent skills, plugins, hooks, monitors, scheduled checks, CI jobs, and operational automations for the current product, project, team workflow, and AI agent surface such as Codex, Claude, Cursor, Gemini, or Antigravity.
+
+## Preflight Questions
+
+Ask before recommending when missing:
+
+- Which AI agent or surfaces should be optimized: Codex, Claude Code, Cursor, GitHub Copilot, Gemini, Antigravity, multiple agents, or unknown?
+- Should recommendations focus on reliability, speed of development, security, observability, documentation, QA, deployments, cost, product discovery, or all of them?
+- Is the user asking for advice only, implementation, or a document under harness/?
+- Are there tools, budgets, compliance limits, or platforms that must be included or avoided?
+
+## Workflow
+
+1. Read the skill registry and this file before starting.
+2. Load README, harness docs, package manifests, CI/deployment files, scripts, observability docs, tasks, codebase map, and agent activation files.
+3. Identify project type, stack, risk profile, critical workflows, release process, existing checks, monitoring gaps, and team workflow.
+4. Recommend agent-specific setup: skills, rules files, plugins, MCPs, hooks, scheduled automations, background review tasks, CI checks, dashboards, alerts, dependency scans, docs refreshes, and incident/report templates.
+5. Prioritize recommendations by impact, effort, risk, tool availability, and maintenance cost.
+6. If implementing, keep changes reversible, documented, and synchronized with AGENTS.md, README, harness skills, scripts, CI, and verdicts.
+
+## Output
+
+- Include a recommendation table with agent surface, automation, purpose, setup path, expected benefit, effort, risk, and verification.
+- Group recommendations for code quality, security, reliability, observability, deployment, product/docs, and developer speed.
+- Mark recommendations that require external accounts, secrets, paid plans, or human approval.
+
+## Completion Evidence
+
+- Recommendations are tailored to inspected project facts.
+- Tool assumptions and unavailable evidence are explicit.
+- The final report gives a shortlist of highest-value automations and the next setup steps.
+`,
   "harness/skills/git-assist.md": `# Git Assist Skill
 
 ## Command
@@ -835,12 +1007,14 @@ function printHelp() {
 Usage:
   the-production-agent-skill init [--dry-run] [--root <path>]
   the-production-agent-skill doctor [--root <path>] [--package-root <path>] [--package-only]
+  the-production-agent-skill recommend [--root <path>] [--agent <name>]
   the-production-agent-skill snippet
   the-production-agent-skill help
 
 Commands:
   init      Create missing harness files and security scripts without overwriting existing files.
   doctor    Check framework package files, downstream guide files, and security scripts.
+  recommend Suggest high-value skills, plugins, and automations for the project and agent surface.
   snippet   Print an activation snippet for AGENTS.md or equivalent agent rules files.
 `);
 }
@@ -851,7 +1025,8 @@ function parseArgs(argv) {
     dryRun: false,
     root: process.cwd(),
     packageRoot,
-    packageOnly: false
+    packageOnly: false,
+    agent: "unknown"
   };
 
   for (let index = 3; index < argv.length; index += 1) {
@@ -879,6 +1054,12 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === "--agent") {
+      args.agent = argv[index + 1] ?? "unknown";
+      index += 1;
+      continue;
+    }
+
     fail(`Unknown option: ${arg}`);
   }
 
@@ -891,7 +1072,7 @@ function fail(message) {
 }
 
 function snippet() {
-  console.log(`Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in \`node_modules/the-production-agent-skill/instructions.md\`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the \`harness/\` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as \`pag-review\`, \`pag-optimise\`, \`pag-guide\`, \`pag-discovery\`, \`pag-compare\`, \`pag-shield\`, \`pag-idea\`, or \`pag-git-assist- {{git-command:with_options}}\`, you must follow the \`Skill Commands\` workflow in \`instructions.md\`: read \`harness/skills.md\`, verify and read the referenced file in \`harness/skills/\`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says \`Update harness\` or a clear variant, you must follow the \`Update Harness Command\` workflow in \`instructions.md\`: inspect the project and harness, brief the user on planned updates, wait for agreement, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.`);
+  console.log(`Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in \`node_modules/the-production-agent-skill/instructions.md\`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the \`harness/\` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as \`pag-review\`, \`pag-optimise\`, \`pag-security\`, \`pag-deployment\`, \`pag-guide\`, \`pag-discovery\`, \`pag-compare\`, \`pag-shield\`, \`pag-idea\`, \`pag-automations\`, or \`pag-git-assist- {{git-command:with_options}}\`, you must follow the \`Skill Commands\` workflow in \`instructions.md\`: read \`harness/skills.md\`, verify and read the referenced file in \`harness/skills/\`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says \`Update harness\` or a clear variant, you must follow the \`Update Harness Command\` workflow in \`instructions.md\`: inspect the project and harness, brief the user on planned updates, wait for agreement, update this harness library to the latest allowed version when package-managed, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.`);
 }
 
 function init({ root, dryRun }) {
@@ -966,9 +1147,82 @@ function doctor({ root, packageRoot: guideRoot, packageOnly }) {
   }
 }
 
+function recommend({ root, agent }) {
+  const packageJsonPath = join(root, "package.json");
+  const packageJson = existsSync(packageJsonPath)
+    ? JSON.parse(readFileSync(packageJsonPath, "utf8"))
+    : {};
+  const deps = {
+    ...packageJson.dependencies,
+    ...packageJson.devDependencies
+  };
+  const has = (name) => Object.prototype.hasOwnProperty.call(deps, name);
+  const stack = [];
+
+  if (has("next")) stack.push("Next.js");
+  if (has("react")) stack.push("React");
+  if (has("@nestjs/core")) stack.push("NestJS");
+  if (has("prisma") || has("@prisma/client")) stack.push("Prisma");
+  if (has("typeorm")) stack.push("TypeORM");
+  if (has("@playwright/test") || has("playwright")) stack.push("Playwright");
+  if (has("vitest")) stack.push("Vitest");
+  if (has("jest")) stack.push("Jest");
+  if (existsSync(join(root, "terraform")) || existsSync(join(root, "main.tf"))) stack.push("Terraform");
+  if (existsSync(join(root, ".github", "workflows"))) stack.push("GitHub Actions");
+
+  const normalizedAgent = agent.toLowerCase();
+  const agentTips = [];
+
+  if (normalizedAgent.includes("codex")) {
+    agentTips.push("Codex: keep AGENTS.md concise, command-oriented, and synchronized with harness skills; use pag-automations for periodic setup reviews.");
+  } else if (normalizedAgent.includes("claude")) {
+    agentTips.push("Claude: mirror the activation snippet into CLAUDE.md when that is the active surface and keep project skills as explicit Markdown workflows.");
+  } else if (normalizedAgent.includes("cursor")) {
+    agentTips.push("Cursor: mirror stable rules into Cursor project rules and keep long operational workflows in harness skills so rules stay focused.");
+  } else if (normalizedAgent.includes("antigravity")) {
+    agentTips.push("Antigravity: keep agent rules, skills, and automations mapped to the tool's plugin and automation surfaces, then record the mapping in harness/mcp-rules.md.");
+  } else {
+    agentTips.push("Unknown agent: start with AGENTS.md plus harness skills, then mirror the activation snippet into the tool-specific rule file that the agent actually reads.");
+  }
+
+  console.log("# Recommended Agent Skills And Automations");
+  console.log("");
+  console.log(`Detected stack: ${stack.length > 0 ? stack.join(", ") : "not enough project evidence detected"}`);
+  console.log(`Agent surface: ${agent}`);
+  console.log("");
+  console.log("## Highest-Value Setup");
+  console.log("");
+  console.log("- Enable pag-review for focused reviews with clear scope, impact, and evidence.");
+  console.log("- Enable pag-optimise for KPI-driven performance, cost, reliability, UX, and maintainability work.");
+  console.log("- Enable pag-security and pag-shield for threat modeling, abuse prevention, privacy, and supply-chain hardening.");
+  console.log("- Enable pag-deployment for release, rollback, infrastructure, CI/CD, and smoke-test readiness.");
+  console.log("- Enable pag-automations to periodically tailor plugins, hooks, checks, dashboards, and alerts to the project.");
+  console.log("- Keep Update harness scheduled or repeated after major dependency, architecture, CI, deployment, or product changes.");
+  console.log("");
+  console.log("## Tool-Specific Notes");
+  console.log("");
+  for (const tip of agentTips) {
+    console.log(`- ${tip}`);
+  }
+  console.log("");
+  console.log("## Automation Backlog");
+  console.log("");
+  console.log("| Area | Recommended Automation | Evidence To Capture |");
+  console.log("| --- | --- | --- |");
+  console.log("| Reliability | Health checks, smoke tests, queue-depth alerts, uptime/SLO alerts | observability-book.md and deployment-book.md |");
+  console.log("| Security | Dependency audit, secret scanning, permission review, threat-model refresh | security reports and harness/tasks.md |");
+  console.log("| Quality | Typecheck, lint, format, unit/integration/E2E gates, codebase consistency codemod dry-runs | CI book and package scripts |");
+  console.log("| Product Docs | Feature PRD/FRD/architecture/tasks/workflow/runbook updates | harness/features/<feature>/ |");
+  console.log("| Delivery | Draft PR creation, release checklist, rollback checklist, migration preflight | git-workflow.md and deployment-book.md |");
+}
+
 function getTemplate(file) {
   if (file === "scripts/supply-chain-audit.mjs") {
     return readFileSync(join(packageRoot, "scripts/supply-chain-audit.mjs"), "utf8");
+  }
+
+  if (file === "scripts/codebase-consistency-codemod.mjs") {
+    return readFileSync(join(packageRoot, "scripts/codebase-consistency-codemod.mjs"), "utf8");
   }
 
   return templates[file];
@@ -982,6 +1236,9 @@ switch (args.command) {
     break;
   case "doctor":
     doctor(args);
+    break;
+  case "recommend":
+    recommend(args);
     break;
   case "snippet":
     snippet();
