@@ -32,6 +32,7 @@ const requiredGuideFiles = [
   "harness/incident-response-book.md",
   "harness/observability-book.md",
   "harness/features/README.md",
+  "harness/planning-notes/README.md",
   "harness/prompt-template.md",
   "harness/skills.md",
   "harness/skills/review.md",
@@ -55,6 +56,7 @@ const requiredProjectFiles = [
 
 const packageFiles = [
   "README.md",
+  "CHANGELOG.md",
   "instructions.md",
   "backend/backend-rules.md",
   "frontend/frontend-rules.md",
@@ -65,8 +67,55 @@ const packageFiles = [
   "scripts/supply-chain-audit.mjs",
   "scripts/codebase-consistency-codemod.mjs",
   "bin/the-production-agent-skill.mjs",
+  "test/cli.test.mjs",
   "package.json"
 ];
+
+const rulebookFiles = [
+  "instructions.md",
+  "backend/backend-rules.md",
+  "frontend/frontend-rules.md",
+  "mobile/react-native-rules.md",
+  "computer-use/computer-use-agent-rules.md",
+  "arsenals/development-arsenals.md"
+];
+
+const taskGuideSections = [
+  "Metadata",
+  "Initial Request",
+  "Refined Working Prompt",
+  "Context And Evidence",
+  "Product And Task Understanding",
+  "Scope, Non-Goals, Assumptions, And Open Questions",
+  "Task Classification And Rule Register",
+  "Architecture And Design Decisions",
+  "Implementation Plan And Change Map",
+  "Test And Evaluation Matrix",
+  "Implementation Log",
+  "Evaluation Evidence",
+  "Feedback Report",
+  "Iteration, Harness Updates, Residual Risks, And Follow-Ups"
+];
+
+const taskStageSections = {
+  rewrite: taskGuideSections.slice(0, 7),
+  planning: taskGuideSections.slice(0, 10),
+  implementation: taskGuideSections.slice(0, 11),
+  evaluation: taskGuideSections.slice(0, 12),
+  feedback: taskGuideSections.slice(0, 13),
+  iteration: taskGuideSections,
+  complete: taskGuideSections
+};
+
+const taskStageRuleNamespaces = {
+  rewrite: ["CORE", "RWR"],
+  planning: ["CORE", "RWR", "PLN"],
+  implementation: ["CORE", "RWR", "PLN", "IMP"],
+  evaluation: ["CORE", "RWR", "PLN", "IMP", "EVL"],
+  feedback: ["CORE", "RWR", "PLN", "IMP", "EVL", "FDB"],
+  iteration: ["CORE", "RWR", "PLN", "IMP", "EVL", "FDB", "ITR"],
+  complete: ["CORE", "RWR", "PLN", "IMP", "EVL", "FDB", "ITR", "DONE"]
+};
 
 const templates = {
   "harness/PRD.md": `# Product Requirements Document
@@ -436,98 +485,64 @@ harness/features/<feature-name>/
 - Mark unknown facts as TBD with an owner or discovery note.
 - Keep feature docs synchronized with product-wide PRD, FRD, architecture, deployment, CI, workflow, dictionary, observability, and runbook docs.
 `,
-  "harness/prompt-template.md": `# Standard Production Task Prompt Template
+  "harness/planning-notes/README.md": `# Task Planning Notes
 
-Use this template for meaningful implementation, review, refactor, security, infrastructure, and debugging work.
+Every project task must create or resume:
 
-## Task
+\`\`\`text
+harness/planning-notes/<task-id>/implementation-guide.md
+\`\`\`
 
-_Describe the requested outcome, users affected, current behavior, desired behavior, and explicit non-goals._
+Use a stable task ID in the form \`YYYYMMDD-short-kebab-slug\`. The implementation guide is the durable execution record for the mandatory Rewrite, Planning, Implementation, Evaluation, Feedback, and Iteration stages.
 
-## Acceptance Criteria
+Create a guide safely with:
 
-| Criterion | How It Will Be Verified |
-| --- | --- |
-| _Expected product behavior_ | _Test, demo, or inspection method_ |
-| _Security/permission requirement_ | _Auth/RBAC/security test_ |
-| _Operational or non-functional requirement_ | _Metric, log, load test, or smoke check_ |
+\`\`\`bash
+npx the-production-agent-skill task --id YYYYMMDD-short-kebab-slug --title "Task title"
+\`\`\`
 
-## Context To Load
+Validate progress with:
 
-- Read the base agent guide and relevant harness files.
-- Read the code paths, tests, schemas, migrations, infrastructure, and docs affected by the task.
-- Check matching packaged library docs and current official docs when the task depends on framework, API, or security-sensitive behavior.
+\`\`\`bash
+npx the-production-agent-skill verify-task --id YYYYMMDD-short-kebab-slug --stage rewrite
+npx the-production-agent-skill verify-task --id YYYYMMDD-short-kebab-slug --stage planning
+npx the-production-agent-skill verify-task --id YYYYMMDD-short-kebab-slug --stage complete
+\`\`\`
 
-## Planning Rules
+The task folder may also contain focused research, diagrams, evaluation logs, screenshots, migration notes, and decision records. Keep durable project truth synchronized with the appropriate PRD, FRD, constraints, verdicts, architecture, handbook, runbook, task, development-history, feature, and observability files.
+`,
+  "harness/prompt-template.md": `# Standard Production Task Prompt
 
-- Start with a plan when the task is non-trivial, risky, security-sensitive, data-sensitive, infrastructure-related, or ambiguous.
-- The plan must state the chosen approach, system structure, engineering norms, safeguards, alternatives considered, and open questions.
-- Simulate the solution globally before coding: data flow, permissions, failure modes, rollback, deployment, observability, scalability, and downstream effects.
-- Ask questions or pause for alignment when uncertainty could change product behavior, architecture, security, cost, migration safety, or user experience.
+Use this short prompt to activate the full task method without duplicating its rules:
 
-## Non-Functional Requirements
+\`\`\`markdown
+Treat this request as the starting prompt, not the final working prompt.
 
-Document explicit targets or assumptions for:
+Requested outcome:
+<describe the outcome>
 
-| Area | Requirement Or Assumption | Evidence Needed |
-| --- | --- | --- |
-| Latency | _Example: bulk initiation endpoint responds in milliseconds by enqueueing durable async work._ | _API/integration test and timing notes_ |
-| Throughput | _Example: supports 5k concurrent users without blocking critical request paths._ | _Load model, query plan, or stress test_ |
-| Availability | _Expected uptime, failover, graceful degradation, and retry behavior._ | _Health checks, alerts, fallback behavior_ |
-| Consistency | _Strong, eventual, or read-after-write needs._ | _Transaction, replica, cache, or reconciliation design_ |
-| Security | _Auth, RBAC, tenant scope, abuse prevention, supply-chain checks._ | _Unit/integration/security tests_ |
-| Operability | _Logs, metrics, traces, dashboards, runbook, rollback._ | _Observed telemetry and rollback notes_ |
+Known scope and constraints:
+<describe known scope, non-goals, deadlines, permissions, and constraints>
 
-## Test Plan
+Success evidence:
+<describe what would prove the outcome>
 
-List planned tests before implementation:
+Follow the numbered rules in the Production Agent Skill. Create or resume the task implementation guide under harness/planning-notes/<task-id>/, run Rewrite, Planning, Implementation, Evaluation, Feedback, and Iteration, and keep affected living harness documents synchronized.
+\`\`\`
 
-| Type | Scenario | Expected Result | Coverage Area |
-| --- | --- | --- | --- |
-| Unit | _Happy path domain behavior_ | _Correct state/output_ | Correctness |
-| Unit | _Invalid input or bad state_ | _Safe error/no mutation_ | Defensive coding |
-| Integration | _Endpoint with valid DTO and auth_ | _Expected response and persistence_ | API contract |
-| Integration | _RBAC/tenant denial_ | _Forbidden/no data leak_ | Security |
-| Integration | _Concurrency/idempotency/retry_ | _No duplicate side effects_ | Reliability |
-| E2E | _Critical user workflow_ | _User-visible success and recovery states_ | Regression |
-| Security | _Malicious input, dependency, or permission boundary_ | _Rejected, logged, or blocked_ | Security |
-| Performance | _Expected scale/load path_ | _Meets latency/resource target_ | Efficiency |
+The canonical detailed structure is generated by:
 
-## Implementation Rules
+\`\`\`bash
+npx the-production-agent-skill task --id <task-id> --title "<title>"
+\`\`\`
 
-- Preserve existing behavior unless a change is explicitly required.
-- Use defensive coding: validate inputs, reject impossible states, keep defaults safe, and treat external systems as unreliable.
-- Apply security first: least privilege, server-side authorization, tenant scoping, secrets protection, dependency hygiene, and safe logs.
-- Build for scale only where the requirement or foreseeable growth justifies it; leave simple extension points without over-engineering.
-- Keep persistence, schema, migrations, seed data, DTOs, tests, and docs synchronized.
-- Prefer async workflows, queues, caches, replicas, sharding, regional routing, or specialized data systems only when the non-functional requirements justify their complexity.
-- Add observability for critical paths, failures, retries, queues, security events, and business state transitions.
-
-## Final Review And Report
-
-After development, report:
-
-- What changed and what the new code means for the system.
-- Side effects introduced, compatibility changes, and how the system evolved.
-- Critical code paths created or changed that need human review.
-- Deployment, migration, rollback, production data, and operational risks.
-- Test results in table form:
-
-| Check | Command Or Method | Result | Notes |
-| --- | --- | --- | --- |
-| Unit | _command_ | _pass/fail/not run_ | _summary_ |
-| Integration | _command_ | _pass/fail/not run_ | _summary_ |
-| Security | _command_ | _pass/fail/not run_ | _summary_ |
-| Build | _command_ | _pass/fail/not run_ | _summary_ |
-
-- Remaining risks, follow-ups, and recommended monitoring after release.
-`
-,
+Do not copy lifecycle rules into project prompts. Keep them canonical in \`instructions.md\`; put task evidence in the generated implementation guide and durable project decisions in the appropriate harness files.
+`,
   "harness/skills.md": `# Skills Registry
 
 This file is the source of truth for project skill commands. A skill is valid only when it is listed here and its referenced file exists under harness/skills/.
 
-When the user sends a command matching pag-{{skill-name}}, read this registry, confirm the matching row, read the referenced skill file, ask any required preflight questions, and follow that skill workflow before doing the work.
+When the user sends a command matching pag-{{skill-name}}, run the mandatory six-stage lifecycle from the base guide and load the matching skill as additional specialized instructions. Create or resume the task implementation guide before skill work, record the selected skill and applicable rule IDs, and keep stage evidence in that guide. A skill never replaces Rewrite, Planning, Implementation, Evaluation, Feedback, or Iteration.
 
 ## Skills
 
@@ -1008,19 +1023,114 @@ Ask only when safety cannot be determined from the repository:
 `
 };
 
+function createTaskGuideTemplate({ taskId, title }) {
+  return `# Implementation Guide: ${title}
+
+## Metadata
+
+- Task ID: \`${taskId}\`
+- Status: rewrite
+- Current stage: Rewrite
+- Risk level: TBD
+- Strictness: TBD
+
+## Initial Request
+
+_Record the request verbatim when safe and concise, otherwise write a faithful summary._
+
+## Refined Working Prompt
+
+_Write the researched, product-aware working prompt before planning._
+
+## Context And Evidence
+
+| Source | Why consulted | Material findings | Freshness or limits |
+| --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD |
+
+## Product And Task Understanding
+
+_Describe users, current behavior, desired outcome, product direction, success criteria, constraints, dependencies, risks, and relevant non-functional needs._
+
+## Scope, Non-Goals, Assumptions, And Open Questions
+
+### Scope
+
+- TBD
+
+### Non-Goals
+
+- TBD
+
+### Assumptions
+
+- TBD
+
+### Open Questions
+
+- TBD
+
+## Task Classification And Rule Register
+
+Task classes: TBD
+
+| Rule ID | Source | Why it applies | Planned evidence | Status |
+| --- | --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD | Selected |
+
+## Architecture And Design Decisions
+
+_Describe the expected system, boundaries, data flow, patterns, alternatives, tradeoffs, security, reliability, operability, rollout, and rollback._
+
+## Implementation Plan And Change Map
+
+| Order | Change | Files or systems | Dependencies | Verification |
+| ---: | --- | --- | --- | --- |
+| 1 | TBD | TBD | TBD | TBD |
+
+## Test And Evaluation Matrix
+
+| Requirement or risk | Test level | Method or command | Expected evidence |
+| --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD |
+
+## Implementation Log
+
+_Record material changes, decisions, deviations, focused checks, and changed files while implementing._
+
+## Evaluation Evidence
+
+| Requirement | Evidence or command | Result | Notes |
+| --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD |
+
+## Feedback Report
+
+_Summarize what changed, why, system impact, critical review paths, verification, deployment/rollback considerations, manual checks, and incomplete work._
+
+## Iteration, Harness Updates, Residual Risks, And Follow-Ups
+
+_Record evaluation-driven fixes, re-evaluation, durable harness updates, deferred work, residual risks, and final completion status._
+`;
+}
+
 function printHelp() {
   console.log(`The Production Agent Skill
 
 Usage:
   the-production-agent-skill init [--dry-run] [--root <path>]
   the-production-agent-skill doctor [--root <path>] [--package-root <path>] [--package-only]
+  the-production-agent-skill task --id <task-id> [--title <title>] [--root <path>]
+  the-production-agent-skill verify-task --id <task-id> [--stage <stage>] [--root <path>]
   the-production-agent-skill recommend [--root <path>] [--agent <name>]
   the-production-agent-skill snippet
   the-production-agent-skill help
 
 Commands:
   init      Create missing harness files and security scripts without overwriting existing files.
-  doctor    Check framework package files, downstream guide files, and security scripts.
+  doctor    Check package files, numbered rulebooks, downstream guide files, and security scripts.
+  task      Create a non-destructive six-stage task implementation guide.
+  verify-task Check required task-guide sections through a lifecycle stage.
   recommend Suggest high-value skills, plugins, and automations for the project and agent surface.
   snippet   Print an activation snippet for AGENTS.md or equivalent agent rules files.
 `);
@@ -1033,7 +1143,10 @@ function parseArgs(argv) {
     root: process.cwd(),
     packageRoot,
     packageOnly: false,
-    agent: "unknown"
+    agent: "unknown",
+    taskId: "",
+    title: "",
+    stage: "complete"
   };
 
   for (let index = 3; index < argv.length; index += 1) {
@@ -1067,6 +1180,24 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === "--id") {
+      args.taskId = argv[index + 1] ?? "";
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--title") {
+      args.title = argv[index + 1] ?? "";
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--stage") {
+      args.stage = (argv[index + 1] ?? "").toLowerCase();
+      index += 1;
+      continue;
+    }
+
     fail(`Unknown option: ${arg}`);
   }
 
@@ -1079,7 +1210,7 @@ function fail(message) {
 }
 
 function snippet() {
-  console.log(`Prior to initiating any coding task, you must first access, read and strictly comply with all requirements outlined in \`node_modules/the-production-agent-skill/instructions.md\`. This file serves as the official operational directive for the AI coding agent and must be followed in its entirety without omission. After completing the review of the core guide, proceed to load and integrate all project-specific rules contained within the \`harness/\` directory. All rules specified in both the core guide and project-specific guides are binding contractual requirements that must be fully adhered to in all applicable scenarios. Under no circumstances may any rule be skipped, disregarded, or incompletely implemented. You are required to validate compliance with every relevant rule before executing any coding work and during first review to ensure full alignment with the established standards. When the user sends a skill command such as \`pag-review\`, \`pag-optimise\`, \`pag-security\`, \`pag-deployment\`, \`pag-guide\`, \`pag-discovery\`, \`pag-compare\`, \`pag-shield\`, \`pag-idea\`, \`pag-automations\`, or \`pag-git-assist- {{git-command:with_options}}\`, you must follow the \`Skill Commands\` workflow in \`instructions.md\`: read \`harness/skills.md\`, verify and read the referenced file in \`harness/skills/\`, ask required preflight questions, and execute the skill workflow as binding guidance. When the user says \`Update harness\` or a clear variant, you must follow the \`Update Harness Command\` workflow in \`instructions.md\`: inspect the project and harness, brief the user on planned updates, wait for agreement, update this harness library to the latest allowed version when package-managed, update project memory, cache important official library documentation, strengthen local agent instructions, add useful automation where appropriate, keep skill registry and skill files synchronized, verify the changes, and provide a comprehensive report.`);
+  console.log(`For every project task, read and follow \`node_modules/the-production-agent-skill/instructions.md\`. Treat the user's initial prompt as authoritative intent but incomplete implementation input. Before implementation, create or resume \`harness/planning-notes/<task-id>/implementation-guide.md\`; research the product, current repository, relevant harness and task memory, available agent memory, applicable numbered rulebooks, tools, and current official sources when needed; then write the refined working prompt and implementation-ready plan there. Run all six stages—Rewrite, Planning, Implementation, Evaluation, Feedback, and Iteration—at a depth proportional to risk, but never skip a stage. Take enough time to infer the right rules and architecture instead of optimizing for speed. Record selected \`PAG-*\` rule IDs and evidence, keep affected living harness docs synchronized, preserve unrelated user work, and do not claim completion until evaluation covers the refined goal. Use \`npx the-production-agent-skill task --id <task-id> --title "<title>"\` to create the task guide and \`verify-task --id <task-id> --stage <stage>\` to validate stage evidence. When a \`pag-*\` skill is invoked, load its registry entry and skill file in addition to this lifecycle. When the user explicitly requests \`Update harness\`, follow the numbered harness-maintenance rules in \`instructions.md\`.`);
 }
 
 function init({ root, dryRun }) {
@@ -1123,6 +1254,252 @@ function init({ root, dryRun }) {
   }
 }
 
+function validateRulebooks(guideRoot) {
+  const issues = [];
+  const seenIds = new Map();
+  const seenRules = new Map();
+  const ruleEntries = [];
+  const rulePattern = /`?\[(PAG-[A-Z]+-\d{3})\] \[(MUST|SHOULD|MAY)\]`? ([^\n]+)/g;
+  const stopWords = new Set(
+    "the a an and or to of in for with when where that this it as by from is are be been before after only every must should may do not use keep treat make define ensure relevant project task work behavior rules rule".split(
+      " "
+    )
+  );
+
+  for (const file of rulebookFiles) {
+    const absolutePath = join(guideRoot, file);
+    if (!existsSync(absolutePath)) continue;
+
+    const content = readFileSync(absolutePath, "utf8");
+    const lines = content.split("\n");
+
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      const idsOnLine = line.match(/PAG-[A-Z]+-\d{3}/g) ?? [];
+      for (const id of idsOnLine) {
+        if (!/\b(MUST|SHOULD|MAY)\b/.test(line)) {
+          issues.push(`${file}:${index + 1} gives ${id} no rule strength`);
+        }
+        if (seenIds.has(id)) {
+          issues.push(`${file}:${index + 1} duplicates rule ID ${id} from ${seenIds.get(id)}`);
+        } else {
+          seenIds.set(id, `${file}:${index + 1}`);
+        }
+      }
+
+      if (
+        /\b(must|must not|should|should not|never|do not|always|required|may not)\b/i.test(line) &&
+        idsOnLine.length === 0 &&
+        !/^#/.test(line) &&
+        !/^\| Rule ID \|/.test(line)
+      ) {
+        issues.push(`${file}:${index + 1} has unnumbered normative language`);
+      }
+
+      if (
+        /^- /.test(line) &&
+        !/^- `?\[PAG-[A-Z]+-\d{3}\] \[(MUST|SHOULD|MAY)\]`? /.test(line)
+      ) {
+        issues.push(`${file}:${index + 1} has an unnumbered top-level rule`);
+      }
+    }
+
+    for (const match of content.matchAll(rulePattern)) {
+      const [, id, , text] = match;
+      const normalized = text
+        .toLowerCase()
+        .replace(/`[^`]+`/g, "<code>")
+        .replace(/[^a-z0-9<>\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (normalized.length >= 45 && seenRules.has(normalized)) {
+        issues.push(`${file} duplicates rule text from ${seenRules.get(normalized)}: ${id}`);
+      } else {
+        seenRules.set(normalized, `${file} (${id})`);
+      }
+
+      const tokens = new Set(
+        text
+          .toLowerCase()
+          .replace(/`[^`]+`/g, " ")
+          .replace(/[^a-z0-9 ]/g, " ")
+          .split(/\s+/)
+          .filter((token) => token.length > 2 && !stopWords.has(token))
+      );
+      ruleEntries.push({ file, id, text, tokens });
+    }
+  }
+
+  for (let left = 0; left < ruleEntries.length; left += 1) {
+    for (let right = left + 1; right < ruleEntries.length; right += 1) {
+      const first = ruleEntries[left];
+      const second = ruleEntries[right];
+      let intersection = 0;
+      for (const token of first.tokens) {
+        if (second.tokens.has(token)) intersection += 1;
+      }
+      if (intersection < 8) continue;
+      const union = new Set([...first.tokens, ...second.tokens]).size;
+      const similarity = union === 0 ? 0 : intersection / union;
+      if (similarity >= 0.78) {
+        issues.push(
+          `${second.file} (${second.id}) is a likely semantic duplicate of ${first.file} (${first.id}); similarity ${similarity.toFixed(2)}`
+        );
+      }
+    }
+  }
+
+  const obsoleteConflictPatterns = [
+    ["read every harness file", /read (all|every) (current )?`?harness/i],
+    ["all rules apply to every task", /all rules .* every task/i],
+    ["speed-first execution", /prioriti[sz]e speed|speed is the priority/i],
+    ["hardcoded default stack", /the default (backend |frontend )?stack is/i],
+    ["hardcoded Safari mandate", /use safari when a browser choice/i]
+  ];
+  for (const file of rulebookFiles) {
+    const absolutePath = join(guideRoot, file);
+    if (!existsSync(absolutePath)) continue;
+    const content = readFileSync(absolutePath, "utf8");
+    for (const [label, pattern] of obsoleteConflictPatterns) {
+      if (pattern.test(content)) issues.push(`${file} retains conflicting guidance: ${label}`);
+    }
+  }
+
+  const corePath = join(guideRoot, "instructions.md");
+  if (existsSync(corePath)) {
+    const core = readFileSync(corePath, "utf8");
+    for (const stage of ["Rewrite", "Planning", "Implementation", "Evaluation", "Feedback", "Iteration"]) {
+      if (!core.includes(`### Stage ${["Rewrite", "Planning", "Implementation", "Evaluation", "Feedback", "Iteration"].indexOf(stage) + 1}: ${stage}`)) {
+        issues.push(`instructions.md is missing lifecycle stage: ${stage}`);
+      }
+    }
+  }
+
+  const readmePath = join(guideRoot, "README.md");
+  if (existsSync(readmePath)) {
+    const readme = readFileSync(readmePath, "utf8");
+    for (const file of requiredProjectFiles) {
+      if (!readme.includes(`\`${file}\``)) {
+        issues.push(`README.md does not list required scaffold file: ${file}`);
+      }
+    }
+    for (const command of ["task --id", "verify-task --id"]) {
+      if (!readme.includes(command)) issues.push(`README.md does not document CLI command: ${command}`);
+    }
+  }
+
+  for (const file of requiredGuideFiles) {
+    if (typeof templates[file] !== "string") {
+      issues.push(`CLI template is missing for required guide file: ${file}`);
+    }
+  }
+
+  return { issues, ruleCount: seenIds.size };
+}
+
+function assertTaskId(taskId) {
+  if (!/^\d{8}-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(taskId)) {
+    fail("Task ID must use YYYYMMDD-short-kebab-slug.");
+  }
+}
+
+function createTask({ root, taskId, title }) {
+  assertTaskId(taskId);
+  const taskTitle = title.trim() || taskId.slice(9).replaceAll("-", " ");
+  const path = join(root, "harness", "planning-notes", taskId, "implementation-guide.md");
+
+  if (existsSync(path)) {
+    fail(`Task guide already exists and was not overwritten: ${path}`);
+  }
+
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, createTaskGuideTemplate({ taskId, title: taskTitle }), { flag: "wx" });
+  console.log(`Created: ${path}`);
+  console.log("Next: complete Rewrite, then run verify-task --stage rewrite.");
+}
+
+function getSection(content, heading) {
+  const marker = `## ${heading}`;
+  const start = content.indexOf(marker);
+  if (start === -1) return null;
+  const bodyStart = start + marker.length;
+  const next = content.indexOf("\n## ", bodyStart);
+  return content.slice(bodyStart, next === -1 ? content.length : next).trim();
+}
+
+function hasMeaningfulTaskContent(body) {
+  if (!body) return false;
+  const meaningful = body
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !line.startsWith("_"))
+    .filter((line) => !/^\|?[-:|\s]+\|?$/.test(line))
+    .filter((line) => !/^(\| )?(Source|Rule ID|Requirement|Order|Task ID)/.test(line))
+    .filter((line) => !/^(### (Scope|Non-Goals|Assumptions|Open Questions)|- TBD|Task classes: TBD|\| TBD)/.test(line));
+  return meaningful.length > 0;
+}
+
+function verifyTask({ root, taskId, stage }) {
+  assertTaskId(taskId);
+  const requiredSections = taskStageSections[stage];
+  if (!requiredSections) {
+    fail(`Unknown stage "${stage}". Use rewrite, planning, implementation, evaluation, feedback, iteration, or complete.`);
+  }
+
+  const path = join(root, "harness", "planning-notes", taskId, "implementation-guide.md");
+  if (!existsSync(path)) fail(`Task guide not found: ${path}`);
+  const content = readFileSync(path, "utf8");
+  const issues = [];
+  const ruleRegister = getSection(content, "Task Classification And Rule Register") ?? "";
+  const selectedRuleIds = new Set(ruleRegister.match(/PAG-[A-Z]+-\d{3}/g) ?? []);
+  const knownRuleIds = new Set();
+  for (const file of rulebookFiles) {
+    const absolutePath = join(packageRoot, file);
+    if (!existsSync(absolutePath)) continue;
+    const matches = readFileSync(absolutePath, "utf8").match(/PAG-[A-Z]+-\d{3}/g) ?? [];
+    for (const id of matches) knownRuleIds.add(id);
+  }
+
+  for (const heading of requiredSections) {
+    const body = getSection(content, heading);
+    if (body === null) {
+      issues.push(`missing section: ${heading}`);
+    } else if (!hasMeaningfulTaskContent(body)) {
+      issues.push(`section still lacks task-specific evidence: ${heading}`);
+    }
+  }
+
+  for (const namespace of taskStageRuleNamespaces[stage]) {
+    const prefix = `PAG-${namespace}-`;
+    if (![...selectedRuleIds].some((id) => id.startsWith(prefix))) {
+      issues.push(`rule register lacks an applicable ${prefix}* rule`);
+    }
+  }
+
+  for (const id of selectedRuleIds) {
+    if (!knownRuleIds.has(id)) issues.push(`rule register references unknown package rule: ${id}`);
+  }
+
+  if (stage === "complete") {
+    if (!/^- Status: complete$/im.test(content)) issues.push("Metadata Status must be complete");
+    if (!/^- Current stage: (Iteration|Complete)$/im.test(content)) {
+      issues.push("Metadata Current stage must be Iteration or Complete");
+    }
+  }
+
+  if (issues.length > 0) {
+    console.log(`Task guide: incomplete for ${stage}`);
+    for (const issue of issues) console.log(`  - ${issue}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log(`Task guide: ${stage} evidence present`);
+  console.log(`  - ${path}`);
+}
+
 function doctor({ root, packageRoot: guideRoot, packageOnly }) {
   const missingPackageFiles = packageFiles.filter((file) => !existsSync(join(guideRoot, file)));
   const missingCustomFiles = packageOnly
@@ -1138,6 +1515,14 @@ function doctor({ root, packageRoot: guideRoot, packageOnly }) {
     }
   }
 
+  const ruleValidation = validateRulebooks(guideRoot);
+  if (ruleValidation.issues.length === 0) {
+    console.log(`Rule framework: ok (${ruleValidation.ruleCount} numbered rules)`);
+  } else {
+    console.log("Rule framework: invalid");
+    for (const issue of ruleValidation.issues) console.log(`  - ${issue}`);
+  }
+
   if (packageOnly) {
     console.log("harness: skipped");
   } else if (missingCustomFiles.length === 0) {
@@ -1149,7 +1534,11 @@ function doctor({ root, packageRoot: guideRoot, packageOnly }) {
     }
   }
 
-  if (missingPackageFiles.length > 0 || missingCustomFiles.length > 0) {
+  if (
+    missingPackageFiles.length > 0 ||
+    missingCustomFiles.length > 0 ||
+    ruleValidation.issues.length > 0
+  ) {
     process.exitCode = 1;
   }
 }
@@ -1202,6 +1591,8 @@ function recommend({ root, agent }) {
   console.log("");
   console.log("## Highest-Value Setup");
   console.log("");
+  console.log("- Require a task implementation guide for every project task and validate lifecycle evidence with verify-task.");
+  console.log("- Add task-guide verification to the project's review or CI workflow when task IDs are available to automation.");
   console.log("- Enable pag-review for focused reviews with clear scope, impact, and evidence.");
   console.log("- Enable pag-optimise for KPI-driven performance, cost, reliability, UX, and maintainability work.");
   console.log("- Enable pag-security and pag-shield for threat modeling, abuse prevention, privacy, and supply-chain hardening.");
@@ -1246,6 +1637,12 @@ switch (args.command) {
     break;
   case "doctor":
     doctor(args);
+    break;
+  case "task":
+    createTask(args);
+    break;
+  case "verify-task":
+    verifyTask(args);
     break;
   case "recommend":
     recommend(args);
