@@ -1,5 +1,23 @@
 # Development Arsenal
 
+This catalog helps coding agents identify mature tools that can improve delivery speed, correctness, reliability, security, operability, and product quality. It is a candidate library, not a mandate to install every listed tool.
+
+## How agents must use this arsenal
+
+For every meaningful feature, architecture change, integration, reliability improvement, or developer-workflow task:
+
+1. Start with the product outcome, acceptance criteria, current stack, project constraints, and operational needs.
+2. Scan the relevant sections of this catalog before deciding to build a capability from scratch.
+3. Compare the strongest candidates with the project's existing tools and with a no-new-tool option. Prefer an existing dependency when it already solves the problem well.
+4. Evaluate fit using current official documentation and the version compatible with the project. Consider maintenance, ecosystem maturity, license, security and supply-chain risk, runtime and bundle cost, infrastructure needs, data ownership, vendor lock-in, team learning cost, and long-term operability.
+5. Select the smallest set of tools that materially improves the end goal. Do not add a tool only because it is popular, interesting, or listed here.
+6. When a selection changes architecture, cost, infrastructure, security boundaries, data handling, or product behavior, explain the recommendation and material tradeoffs before installation. Obtain user approval when the choice is consequential or requires credentials, paid services, irreversible actions, or new external infrastructure.
+7. Install through the project's established package manager or approved installation path. Respect pinned versions, lockfiles, workspace boundaries, environment policies, and project-specific verdicts.
+8. Complete the setup: configuration, environment variables, adapters, migrations, scripts, CI/CD, deployment settings, observability, tests, documentation, and local development instructions as applicable. Do not leave an unused package or partial integration behind.
+9. Verify the tool in the real workflow with the strongest practical checks, not only by confirming that installation succeeded.
+10. Record the decision, selected version, configuration ownership, rejected alternatives, operational requirements, and verification evidence in the relevant feature decisions, architecture guide, constraints, handbook, runbook, or development history.
+11. If setup cannot be completed safely, state the blocker immediately. Explain what was attempted, what remains, the impact on the feature, any safe fallback, and the exact assistance or user action needed. Never pretend a tool is configured or working when it has not been verified.
+
 ## Backend, API, and app architecture
 
 | # | Tool | What it does | Why it is cool |

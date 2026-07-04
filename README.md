@@ -10,6 +10,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **360 feature development:** agents look beyond the immediate prompt and surface edge cases, failure modes, negative paths, abuse cases, scale concerns, and future integrations.
 - **Better planning:** agents clarify ambiguity, research current framework/library practices, compare options, and lock an implementation plan before high-impact work.
 - **Packaged library references:** agents check matching files in `docs/` for in-depth library APIs and capabilities before implementing against supported libraries.
+- **Development arsenal:** agents scan a packaged catalog of proven tools, compare candidates against the current stack and a no-new-tool option, then fully install, configure, document, and verify only the tools that materially improve the product outcome.
 - **Living project memory:** agents maintain PRDs, functional requirements, architecture notes, runbooks, deployment/CI/workflow books, dictionaries, incident and observability books, task history, verdicts, and file maps in a dedicated project guide folder.
 - **Feature-level docs:** substantial features get their own `harness/features/<feature-name>/` folders with PRD, FRD, SystemsArchitecture, tasks, workflow, runbook, observability, and decision docs.
 - **Strictness levels:** projects can choose `advisory`, `standard`, or `strict` in `harness/verdicts.md`; strict mode requires full precautions, docs, KPI capture, tests, security review, rollout/rollback notes, and explicit risk acceptance for skipped safeguards.
@@ -151,13 +152,15 @@ For larger tasks, the agent should:
 2. Detect skill commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, and `pag-git-assist- ...`; load `harness/skills.md` and the referenced file in `harness/skills/` before acting.
 3. Classify the task as backend, frontend, mobile, full-stack, QA, infrastructure, documentation, or browser/computer-use.
 4. Read the relevant code, living docs, and matching packaged `docs/` library reference files before acting.
-5. Clarify ambiguous intent and surface useful feature improvements.
-6. Research current library/framework practices when useful or when no matching packaged docs file exists.
-7. Propose a plan with options and tradeoffs, including reusable open-source or standards-based options when complex rules or architecture patterns are involved.
-8. Include the chosen approach, expected system structure, engineering norms, safeguards, non-functional assumptions, and a table of planned tests for meaningful work.
-9. Implement with production-grade architecture, tests, telemetry, KPI-aware scale assumptions, and docs.
-10. Run a final cross-check for regressions, security, accessibility, reliability, supply-chain risk, and product fit.
-11. Update living docs, using Mermaid diagrams, tables, checklists, and clear procedures where they improve comprehension, then provide a concise review with test results, system impact, side effects, rollback notes, and critical code paths for human review.
+5. For meaningful implementation or architecture work, consult `arsenals/development-arsenals.md`, compare suitable tools with the existing stack and a no-new-tool option, and select only tools that materially improve the end goal.
+6. Clarify ambiguous intent and surface useful feature improvements.
+7. Research current library/framework practices when useful or when no matching packaged docs file exists.
+8. Propose a plan with options and tradeoffs, including reusable open-source or standards-based options when complex rules or architecture patterns are involved.
+9. Include the chosen approach, expected system structure, engineering norms, safeguards, non-functional assumptions, tool setup and ownership when relevant, and a table of planned tests for meaningful work.
+10. Implement with production-grade architecture, tests, telemetry, KPI-aware scale assumptions, and docs. Fully configure and verify selected tools instead of stopping after package installation.
+11. State blockers early and name the exact assistance, credential, approval, environment change, or decision needed to finish safely.
+12. Run a final cross-check for regressions, security, accessibility, reliability, supply-chain risk, and product fit.
+13. Update living docs, using Mermaid diagrams, tables, checklists, and clear procedures where they improve comprehension, then provide a concise review with test results, system impact, side effects, rollback notes, and critical code paths for human review.
 
 When the user says `Update harness` or a clear variant, the agent must run the dedicated harness-growth workflow from `instructions.md`. It inspects the project, package manifests, current harness, activation files, docs, scripts, tools, skills, and codebase; identifies important direct frameworks and platform libraries; briefs the user and waits for agreement; updates `the-production-agent-skill` to the latest allowed package-managed version when applicable; caches full relevant official textual docs under `harness/libraries-documentations/`; self-heals missing or weak agent rules outside `harness/verdicts.md`; adds useful automation, templates, reports, MCP/tool guidance, skill workflows, and workflow safeguards; keeps `harness/skills.md` synchronized with `harness/skills/`; records deferred work in `harness/tasks.md`; verifies the updates; and reports exactly what changed and how to use it.
 
@@ -186,6 +189,7 @@ When package rules conflict with project rules, the agent should ask for a decis
 - `frontend/frontend-rules.md`: frontend and product interface engineering rules.
 - `mobile/react-native-rules.md`: React Native, Expo, native mobile, offline, accessibility, performance, security, testing, app-store, and release engineering rules.
 - `computer-use/computer-use-agent-rules.md`: browser/computer-use safety guidance.
+- `arsenals/development-arsenals.md`: curated tool catalog plus the selection, installation, setup, documentation, verification, and assistance workflow.
 - `docs/`: packaged library API and capability references, including React Native, Expo, Expo Application Services, the React Native ecosystem, NestJS, and TypeORM.
 - `scripts/supply-chain-audit.mjs`: dependency vulnerability and supply-chain behavior check scaffolded into downstream projects by `init`.
 

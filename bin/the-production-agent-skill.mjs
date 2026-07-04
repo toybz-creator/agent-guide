@@ -60,6 +60,7 @@ const packageFiles = [
   "frontend/frontend-rules.md",
   "mobile/react-native-rules.md",
   "computer-use/computer-use-agent-rules.md",
+  "arsenals/development-arsenals.md",
   "docs",
   "scripts/supply-chain-audit.mjs",
   "scripts/codebase-consistency-codemod.mjs",

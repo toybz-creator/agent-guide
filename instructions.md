@@ -23,6 +23,7 @@ This package contains reusable base rules:
 - `frontend/frontend-rules.md`: frontend architecture, UI, accessibility, state, data, and product experience rules.
 - `mobile/react-native-rules.md`: React Native, Expo, native mobile architecture, accessibility, offline, performance, testing, store, and release rules.
 - `computer-use/computer-use-agent-rules.md`: browser and computer-use safety rules.
+- `arsenals/development-arsenals.md`: curated development-tool candidates and the mandatory workflow for evaluating, selecting, installing, configuring, and verifying them.
 - `docs/`: packaged library API and capability references. These files help agents use supported frameworks and libraries deeply and correctly.
 
 Do not edit the base guide for project-specific behavior. Keep local customization in `harness/`.
@@ -191,6 +192,7 @@ Before starting a task:
 - Load `mobile/react-native-rules.md` together with frontend rules for React Native, Expo, Android, iOS, native modules, mobile UI, device capabilities, app stores, or OTA update work.
 - Load both backend and frontend rules for full-stack tasks or when the task layer is unclear.
 - Load computer-use rules for browser automation, UI testing, screenshots, or desktop interactions.
+- For meaningful features, architecture decisions, integrations, reliability work, or developer-workflow changes, read the usage workflow and relevant categories in `arsenals/development-arsenals.md` before deciding whether to build a capability from scratch or adopt a tool.
 - Check the packaged `docs/` folder for library references that match the task before implementing with that library.
 - Read the touched code paths before changing them.
 - Check `verdicts.md` for project-specific preferences before asking repeat questions.
@@ -316,6 +318,27 @@ If `verdicts.md` says web research is automatic, use it. If it says optional, as
 
 When a project opts in to cached library documentation, store documentation under `harness/libraries-documentations/<library-name>/`. Outside the `Update harness` workflow, pull only the useful HTML/text content needed for the task and save it as Markdown. During `Update harness`, follow the fuller documentation-cache requirements in the `Update Harness Command` section. Do not download entire websites, asset bundles, or irrelevant dependencies.
 
+### 5b. Evaluate And Use The Development Arsenal
+
+For every meaningful feature implementation, architecture change, integration, reliability improvement, or developer-workflow task, actively decide whether a proven tool would improve the outcome. Do not default to custom code when a mature solution fits, and do not add dependencies merely because they appear in the arsenal.
+
+Follow this workflow:
+
+1. Define the capability needed from the product goal, acceptance criteria, current architecture, non-functional targets, constraints, and expected operating model.
+2. Inspect the project's manifests, lockfiles, existing dependencies, infrastructure, adapters, conventions, and project verdicts. Prefer an existing approved tool when it already meets the need.
+3. Read the usage rules and scan the relevant categories in `arsenals/development-arsenals.md`. Compare a small shortlist against the no-new-tool and custom-build options.
+4. Verify candidates against the installed stack and current official documentation. Evaluate functionality, compatibility, maintenance, release stability, ecosystem maturity, license, security and supply-chain posture, install scripts, bundle/runtime cost, infrastructure needs, data handling, privacy, vendor lock-in, migration and rollback cost, team learning cost, and operational ownership.
+5. Choose the smallest toolset that materially improves delivery, correctness, reliability, security, observability, maintainability, or user experience. Explain why rejected candidates or custom code fit less well when the decision is material.
+6. Before installation, ask for user alignment if the choice changes architecture, recurring cost, infrastructure, security or trust boundaries, data residency, external vendors, product behavior, or operational ownership. Always ask when credentials, paid plans, destructive changes, privileged access, or irreversible provisioning are required.
+7. Install through the repository's established package manager or approved installation mechanism. Use a compatible, deliberate version; update the correct manifest and lockfile; respect monorepo/workspace boundaries; and review lifecycle scripts or binary downloads before allowing them.
+8. Finish the integration. Add every applicable configuration value, typed environment contract, project-owned adapter, initialization path, migration, script, CI job, deployment setting, permission, timeout, retry policy, telemetry signal, test, runbook step, and developer setup instruction. Never report a package-only install as a completed tool integration.
+9. Exercise the tool through the feature's real path. Run focused unit or integration checks, smoke tests, builds, security/audit checks, failure-path checks, and deployment or local-runtime verification as applicable. Confirm both successful behavior and safe failure behavior.
+10. Remove exploratory dependencies, unused configuration, and abandoned scaffolding from rejected candidates. Do not leave multiple overlapping tools or dead setup behind.
+11. Record the chosen tool and version, purpose, decision rationale, rejected alternatives, configuration and credential ownership, operational duties, update strategy, rollback/removal path, and verification evidence in the relevant feature `decisions.md`, architectural guide, constraints, handbook, runbook, development history, or task file.
+12. If any part cannot be completed safely, tell the user as soon as the blocker is known. State the exact step that is blocked, evidence or error, what was attempted, impact, safe fallback, residual risk, and the specific assistance, credential, approval, environment change, or decision needed. Keep the repository in a coherent state and never imply the tool works without verification.
+
+The arsenal is a discovery aid, not an exhaustive or automatically trusted allowlist. A tool not listed there may be selected when evidence shows it is a better fit. A listed tool may be rejected when it conflicts with project constraints or a safer, simpler option exists.
+
 ### 6. Plan
 
 Before significant implementation, propose a practical plan:
@@ -328,6 +351,7 @@ Before significant implementation, propose a practical plan:
 - test strategy
 - docs to update
 - rollout, migration, or compatibility notes
+- tool or library decisions, including the no-new-tool option, installation/configuration scope, and operational ownership when relevant
 
 The plan must make the direction reviewable before code changes. Include:
 
@@ -352,6 +376,8 @@ Implementation rules:
 - Prefer clear, boring, maintainable code over cleverness.
 - Use framework-native APIs deeply and correctly.
 - Use mature libraries with high value and good ecosystem fit.
+- When the development-arsenal workflow selects a tool, install and configure it completely across code, manifests, lockfiles, environments, CI/CD, deployment, observability, tests, and documentation wherever applicable.
+- Do not confuse dependency installation with feature completion. A selected tool is complete only when the product path uses it correctly and verification proves the integration works.
 - For greenfield work, choose current stable framework/library versions unless project constraints, compatibility, or risk require a pinned older version. Record the reason for non-current choices.
 - Actively leverage high-quality official and community/ecosystem libraries when they materially improve feature completeness, reliability, maintainability, security, observability, or product polish.
 - Prefer feature/domain structure where related code lives together.
@@ -436,6 +462,8 @@ After each task, provide:
 - critical code paths that deserve human review, especially edge cases, failure handling, core business rules, security boundaries, data migrations, infrastructure permissions, and points of failure
 - verification run and results
 - test results in table form for meaningful work, including command or method, result, and notes
+- tools evaluated, selected, rejected, installed, configured, or removed; include the decision rationale and operational impact when relevant
+- any incomplete tool setup or blocker, including the exact assistance, credential, approval, environment change, or decision still needed
 - manual test instructions
 - docs updated
 - remaining concerns or follow-ups
