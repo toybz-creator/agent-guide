@@ -21,6 +21,7 @@ This package contains reusable base rules:
 - `instructions.md`: task lifecycle, documentation policy, safety rules, and quality framework.
 - `backend/backend-rules.md`: backend architecture, APIs, data, reliability, and service rules.
 - `frontend/frontend-rules.md`: frontend architecture, UI, accessibility, state, data, and product experience rules.
+- `mobile/react-native-rules.md`: React Native, Expo, native mobile architecture, accessibility, offline, performance, testing, store, and release rules.
 - `computer-use/computer-use-agent-rules.md`: browser and computer-use safety rules.
 - `docs/`: packaged library API and capability references. These files help agents use supported frameworks and libraries deeply and correctly.
 
@@ -44,6 +45,7 @@ Every project using this framework should have `harness/`. Create missing files 
 - `files-directories.md`: current codebase map grouped by feature/domain with concise descriptions.
 - `backend-handbook.md`: backend architecture, dependencies, modules, data access, service flows, and operations handbook.
 - `frontend-handbook.md`: frontend architecture, dependencies, routes, state, data flows, UI systems, and integration handbook.
+- `mobile-handbook.md`: React Native/Expo versions, supported platforms, native ownership, routes, state, storage, offline behavior, permissions, build profiles, signing, stores, updates, testing, and mobile operations handbook.
 - `environments-cloud-deployments.md`: local/remote environments, cloud infrastructure, secrets, deployment flows, operational notes, and support procedures.
 - `project-product-runbook.md`: product and project operating runbook covering ownership, user journeys, core workflows, support paths, release readiness, and day-to-day operating procedures.
 - `deployment-book.md`: deployment procedures, environment promotion, release gates, rollback, smoke tests, migration order, verification, and emergency deployment handling.
@@ -115,7 +117,7 @@ Follow this workflow:
 
 1. Load the base guide, current `harness/` files, activation files such as `AGENTS.md` or `.cursorrules`, project docs, task notes, scripts, templates, MCP/tool rules, CI/config files, package manifests, lockfiles, and the codebase areas needed to understand the system.
 2. Inspect package and stack manifests, including `package.json`, lockfiles, `pyproject.toml`, `requirements.txt`, `Pipfile`, `poetry.lock`, `go.mod`, `Cargo.toml`, `.csproj`, and equivalent project files when present.
-3. Identify important direct frameworks, platform libraries, and workflow tools only. Examples include Next.js, React, NestJS, Prisma, Flask, Django, FastAPI, Express, Vite, TypeORM, Tailwind, Playwright, Cypress, Jest, Vitest, Docker, Terraform, Kubernetes, and equivalent stack-defining dependencies. Exclude transitive dependencies, tiny utilities, unused packages, and libraries that do not materially change how an agent should build, test, operate, or debug the project.
+3. Identify important direct frameworks, platform libraries, and workflow tools only. Examples include Next.js, React, React Native, Expo, Expo Router, NestJS, Prisma, Flask, Django, FastAPI, Express, Vite, TypeORM, Tailwind, Playwright, Cypress, Jest, Vitest, Docker, Terraform, Kubernetes, and equivalent stack-defining dependencies. Exclude transitive dependencies, tiny utilities, unused packages, and libraries that do not materially change how an agent should build, test, operate, or debug the project.
 4. Before changing files, tell the user what will be updated, what documentation may be downloaded, which harness files or activation files may change, what automation may be added, and what verification will run. Wait for clear user agreement before implementation unless the user already gave explicit approval in the same request.
 5. Pull current official textual documentation for the important libraries that need cached reference material. Capture the full relevant docs set for each selected library, including API references, configuration options, CLI commands, guides, how-tos, integration notes, and version-specific caveats. Save it as structured Markdown under `harness/libraries-documentations/<library-name>/`.
 6. Keep documentation caches useful, not bloated. Do not save asset bundles, images, videos, analytics scripts, duplicated generated pages, irrelevant site chrome, marketing pages, or docs for unimportant dependencies. Each saved docs set must include source URLs, detected package/version when available, retrieval date, and section structure compatible with the packaged `docs/` style.
@@ -186,6 +188,7 @@ Before starting a task:
 - Load relevant harness files from `harness/`.
 - Load `backend/backend-rules.md` for backend, API, database, infrastructure, jobs, events, auth, storage, or service work.
 - Load `frontend/frontend-rules.md` for frontend, product UI, client state, routing, forms, design system, accessibility, or browser-facing work.
+- Load `mobile/react-native-rules.md` together with frontend rules for React Native, Expo, Android, iOS, native modules, mobile UI, device capabilities, app stores, or OTA update work.
 - Load both backend and frontend rules for full-stack tasks or when the task layer is unclear.
 - Load computer-use rules for browser automation, UI testing, screenshots, or desktop interactions.
 - Check the packaged `docs/` folder for library references that match the task before implementing with that library.
@@ -198,6 +201,7 @@ Classify the work as one or more of:
 
 - product requirement
 - frontend
+- mobile
 - backend
 - full-stack
 - database or migration
@@ -299,7 +303,7 @@ When a task touches a framework or library that may have a matching file in this
 Follow this process:
 
 1. Identify relevant libraries from the user request, imports, `package.json`, lockfiles, module names, error messages, stack traces, touched files, and existing code conventions.
-2. Look for matching documentation files under `docs/` using case-insensitive name matching and common aliases. For example, NestJS work should check `docs/NestJS.md`; TypeORM entity, repository, migration, relation, query builder, or data-source work should check `docs/TypeORM.md`.
+2. Look for matching documentation files under `docs/` using case-insensitive name matching and common aliases. For example, NestJS work should check `docs/NestJS.md`; TypeORM entity, repository, migration, relation, query builder, or data-source work should check `docs/TypeORM.md`; React Native or Expo work should check `docs/ReactNative.md`, `docs/Expo.md`, `docs/ExpoApplicationServices.md`, and `docs/ReactNativeEcosystem.md` as applicable.
 3. Read the matching docs sections that cover the API, feature, decorator, configuration option, CLI command, or integration being used. Do not rely on memory alone when a packaged docs file exists.
 4. Apply the documented library capabilities through the project's established architecture and overrides. The packaged docs describe available APIs; they do not override project-specific `harness/` decisions, source code conventions, security rules, or explicit user instructions.
 5. If no matching packaged docs file exists, use official documentation or current package docs when research is needed, then proceed according to the normal research rules.

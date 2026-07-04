@@ -18,7 +18,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Automation recommendations:** the `recommend` CLI command and `pag-automations` skill suggest skills, plugins, hooks, monitors, CI checks, alerts, and agent-specific setup for Codex, Claude, Cursor, Antigravity, and similar tools.
 - **Harness growth command:** agents treat `Update harness` as a binding workflow to refresh project memory, cache important official library docs, strengthen local instructions, and add useful automation.
 - **Safer customization:** teams can override decisions in `harness/verdicts.md` without editing this package.
-- **Stack-specific depth:** backend and frontend rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, and runtime operations.
+- **Stack-specific depth:** backend, web frontend, and React Native/Expo rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, native platforms, app stores, and runtime operations.
 
 ## Install
 
@@ -82,6 +82,7 @@ Required downstream files:
 - `harness/files-directories.md`
 - `harness/backend-handbook.md`
 - `harness/frontend-handbook.md`
+- `harness/mobile-handbook.md`
 - `harness/environments-cloud-deployments.md`
 - `harness/project-product-runbook.md`
 - `harness/deployment-book.md`
@@ -148,7 +149,7 @@ For larger tasks, the agent should:
 
 1. Load base and harness rules.
 2. Detect skill commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, and `pag-git-assist- ...`; load `harness/skills.md` and the referenced file in `harness/skills/` before acting.
-3. Classify the task as backend, frontend, full-stack, QA, infrastructure, documentation, or browser/computer-use.
+3. Classify the task as backend, frontend, mobile, full-stack, QA, infrastructure, documentation, or browser/computer-use.
 4. Read the relevant code, living docs, and matching packaged `docs/` library reference files before acting.
 5. Clarify ambiguous intent and surface useful feature improvements.
 6. Research current library/framework practices when useful or when no matching packaged docs file exists.
@@ -183,8 +184,9 @@ When package rules conflict with project rules, the agent should ask for a decis
 - `instructions.md`: base framework and task lifecycle.
 - `backend/backend-rules.md`: backend and service engineering rules.
 - `frontend/frontend-rules.md`: frontend and product interface engineering rules.
+- `mobile/react-native-rules.md`: React Native, Expo, native mobile, offline, accessibility, performance, security, testing, app-store, and release engineering rules.
 - `computer-use/computer-use-agent-rules.md`: browser/computer-use safety guidance.
-- `docs/`: packaged library API and capability references, such as NestJS and TypeORM.
+- `docs/`: packaged library API and capability references, including React Native, Expo, Expo Application Services, the React Native ecosystem, NestJS, and TypeORM.
 - `scripts/supply-chain-audit.mjs`: dependency vulnerability and supply-chain behavior check scaffolded into downstream projects by `init`.
 
 ## Publishing

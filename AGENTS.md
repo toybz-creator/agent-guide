@@ -17,6 +17,7 @@ Because the package teaches agents how to behave, every change must be unusually
 - `instructions.md`: base operating framework for coding agents. This is the primary behavior document, including the `Update harness` and skill-command workflows.
 - `backend/backend-rules.md`: production backend, API, data, reliability, observability, security, and operations rules.
 - `frontend/frontend-rules.md`: production frontend, UI, accessibility, state, integration, performance, and testing rules.
+- `mobile/react-native-rules.md`: production React Native and Expo architecture, UX, accessibility, native integration, performance, offline, security, testing, store, and release rules.
 - `computer-use/computer-use-agent-rules.md`: browser automation, screenshots, desktop interaction, and UI verification rules.
 - `docs/`: packaged library and framework references for supported stacks such as NextJS, NestJS, React, and TypeORM and so on.
 - `scripts/supply-chain-audit.mjs`: built-in supply-chain audit scaffold copied into downstream projects.
@@ -48,6 +49,7 @@ For this repository, that usually means:
 - Read `instructions.md` when changing global agent behavior.
 - Read `backend/backend-rules.md` when changing backend guidance.
 - Read `frontend/frontend-rules.md` when changing frontend guidance.
+- Read `mobile/react-native-rules.md` when changing React Native, Expo, Android, iOS, mobile, native-module, app-store, or OTA update guidance.
 - Read `computer-use/computer-use-agent-rules.md` when changing browser, desktop, screenshot, or UI verification guidance.
 - Read the matching file under `docs/` before changing packaged library or framework guidance.
 - Read `instructions.md`, `README.md`, and `bin/the-production-agent-skill.mjs` before changing `Update harness`, `pag-*` skill commands, required scaffold files, or activation snippets.

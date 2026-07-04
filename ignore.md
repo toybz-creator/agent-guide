@@ -1,65 +1,50 @@
 
 
-- AI to pull all of the docs of libs listed in package.json, everything, it should see how the existing libs have actually pulled all the APIs and API options and then save it in the docs folder.
 
  - Bring in all the notes from Notion
-
- - Bring in all notes from TickTick
-
- - Create system architecture specs for most features and bring it in
- - Bring in some of the rules from Cal.com
-
-- Add options for strict level. If strict we enforce user to take all precaution, optimisation rules etc
-
-
- - Users are advised and must set KPI, for DB, API response time. Expected endpoint hit rate etc. Agent must ensure to architect and code to meet this KPI, including out of code suggestions for Sharding, Load balancing etc. All these can be done in the terraform doc. 
-
-
-- 
-
-
-- Add skills for : optimisation, security, deployment etc. All skills must ask questions first before dabbling into work
+ - Bring in all of the notes from TickTick 
+ - Bring in all of the notes from Note
 
 - Update, agent update command to: 'agent-guide update'
   Since all agent use command and skills would follow this pattern
 
-- Update harness command should also run an npm update the harness libray too, so we have the up to date version of it
-
-
-- Update Readme of the specif
-
-- Write script to ensure all codebase are monotonous, e.g codemod to change all codebase from "" to '' etc. With appropriate linting/format rule docs etc
-This ensures that we dont have git commits touching unnneeded files just because format rule changes
-
-
 ----
 
 
-
-
-Architecture, runbook, deployment book, ci book, workflow book, dictionary (product/project terms and what it means) and other related docs must use mermaid diagram, tables and any other good UI UX that will make the docs comprehensive
-
-
-
-- Idea command
-
-
-- Use tables and any other good UI UX that will make the docs comprehensive
-
-- Architecture, runbook, deployment book, ci book, workflow book, dictionary (product/project terms and what it means) and other related docs must use mermaid diagram, tables and any other good UI UX that will make the docs comprehensive
-
-
-- Workflow to manage local- non git files efficiently
-
-
-- commit, push, pull, pr stage workflow to parse, format, lint, ensure that no rules are broken, checks workflow, check that operation is okay (wont cause even sligh havock), can manage conflicts well etc etc right from the agent interface
-
-
 - integration  integration, skills, uninvoked suggestion  for  with github and co mcp and agent
-
 - integration, skills, uninvoked suggestion  for live logs and metrics, bugs etc
-
-
 - uninvoked project/product/system monitor. checks all envs, github, logs, etc etc every 30mins and if there is something of worth, sends a message to the team and a ready to go fix if needed
 
-- Use y
+- Add rule to infer,dedcue  golden rules that must be followed on a project basis. This is because rule book and co, can get large 
+
+
+- In AscentFin, template should no regressions etc
+
+
+
+
+## For Agent Guide
+
+- guidiance and step on how to digest rules :
+  - Rewrite stage: Codex memory, Project memmory, task book, prompt,  related rule books and web, infer and come up with guiding rules and end goal. 
+  - Planning stage: Base on rule, deduce system architecture and implmentation plan, plus how ro achieve goal
+  - Implementation stage: Follow the plan, implement the system, and monitor the system to ensure it is working as expected.
+  - Evaluation stage: Evaluate the system, and make sure it is meeting the end goal. Using unit, integration, e2e and manual testing.
+  - Feedback stage: Write a comprehensive report on whats done
+  - Iteration stage: Iterate the system, and continue to improve it.
+
+- rule that for all or any tasks, it should pick the right rule from the rule books. Turn formulate rules to guide that task to completion. 
+- rule that it should note that it should consider codex memomery, project memory, harness, turn fine tune to create plan
+
+
+- rule that it should note that it should consider codex memomery, project memory, harness, turn fine tune to create plan
+
+- rule that as it does anything that might need to be done agaiin, it should keep note of how it was able to do something good. Like using web to create some services so it doesnt have  to restart it again
+
+
+## For CBG
+
+- Use the Codex browser and CLI  to do all. Sign in and give it access. Use Railway as local dev environment. Use codex goal and cloud build
+- create all needed accounts on needed platforms
+
+- Codex should l

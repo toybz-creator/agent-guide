@@ -22,6 +22,7 @@ const requiredGuideFiles = [
   "harness/files-directories.md",
   "harness/backend-handbook.md",
   "harness/frontend-handbook.md",
+  "harness/mobile-handbook.md",
   "harness/environments-cloud-deployments.md",
   "harness/project-product-runbook.md",
   "harness/deployment-book.md",
@@ -57,6 +58,7 @@ const packageFiles = [
   "instructions.md",
   "backend/backend-rules.md",
   "frontend/frontend-rules.md",
+  "mobile/react-native-rules.md",
   "computer-use/computer-use-agent-rules.md",
   "docs",
   "scripts/supply-chain-audit.mjs",
@@ -170,6 +172,10 @@ Document backend architecture, dependencies, modules, data access, service flows
   "harness/frontend-handbook.md": `# Frontend Handbook
 
 Document frontend architecture, routes, state ownership, data flows, UI systems, and integration notes.
+`,
+  "harness/mobile-handbook.md": `# Mobile Handbook
+
+Document React Native and Expo versions, supported platforms and OS versions, native project ownership, routes and deep links, state and data flow, storage and offline behavior, permissions, accessibility, performance budgets, native dependencies, config plugins, build profiles, app identifiers, signing ownership, store tracks, OTA update policy, device testing, observability, and mobile operational notes.
 `,
   "harness/environments-cloud-deployments.md": `# Environments, Cloud, And Deployments
 
@@ -1161,6 +1167,9 @@ function recommend({ root, agent }) {
 
   if (has("next")) stack.push("Next.js");
   if (has("react")) stack.push("React");
+  if (has("react-native")) stack.push("React Native");
+  if (has("expo")) stack.push("Expo");
+  if (has("expo-router")) stack.push("Expo Router");
   if (has("@nestjs/core")) stack.push("NestJS");
   if (has("prisma") || has("@prisma/client")) stack.push("Prisma");
   if (has("typeorm")) stack.push("TypeORM");
