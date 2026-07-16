@@ -143,6 +143,8 @@ The goal of Planning is to simulate the solution, expose failure modes, and prod
 - `[PAG-PLN-013] [MUST]` Pause for user alignment before implementation when the plan introduces a material scope expansion, irreversible action, new paid/external service, new trust boundary, production mutation, destructive migration, major architecture choice, or unresolved product decision.
 - `[PAG-PLN-014] [SHOULD]` Proceed without ceremonial confirmation when the plan is within the user's authorized scope, reversible, low-risk, and grounded in existing project decisions.
 - `[PAG-PLN-015] [MUST]` Do not let urgency collapse planning. In an emergency, use a concise mitigation plan first, then document deeper recovery and follow-up work.
+- `[PAG-PLN-016] [MUST]` For a large task with two or more independent workstreams, group tightly related, dependency-sharing work into bounded workstreams and delegate each independently executable workstream to a sub-agent. Define each delegation's scope, files or boundaries, required evidence, dependencies, and handoff before it begins.
+- `[PAG-PLN-017] [MUST]` Use the maximum safely usable number of sub-agents for a large task: fill available parallel capacity with non-overlapping, valuable workstreams before doing serial work yourself. Do not create artificial splits, duplicate investigation, delegate work that requires the same exclusive mutation, or exceed platform, cost, security, context, or coordination limits; record the limiting reason when capacity is intentionally unused.
 
 ### Stage 3: Implementation
 
@@ -162,6 +164,7 @@ The goal of Implementation is to execute the approved or safely inferred plan as
 - `[PAG-IMP-012] [MUST]` Keep the implementation log, changed-file map, decisions, deviations, and intermediate evidence current in the task guide.
 - `[PAG-IMP-013] [MUST]` Update affected living docs and harness sources when implementation establishes durable product or engineering facts.
 - `[PAG-IMP-014] [MUST]` Define and enforce bounded modules' public APIs using the project's established mechanism. When the project uses root exports, consumers must import through that public surface rather than deep-importing internals; document justified exceptions for tests, migrations, stories, generated code, or approved internals.
+- `[PAG-IMP-015] [MUST]` The coordinating agent retains ownership of shared contracts, integration order, conflict resolution, final review, and end-to-end evaluation. Reconcile every sub-agent handoff against current repository evidence before accepting it or reporting the task complete.
 
 ### Stage 4: Evaluation
 
