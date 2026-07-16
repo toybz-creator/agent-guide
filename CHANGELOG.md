@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Renamed the package, executable command, binary, documentation, and activation paths to Production Agent Guide (`production-agent-guide`) with the short `pag` executable. This is a breaking release for existing consumers.
+- Added `CONTRIBUTING.md` with local setup, quality expectations, validation commands, and pull-request guidance.
+
 ## 0.2.0
 
 - Added stable numbered `PAG-*` rules with `MUST`, `SHOULD`, and `MAY` strengths.

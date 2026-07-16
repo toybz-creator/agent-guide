@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository builds `the-production-agent-skill`, a reusable rule framework for AI coding agents. The project exists to make coding agents more production-minded, context-aware, safe, thorough, and useful across many downstream software projects.
+This repository builds `production-agent-guide`, a reusable rule framework for AI coding agents. The project exists to make coding agents more production-minded, context-aware, safe, thorough, and useful across many downstream software projects.
 
 Agents working here must treat this repository as both:
 
@@ -22,7 +22,7 @@ Because the package teaches agents how to behave, every change must be unusually
 - `docs/`: packaged library and framework references for supported stacks such as NextJS, NestJS, React, and TypeORM and so on.
 - `scripts/supply-chain-audit.mjs`: built-in supply-chain audit scaffold copied into downstream projects.
 - `scripts/codebase-consistency-codemod.mjs`: built-in consistency codemod scaffold copied into downstream projects.
-- `bin/the-production-agent-skill.mjs`: CLI entrypoint for `init`, `doctor`, `recommend`, `snippet`, and `help`; it defines required downstream `harness/` files, skill templates, and scaffold/doctor behavior.
+- `bin/pag.mjs`: CLI entrypoint for `init`, `doctor`, `recommend`, `snippet`, and `help`; it defines required downstream `harness/` files, skill templates, and scaffold/doctor behavior.
 - `package.json`: npm metadata, package files, binary mapping, scripts, and engine requirement.
 - `ignore.md`: reference material that is not part of the active package contract unless the user explicitly asks to inspect it.
 
@@ -52,9 +52,9 @@ For this repository, that usually means:
 - Read `mobile/react-native-rules.md` when changing React Native, Expo, Android, iOS, mobile, native-module, app-store, or OTA update guidance.
 - Read `computer-use/computer-use-agent-rules.md` when changing browser, desktop, screenshot, or UI verification guidance.
 - Read the matching file under `docs/` before changing packaged library or framework guidance.
-- Read `instructions.md`, `README.md`, and `bin/the-production-agent-skill.mjs` before changing `Update harness`, `pag-*` skill commands, required scaffold files, or activation snippets.
+- Read `instructions.md`, `README.md`, and `bin/pag.mjs` before changing `Update harness`, `pag-*` skill commands, required scaffold files, or activation snippets.
 - Read `scripts/supply-chain-audit.mjs` before changing dependency, vulnerability, install-script, Socket, or audit workflow guidance.
-- Read `bin/the-production-agent-skill.mjs` and `package.json` before changing CLI commands, package files, scripts, or npm metadata.
+- Read `bin/pag.mjs` and `package.json` before changing CLI commands, package files, scripts, or npm metadata.
 
 ### Preserve The Package Contract
 
@@ -113,7 +113,7 @@ Do not silently perform large unrelated changes. Surface meaningful scope expans
 
 ### For CLI Changes
 
-1. Read `bin/the-production-agent-skill.mjs`, `README.md`, and `package.json`.
+1. Read `bin/pag.mjs`, `README.md`, and `package.json`.
 2. Keep commands non-destructive by default.
 3. Never overwrite existing downstream project files during `init`; use `init --dry-run --root <path>` to preview scaffold changes when needed.
 4. Keep `doctor` checks clear and actionable.
@@ -123,7 +123,7 @@ Do not silently perform large unrelated changes. Surface meaningful scope expans
 
 ### For Skill Command Changes
 
-1. Read the `Skill Commands` section in `instructions.md`, README activation and customization text, and the template map in `bin/the-production-agent-skill.mjs`.
+1. Read the `Skill Commands` section in `instructions.md`, README activation and customization text, and the template map in `bin/pag.mjs`.
 2. Keep skill commands in the `pag-{{skill-name}}` format unless the user explicitly changes the contract.
 3. Keep `harness/skills.md` and every referenced `harness/skills/*.md` template synchronized; a documented skill must have a file, and a runnable file must be listed in the registry.
 4. Preserve the documented baked-in skills unless intentionally changing the contract: `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-discovery`, `pag-compare`, `pag-shield`, `pag-idea`, `pag-automations`, and `pag-git-assist- {{git-command:with_options}}`.
@@ -153,12 +153,12 @@ npm run validate
 npm run pack
 npm run publish:dry-run
 npm run security:supply-chain
-node bin/the-production-agent-skill.mjs help
-node bin/the-production-agent-skill.mjs init --root /tmp/the-production-agent-skill-check
-node bin/the-production-agent-skill.mjs doctor --root /tmp/the-production-agent-skill-check --package-root .
-node bin/the-production-agent-skill.mjs recommend --root /tmp/the-production-agent-skill-check --agent codex
-node bin/the-production-agent-skill.mjs snippet
-node bin/the-production-agent-skill.mjs doctor --package-root . --package-only
+node bin/pag.mjs help
+node bin/pag.mjs init --root /tmp/production-agent-guide-check
+node bin/pag.mjs doctor --root /tmp/production-agent-guide-check --package-root .
+node bin/pag.mjs recommend --root /tmp/production-agent-guide-check --agent codex
+node bin/pag.mjs snippet
+node bin/pag.mjs doctor --package-root . --package-only
 node scripts/supply-chain-audit.mjs --root . --json
 ```
 
@@ -224,11 +224,11 @@ When the user asks for suggestions, package hardening, or quality improvements, 
 
 ### CLI Improvements
 
-- Add `the-production-agent-skill doctor --json` for machine-readable checks.
-- Add `the-production-agent-skill init --profile <library|saas|api|frontend|fullstack>` to scaffold more relevant harness templates.
-- Add `the-production-agent-skill upgrade` to detect newly added required guide files and create only missing files.
-- Add `the-production-agent-skill explain` to print which files an agent should read for a task type.
-- Add `the-production-agent-skill validate-docs` to detect missing headings, stale file references, and contradictory guide settings.
+- Add `pag doctor --json` for machine-readable checks.
+- Add `pag init --profile <library|saas|api|frontend|fullstack>` to scaffold more relevant harness templates.
+- Add `pag upgrade` to detect newly added required guide files and create only missing files.
+- Add `pag explain` to print which files an agent should read for a task type.
+- Add `pag validate-docs` to detect missing headings, stale file references, and contradictory guide settings.
 - Add tests for CLI commands using temporary directories.
 
 ### Documentation Improvements

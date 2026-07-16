@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 
 const packageRoot = resolve(import.meta.dirname, "..");
-const cli = join(packageRoot, "bin", "the-production-agent-skill.mjs");
+const cli = join(packageRoot, "bin", "pag.mjs");
 
 function run(args, options = {}) {
   return spawnSync(process.execPath, [cli, ...args], {

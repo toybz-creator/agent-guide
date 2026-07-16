@@ -1,5 +1,5 @@
 {
-  "name": "the-production-agent-skill",
+  "name": "production-agent-guide",
   "version": "0.2.0",
   "description": "A production-grade human language skill guide framework for AI coding agents.",
   "type": "module",
@@ -15,11 +15,12 @@
     "framework"
   ],
   "bin": {
-    "the-production-agent-skill": "bin/the-production-agent-skill.mjs"
+    "pag": "bin/pag.mjs"
   },
   "files": [
     "README.md",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "LICENSE",
     "instructions.md",
     "backend/",
@@ -39,7 +40,7 @@
     "test": "node --test test/*.test.mjs",
     "security:supply-chain": "node scripts/supply-chain-audit.mjs",
     "security:supply-chain:fix": "node scripts/supply-chain-audit.mjs --fix",
-    "validate": "node --check bin/the-production-agent-skill.mjs && node bin/the-production-agent-skill.mjs doctor --package-root . --package-only && npm test"
+    "validate": "node --check bin/pag.mjs && node bin/pag.mjs doctor --package-root . --package-only && npm test"
   },
   "engines": {
     "node": ">=18"

@@ -1,6 +1,6 @@
-# The Production Agent Skill
+# Production Agent Guide
 
-The Production Agent Skill is a reusable rule framework for AI coding agents. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
+Production Agent Guide is a reusable rule framework for AI coding agents. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
 
 Use it as the stable base layer for your agent behavior. Put project-specific decisions, preferences, and product context in `harness/` so this package can be updated without losing your project rules.
 
@@ -30,31 +30,31 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 Install from the registry when published:
 
 ```bash
-npm install --save-dev the-production-agent-skill
+npm install --save-dev production-agent-guide
 ```
 
 Use a local checkout during development:
 
 ```bash
-npm install --save-dev /path/to/the-production-agent-skill
+npm install --save-dev /path/to/production-agent-guide
 ```
 
-You can also copy this folder into a repository as `the-production-agent-skill/`, but package installation is preferred because it is easier to update.
+You can also copy this folder into a repository as `production-agent-guide/`, but package installation is preferred because it is easier to update.
 
 ## Activate In A Project
 
 Add this to your `AGENTS.md`, `.cursorrules`, Codex instructions, or equivalent agent rule file:
 
 ```markdown
-For every project task, read and follow `node_modules/the-production-agent-skill/instructions.md`. Treat the user's initial prompt as authoritative intent but incomplete implementation input. Before implementation, create or resume `harness/planning-notes/<task-id>/implementation-guide.md`; research the product, current repository, relevant harness and task memory, available agent memory, applicable numbered rulebooks, tools, and current official sources when needed; then write the refined working prompt and implementation-ready plan there. For large tasks, group related independent work into bounded workstreams and delegate them to the maximum safely usable number of sub-agents; the coordinating agent owns integration and final evaluation. Run all six stages—Rewrite, Planning, Implementation, Evaluation, Feedback, and Iteration—at a depth proportional to risk, but never skip a stage. Take enough time to infer the right rules and architecture instead of optimizing for speed. Record selected `PAG-*` rule IDs and evidence, keep affected living harness docs synchronized, preserve unrelated user work, and do not claim completion until evaluation covers the refined goal. Use `npx the-production-agent-skill task --id <task-id> --title "<title>"` to create the task guide and `verify-task --id <task-id> --stage <stage>` to validate stage evidence. When a `pag-*` skill is invoked, load its registry entry and skill file in addition to this lifecycle. When the user explicitly requests `Update harness`, follow the numbered harness-maintenance rules in `instructions.md`.
+For every project task, read and follow `node_modules/production-agent-guide/instructions.md`. Treat the user's initial prompt as authoritative intent but incomplete implementation input. Before implementation, create or resume `harness/planning-notes/<task-id>/implementation-guide.md`; research the product, current repository, relevant harness and task memory, available agent memory, applicable numbered rulebooks, tools, and current official sources when needed; then write the refined working prompt and implementation-ready plan there. For large tasks, group related independent work into bounded workstreams and delegate them to the maximum safely usable number of sub-agents; the coordinating agent owns integration and final evaluation. Run all six stages—Rewrite, Planning, Implementation, Evaluation, Feedback, and Iteration—at a depth proportional to risk, but never skip a stage. Take enough time to infer the right rules and architecture instead of optimizing for speed. Record selected `PAG-*` rule IDs and evidence, keep affected living harness docs synchronized, preserve unrelated user work, and do not claim completion until evaluation covers the refined goal. Use `npx pag task --id <task-id> --title "<title>"` to create the task guide and `verify-task --id <task-id> --stage <stage>` to validate stage evidence. When a `pag-*` skill is invoked, load its registry entry and skill file in addition to this lifecycle. When the user explicitly requests `Update harness`, follow the numbered harness-maintenance rules in `instructions.md`.
 ```
 
-If you copied the guide into the repository, replace `node_modules/the-production-agent-skill/instructions.md` with `the-production-agent-skill/instructions.md`.
+If you copied the guide into the repository, replace `node_modules/production-agent-guide/instructions.md` with `production-agent-guide/instructions.md`.
 
 The CLI can print this snippet:
 
 ```bash
-npx the-production-agent-skill snippet
+npx pag snippet
 ```
 
 ## Project Setup
@@ -62,7 +62,7 @@ npx the-production-agent-skill snippet
 Create the project-specific guide scaffold:
 
 ```bash
-npx the-production-agent-skill init
+npx pag init
 ```
 
 The command is non-destructive. It creates missing files only and never overwrites your existing project rules.
@@ -123,22 +123,22 @@ Required downstream files:
 Check a project at any time:
 
 ```bash
-npx the-production-agent-skill doctor
+npx pag doctor
 ```
 
 Create and validate a task workspace:
 
 ```bash
-npx the-production-agent-skill task --id 20260704-example-task --title "Example task"
-npx the-production-agent-skill verify-task --id 20260704-example-task --stage rewrite
-npx the-production-agent-skill verify-task --id 20260704-example-task --stage planning
-npx the-production-agent-skill verify-task --id 20260704-example-task --stage complete
+npx pag task --id 20260704-example-task --title "Example task"
+npx pag verify-task --id 20260704-example-task --stage rewrite
+npx pag verify-task --id 20260704-example-task --stage planning
+npx pag verify-task --id 20260704-example-task --stage complete
 ```
 
 Get project-aware recommendations for agent skills, plugins, hooks, monitors, CI checks, alerts, and automation setup:
 
 ```bash
-npx the-production-agent-skill recommend --agent codex
+npx pag recommend --agent codex
 ```
 
 The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vulnerability test run. Add scripts like these to the downstream project `package.json` when they fit the local test workflow:
@@ -153,7 +153,36 @@ The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vuln
 }
 ```
 
-The script checks reproducible installs, dependency specs, `npm audit`, install-time package scripts, and suspicious dependency behavior indicators. Use `--socket` when the project has approved Socket-style package behavior scanning; Socket documents `socket ci` for CI policy checks at https://docs.socket.dev/docs/socket-ci.
+### Supply-chain audit
+
+`security:supply-chain` is report-only. Run it in local development and CI to check reproducible installs, dependency specs, `npm audit`, install-time package scripts, and suspicious dependency behavior indicators:
+
+```bash
+npm run security:supply-chain
+```
+
+Findings at or above the configured audit severity, a missing lockfile, and unapproved install-time scripts make the command fail. Sensitive behavior indicators are warnings for review, not proof that a package is unsafe.
+
+`security:supply-chain:fix` runs `npm audit fix` at the configured severity threshold, then runs the audit again:
+
+```bash
+npm run security:supply-chain:fix
+```
+
+It can change dependency versions and the lockfile. Review the resulting diff, package release notes, and regression risk before keeping those changes. It does not automatically resolve risky dependency specs, lifecycle scripts, missing lockfiles, or behavior warnings.
+
+The script supports these options:
+
+```bash
+node scripts/supply-chain-audit.mjs --json
+node scripts/supply-chain-audit.mjs --audit-level moderate
+node scripts/supply-chain-audit.mjs --root /path/to/project
+node scripts/supply-chain-audit.mjs --allow-install-scripts package-a,package-b
+node scripts/supply-chain-audit.mjs --allow-network-packages package-a,package-b
+node scripts/supply-chain-audit.mjs --socket
+```
+
+Use the allowlist flags only after reviewing and documenting why a package needs that capability. Use `--socket` when the project has approved Socket-style package behavior scanning; [Socket documents `socket ci` for CI policy checks](https://docs.socket.dev/docs/socket-ci).
 
 The scaffolded `scripts/codebase-consistency-codemod.mjs` helps standardize quote style without broad formatter churn. It is dry-run by default, requires an explicit `--quote single` or `--quote double`, and should only be run with `--write` after confirming the established project standard or asking the user:
 
@@ -208,8 +237,17 @@ When a same-priority conflict materially changes product behavior, architecture,
 - `docs/`: packaged library API and capability references, including React Native, Expo, Expo Application Services, the React Native ecosystem, NestJS, and TypeORM.
 - `scripts/supply-chain-audit.mjs`: dependency vulnerability and supply-chain behavior check scaffolded into downstream projects by `init`.
 - `test/cli.test.mjs`: package integration tests for rule validation, activation synchronization, scaffolding, task creation, and lifecycle verification.
+- `CONTRIBUTING.md`: contributor workflow, quality expectations, and pull-request checklist.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the local development workflow and pull-request requirements.
 
 ## Publishing
+
+GitHub Actions validates every pull request targeting `main`. A push to `main`, including a merged pull request, validates, publishes the version in `package.json` when it is not already on npm, and creates a matching GitHub release. The workflow uses the repository `NPM_TOKEN` secret; do not store npm credentials in the repository.
+
+Each npm version is immutable. Update `package.json` to a new version before merging a release-worthy change; commits that retain an already-published version are validated but skip publishing and release creation.
 
 Dry-run the package before publishing:
 
