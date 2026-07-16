@@ -41,6 +41,17 @@
 
 - rule that as it does anything that might need to be done agaiin, it should keep note of how it was able to do something good. Like using web to create some services so it doesnt have  to restart it again
 
+Can we add a rule, that split all tasks to sub agents
+One sub agent does all thats needed to plan the task
+Another docs the implementation 
+Another one tests a
+
+
+## todo:
+
+- Remove the project's own harness folder from release files
+- 
+
 
 ## For CBG
 
