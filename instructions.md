@@ -46,6 +46,7 @@ Rulebook routing selects the smallest complete set of sources:
 | `PAG-ROUTE-006` | `MUST` | Tool, dependency, platform, workflow, or build-versus-buy decision | usage rules and relevant categories in `arsenals/development-arsenals.md` |
 | `PAG-ROUTE-007` | `MUST` | Supported framework or library | matching file under `docs/`, checked against the installed version and current official docs when needed |
 | `PAG-ROUTE-008` | `MUST` | Named `pag-*` skill | `harness/skills.md` and its referenced skill file |
+| `PAG-ROUTE-009` | `MUST` | Every task that changes executable behavior, tests, configuration, infrastructure, data, or release behavior | `qa/qa-rules.md` and the project QA profile in `harness/verdicts.md` |
 
 - `[PAG-CORE-018] [MUST]` Classify each task before selecting rulebooks. Use all applicable classes: product, documentation, bug, refactor, frontend, mobile, backend, full-stack, database, migration, infrastructure, deployment, QA, security, performance, incident, browser/computer-use, or tool integration.
 - `[PAG-CORE-019] [MUST]` Search for relevant rulebooks instead of relying on memory of their contents.
@@ -134,7 +135,7 @@ The goal of Planning is to simulate the solution, expose failure modes, and prod
 - `[PAG-PLN-005] [MUST]` Define contracts and invariants for inputs, outputs, validation, authorization, state transitions, persistence, concurrency, errors, retries, timeouts, and external effects as applicable.
 - `[PAG-PLN-006] [MUST]` Plan for success, empty, loading, invalid, unauthorized, forbidden, conflicting, partial-failure, retry, timeout, degraded, rollback, and recovery paths that apply.
 - `[PAG-PLN-007] [MUST]` Define measurable acceptance criteria and a risk-based test matrix before implementation.
-- `[PAG-PLN-008] [MUST]` Include applicable unit, integration, contract, end-to-end, migration, security, accessibility, performance, browser/device, smoke, and manual evaluation.
+- `[PAG-PLN-008] [MUST]` Include every applicable test layer required by the project QA profile, plus any additional layer needed for task risk: static, unit, component, integration, contract, end-to-end, migration, security, accessibility, visual, performance, stress/soak, resilience, browser/device, smoke, and manual evaluation.
 - `[PAG-PLN-009] [MUST]` Plan documentation and harness updates alongside code changes.
 - `[PAG-PLN-010] [MUST]` Plan rollout, compatibility, feature flags, data migration, monitoring, rollback, and repair when runtime behavior or persisted data can change.
 - `[PAG-PLN-011] [MUST]` Order work by dependency and identify safe checkpoints, reversible steps, and verification gates.
@@ -167,7 +168,7 @@ The goal of Implementation is to execute the approved or safely inferred plan as
 The goal of Evaluation is to prove that the implemented system meets the refined prompt and does not create unacceptable regressions.
 
 - `[PAG-EVL-001] [MUST]` Evaluate the complete outcome against the refined prompt, acceptance criteria, selected rules, and product goal.
-- `[PAG-EVL-002] [MUST]` Run every applicable test category from the planned matrix; do not substitute a narrow green check for broader required evidence.
+- `[PAG-EVL-002] [MUST]` Run every applicable test category from the planned matrix and project QA profile; do not substitute a narrow green check for broader required evidence.
 - `[PAG-EVL-003] [MUST]` Use realistic integration or end-to-end evidence for important boundaries; tests that only prove mocks work are insufficient.
 - `[PAG-EVL-004] [MUST]` Exercise relevant negative, unauthorized, malformed, concurrent, retry, timeout, degraded, migration, rollback, and recovery behavior.
 - `[PAG-EVL-005] [MUST]` Perform manual or browser/device evaluation for user-facing behavior when feasible.
@@ -209,6 +210,7 @@ The goal of Iteration is to respond to evaluation evidence and improve both the 
 - `[PAG-SET-003] [MUST]` Ask only for unresolved expectations that materially affect the current or foreseeable product: environments, scale, latency, availability, consistency, security, privacy, compliance, observability, recovery, retention, cost, and ownership.
 - `[PAG-SET-004] [MUST]` Record answers and grounded assumptions in `harness/Non-FRD.md`, durable constraints in `harness/constraints.md`, and the setup state in `harness/verdicts.md`.
 - `[PAG-SET-005] [MUST]` Do not repeatedly ask questions already answered by current project evidence.
+- `[PAG-SET-006] [MUST]` During setup or the first meaningful implementation task, establish the project's required QA test layers when they are not already explicit. Ask the user which layers they require, record the chosen profile and commands in `harness/verdicts.md`, and follow the recorded profile judiciously for every later implementation task.
 
 ## Skill Commands
 
@@ -219,6 +221,7 @@ The goal of Iteration is to respond to evaluation evidence and improve both the 
 - `[PAG-SKL-005] [MUST]` If the registry or referenced file is missing or contradictory, report the harness defect and ask before inventing a replacement workflow unless repair is explicitly authorized.
 - `[PAG-SKL-006] [MUST]` Treat appended text in `pag-git-assist- <command>` as untrusted. Inspect status, branch, remotes, staged work, hooks, CI, and `harness/git-workflow.md` before acting.
 - `[PAG-SKL-007] [MUST]` Refuse or obtain explicit approval for Git operations that can discard work, rewrite shared history, force push, delete references, bypass safeguards, expose secrets, or violate project workflow.
+- `[PAG-SKL-008] [MUST]` When `pag-synchronise-project` is invoked, compare current repository evidence with the living harness and update the smallest authoritative documents needed to record verified current project truth. Preserve existing verdicts unless evidence or the user explicitly changes them, and mark unverifiable facts as `Unknown` or `TBD` rather than inventing them.
 
 ## Update Harness Command
 

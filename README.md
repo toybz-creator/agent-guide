@@ -17,8 +17,9 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Living project memory:** agents maintain PRDs, functional requirements, architecture notes, runbooks, deployment/CI/workflow books, dictionaries, incident and observability books, task history, verdicts, and file maps in a dedicated project guide folder.
 - **Feature-level docs:** substantial features get their own `harness/features/<feature-name>/` folders with PRD, FRD, SystemsArchitecture, tasks, workflow, runbook, observability, and decision docs.
 - **Strictness levels:** projects can choose `advisory`, `standard`, or `strict` in `harness/verdicts.md`; strict mode requires full precautions, docs, KPI capture, tests, security review, rollout/rollback notes, and explicit risk acceptance for skipped safeguards.
+- **Enforceable QA profile:** during setup, agents ask which test layers the project requires, record the answer and commands in `harness/verdicts.md`, then write, run, and report the selected coverage after every applicable implementation task. The profile can require unit, integration, E2E, manual browser/computer-use, security, load/stress, accessibility, migration, visual, smoke, or other test layers.
 - **KPI-driven architecture:** agents ask for endpoint hit rates, latency, database/query budgets, queue volume, availability, observability, and growth targets, then plan code and infrastructure toward those targets.
-- **Skill commands:** agents treat commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-automations`, and `pag-git-assist- ...` as binding workflows loaded from `harness/skills.md` and `harness/skills/`.
+- **Skill commands:** agents treat commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-automations`, `pag-synchronise-project`, and `pag-git-assist- ...` as binding workflows loaded from `harness/skills.md` and `harness/skills/`.
 - **Automation recommendations:** the `recommend` CLI command and `pag-automations` skill suggest skills, plugins, hooks, monitors, CI checks, alerts, and agent-specific setup for Codex, Claude, Cursor, Antigravity, and similar tools.
 - **Harness growth command:** agents treat `Update harness` as a binding workflow to refresh project memory, cache important official library docs, strengthen local instructions, and add useful automation.
 - **Safer customization:** teams can override decisions in `harness/verdicts.md` without editing this package.
@@ -66,6 +67,15 @@ npx the-production-agent-skill init
 
 The command is non-destructive. It creates missing files only and never overwrites your existing project rules.
 
+### First-Time Harness Setup
+
+After `init` completes, finish the initial setup in this order:
+
+1. Review and modify `harness/verdicts.md` so it captures project-specific decisions, preferences, constraints, and required QA profile.
+2. Send your AI agent the prompt `pag-synchronise-project`.
+
+`pag-synchronise-project` compares the harness with the current project and updates the relevant living documents to reflect verified product behavior, code, architecture, infrastructure, plans, known gaps or missteps, and refinements. It is useful immediately after initialization and at any later point after manual or out-of-band project work.
+
 Required downstream files:
 
 - `harness/PRD.md`
@@ -105,6 +115,7 @@ Required downstream files:
 - `harness/skills/shield.md`
 - `harness/skills/idea.md`
 - `harness/skills/automations.md`
+- `harness/skills/synchronise-project.md`
 - `harness/skills/git-assist.md`
 - `scripts/supply-chain-audit.mjs`
 - `scripts/codebase-consistency-codemod.mjs`
@@ -174,11 +185,14 @@ Use `harness/verdicts.md` as the persistent settings and conflict-resolution fil
 
 - whether linting/formatting hooks should be configured
 - preferred observability provider
+- required QA test layers, commands, test environment, fixtures, and whether manual browser/computer-use testing is mandatory
 - whether web research should be automatic, optional, or disabled
 - architecture decisions that override a default guide rule
 - deployment and environment assumptions
 
 Use `harness/skills.md` and `harness/skills/` for project-specific skill commands. A skill is available only when the registry row and referenced skill file both exist. New skill commands must use the `pag-{{skill-name}}` format and should include preflight questions, workflow steps, output expectations, and completion evidence.
+
+Use `pag-synchronise-project` after initialization and whenever the repository has changed outside the normal agent workflow. It captures verified current project truth in the harness while preserving existing decisions in `harness/verdicts.md` unless the user or evidence changes them.
 
 When a same-priority conflict materially changes product behavior, architecture, cost, risk, scope, or user experience, the agent asks once, records the durable decision in `verdicts.md`, and follows it in future tasks. The conflict order in `instructions.md` remains authoritative.
 
@@ -189,6 +203,7 @@ When a same-priority conflict materially changes product behavior, architecture,
 - `frontend/frontend-rules.md`: frontend and product interface engineering rules.
 - `mobile/react-native-rules.md`: React Native, Expo, native mobile, offline, accessibility, performance, security, testing, app-store, and release engineering rules.
 - `computer-use/computer-use-agent-rules.md`: browser/computer-use safety guidance.
+- `qa/qa-rules.md`: test-profile setup and enforcement plus unit, integration, contract, E2E, manual browser/computer-use, accessibility, visual, security, performance/load, stress/soak, resilience, migration/data, smoke, and QA evidence rules.
 - `arsenals/development-arsenals.md`: curated tool-discovery catalog; the canonical selection, implementation, evaluation, and reporting workflow remains in `instructions.md`.
 - `docs/`: packaged library API and capability references, including React Native, Expo, Expo Application Services, the React Native ecosystem, NestJS, and TypeORM.
 - `scripts/supply-chain-audit.mjs`: dependency vulnerability and supply-chain behavior check scaffolded into downstream projects by `init`.

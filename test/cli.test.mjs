@@ -32,7 +32,7 @@ test("README activation matches the CLI snippet", () => {
   );
 });
 
-test("init scaffolds the planning-notes contract", () => {
+test("init scaffolds the planning-notes, QA-profile, and synchronise-project contracts", () => {
   const root = mkdtempSync(join(tmpdir(), "production-agent-init-"));
   const result = run(["init", "--root", root]);
   assert.equal(result.status, 0, result.stdout + result.stderr);
@@ -41,6 +41,19 @@ test("init scaffolds the planning-notes contract", () => {
     "utf8"
   );
   assert.match(planningReadme, /Rewrite, Planning, Implementation, Evaluation, Feedback, and Iteration/);
+  const verdicts = readFileSync(join(root, "harness", "verdicts.md"), "utf8");
+  assert.match(verdicts, /qa-test-profile: unset/);
+  assert.match(verdicts, /qa-manual-browser-testing: unset/);
+  assert.match(result.stdout, /Next stage: complete the initial harness setup/);
+  assert.match(result.stdout, /Review and modify harness\/verdicts\.md/);
+  assert.match(result.stdout, /pag-synchronise-project/);
+  const skills = readFileSync(join(root, "harness", "skills.md"), "utf8");
+  const synchroniseProject = readFileSync(
+    join(root, "harness", "skills", "synchronise-project.md"),
+    "utf8"
+  );
+  assert.match(skills, /pag-synchronise-project/);
+  assert.match(synchroniseProject, /Synchronise the living harness/);
 });
 
 test("task creation is non-destructive and verify-task detects incomplete rewrite", () => {

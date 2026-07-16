@@ -45,6 +45,7 @@ const requiredGuideFiles = [
   "harness/skills/shield.md",
   "harness/skills/idea.md",
   "harness/skills/automations.md",
+  "harness/skills/synchronise-project.md",
   "harness/skills/git-assist.md"
 ];
 
@@ -62,6 +63,7 @@ const packageFiles = [
   "frontend/frontend-rules.md",
   "mobile/react-native-rules.md",
   "computer-use/computer-use-agent-rules.md",
+  "qa/qa-rules.md",
   "arsenals/development-arsenals.md",
   "docs",
   "scripts/supply-chain-audit.mjs",
@@ -77,6 +79,7 @@ const rulebookFiles = [
   "frontend/frontend-rules.md",
   "mobile/react-native-rules.md",
   "computer-use/computer-use-agent-rules.md",
+  "qa/qa-rules.md",
   "arsenals/development-arsenals.md"
 ];
 
@@ -196,6 +199,10 @@ This file stores final decisions, project preferences, and conflict resolutions 
 - lint-format-hooks: unset
 - strict-level: standard
 - observability-provider: unset
+- qa-test-profile: unset
+- qa-test-commands: unset
+- qa-manual-browser-testing: unset
+- qa-test-environment-and-fixtures: unset
 `,
   "harness/mcp-rules.md": `# MCP Rules
 
@@ -558,6 +565,7 @@ When the user sends a command matching pag-{{skill-name}}, run the mandatory six
 | Shield | pag-shield | harness/skills/shield.md | Assesses abuse, misuse, leakage, security, operational, and supply-chain protection across system layers. |
 | Idea | pag-idea | harness/skills/idea.md | Generates practical next-step ideas for product, engineering, refactoring, hardening, optimization, and operations. |
 | Automations | pag-automations | harness/skills/automations.md | Recommends agent skills, plugins, hooks, monitors, and automations for the project and AI agent surface. |
+| Synchronise Project | pag-synchronise-project | harness/skills/synchronise-project.md | Synchronises the living harness with the current project, product, code, architecture, infrastructure, plans, gaps, and refinements. |
 | Git Assist | pag-git-assist- {{git-command:with_options}} | harness/skills/git-assist.md | Reviews and, only when safe, runs the appended git command according to repository state and git workflow rules. |
 
 ## Extending Skills
@@ -980,6 +988,50 @@ Ask before recommending when missing:
 - Tool assumptions and unavailable evidence are explicit.
 - The final report gives a shortlist of highest-value automations and the next setup steps.
 `,
+  "harness/skills/synchronise-project.md": `# Synchronise Project Skill
+
+## Command
+
+pag-synchronise-project
+
+## Purpose
+
+Synchronise the living harness with the project's current, evidence-backed reality. Use this immediately after harness initialization and whenever manual work, product decisions, code changes, architecture or infrastructure changes, plans, discovered gaps or missteps, or refinements may not yet be captured in the harness.
+
+This skill records the current truth; it does not invent product decisions or overwrite durable verdicts without evidence or explicit user direction.
+
+## Preflight Questions
+
+Ask only when the answer cannot be found in the repository, harness, task notes, or available project context:
+
+- Is there a specific branch, environment, product area, manual change, or time period that this sync must cover?
+- Are there authoritative external plans, tickets, diagrams, or decisions that are not available in the repository?
+- Should the work be documentation-only, or should discovered harness defects be repaired as part of this request?
+
+## Workflow
+
+1. Read the skill registry, this file, active repository instructions, and the existing harness before making changes.
+2. Inspect current project evidence proportionate to scope: product and code entrypoints, manifests and lockfiles, architecture, infrastructure and environment configuration, CI/CD, tests, scripts, task notes, Git history when useful, and relevant official documentation.
+3. Compare that evidence against every relevant living harness document. Identify missing, stale, duplicated, contradictory, or unsupported statements.
+4. Update the smallest authoritative harness documents needed to capture the current product, implementation, architecture, infrastructure, operational workflows, plans, known gaps or missteps, refinements, constraints, and decisions. Keep \`harness/verdicts.md\` as the conflict-resolution source; preserve its existing decisions unless evidence or the user explicitly changes them.
+5. Mark facts that cannot be verified as \`Unknown\` or \`TBD\` with an owner or discovery action. Record meaningful incomplete follow-up work in \`harness/tasks.md\`.
+6. Keep \`harness/skills.md\`, \`harness/files-directories.md\`, \`harness/development-history.md\`, and other affected living documents synchronized. Do not copy task-specific evidence into durable docs unless it is durable project truth.
+7. Verify the resulting harness with the available package doctor and relevant repository checks, then report what was synchronized, what remains unknown, and what evidence was used.
+
+## Output
+
+- State the sync scope and evidence inspected.
+- List the harness documents updated and the project truth each now records.
+- Separate confirmed facts, grounded assumptions, and unresolved unknowns.
+- State any detected contradictions, gaps, or manual work that still needs follow-up.
+
+## Completion Evidence
+
+- Current repository and harness evidence were compared.
+- Affected living harness documents reflect the current verified project state.
+- Existing verdicts were preserved or changed with recorded evidence or user direction.
+- Unknowns and follow-ups are explicit, and relevant verification was run.
+`,
   "harness/skills/git-assist.md": `# Git Assist Skill
 
 ## Command
@@ -1251,6 +1303,14 @@ function init({ root, dryRun }) {
     for (const file of skipped) {
       console.log(`  - ${file}`);
     }
+  }
+
+  if (!dryRun) {
+    console.log("");
+    console.log("Next stage: complete the initial harness setup.");
+    console.log("1. Review and modify harness/verdicts.md for this project's decisions and needs.");
+    console.log("2. Send your AI agent: pag-synchronise-project");
+    console.log("   This synchronises the harness with the current project, product, code, architecture, infrastructure, plans, gaps, and refinements.");
   }
 }
 
