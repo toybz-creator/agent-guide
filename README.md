@@ -14,7 +14,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Numbered rules:** stable `PAG-*` IDs make rule selection and completion evidence explicit instead of asking an agent to remember an undifferentiated wall of guidance.
 - **360 feature development:** agents look beyond the immediate prompt and surface edge cases, failure modes, negative paths, abuse cases, scale concerns, and future integrations.
 - **Better planning and delegation:** agents clarify ambiguity, research current framework/library practices, compare options, lock an implementation plan before high-impact work, and split large tasks into related bounded workstreams that use the maximum safe parallel sub-agent capacity.
-- **Packaged library references:** agents check matching files in `docs/` for in-depth library APIs and capabilities before implementing against supported libraries.
+- **Packaged library references:** agents check matching files in `docs/` or pulls them down for in-depth library APIs and capabilities before implementing against supported libraries.
 - **Development arsenal:** agents scan a packaged catalog of proven tools, compare candidates against the current stack and a no-new-tool option, then fully install, configure, document, and verify only the tools that materially improve the product outcome.
 - **Living project memory:** agents maintain PRDs, functional requirements, architecture notes, runbooks, deployment/CI/workflow books, dictionaries, incident and observability books, task history, verdicts, and file maps in a dedicated project guide folder.
 - **Feature-level docs:** substantial features get their own `harness/features/<feature-name>/` folders with PRD, FRD, SystemsArchitecture, tasks, workflow, runbook, observability, and decision docs.
@@ -32,12 +32,10 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 ### Quick Start
 
 1. Install the package in the project where your coding agent works.
-
    ```bash
    npm install --save-dev production-agent-guide
    ```
-
-2. Add the activation snippet below to the instruction file your agent actually reads.
+2. Add the activation snippet in [Activate In A Project](#activate-in-a-project) to the instruction file your agent actually reads.
 3. Create the non-destructive project harness with `npx pag init`.
 4. Review `harness/verdicts.md`, then ask the agent to run `pag-synchronise-project`.
 
@@ -150,15 +148,6 @@ Check a project at any time:
 npx pag doctor
 ```
 
-Create and validate a task workspace:
-
-```bash
-npx pag task --id 20260704-example-task --title "Example task"
-npx pag verify-task --id 20260704-example-task --stage rewrite
-npx pag verify-task --id 20260704-example-task --stage planning
-npx pag verify-task --id 20260704-example-task --stage complete
-```
-
 Get project-aware recommendations for agent skills, plugins, hooks, monitors, CI checks, alerts, and automation setup:
 
 ```bash
@@ -167,15 +156,13 @@ npx pag recommend --agent codex
 
 ### CLI Reference
 
-| Command | Purpose |
-| --- | --- |
-| `npx pag init [--dry-run] [--root <path>]` | Create only missing harness files and scripts. |
-| `npx pag doctor [--root <path>]` | Check the package and a downstream harness for missing or inconsistent files. |
-| `npx pag task --id <task-id> [--title <title>]` | Create a six-stage task implementation guide without overwriting an existing one. |
-| `npx pag verify-task --id <task-id> --stage <stage>` | Check lifecycle evidence through a selected stage. |
-| `npx pag recommend [--agent <name>]` | Print agent-specific skills, plugin, automation, and CI suggestions. |
-| `npx pag snippet` | Print the activation snippet for your agent instruction file. |
-| `npx pag help` | Print usage and all supported command options. |
+| Command                                    | Purpose                                                                       |
+| ------------------------------------------ | ----------------------------------------------------------------------------- |
+| `npx pag init [--dry-run] [--root <path>]` | Create only missing harness files and scripts.                                |
+| `npx pag doctor [--root <path>]`           | Check the package and a downstream harness for missing or inconsistent files. |
+| `npx pag recommend [--agent <name>]`       | Print agent-specific skills, plugin, automation, and CI suggestions.          |
+| `npx pag snippet`                          | Print the activation snippet for your agent instruction file.                 |
+| `npx pag help`                             | Print usage and all supported command options.                                |
 
 The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vulnerability test run. Add scripts like these to the downstream project `package.json` when they fit the local test workflow:
 
@@ -218,7 +205,7 @@ node scripts/supply-chain-audit.mjs --allow-network-packages package-a,package-b
 node scripts/supply-chain-audit.mjs --socket
 ```
 
-Use the allowlist flags only after reviewing and documenting why a package needs that capability. Use `--socket` when the project has approved Socket-style package behavior scanning; [Socket documents `socket ci` for CI policy checks](https://docs.socket.dev/docs/socket-ci).
+Use the allowlist flags only after reviewing and documenting why a package needs that capability. Use `--socket` when the project has approved Socket-style package behavior scanning; [Socket documents](https://docs.socket.dev/docs/socket-ci) [`socket ci`](https://docs.socket.dev/docs/socket-ci) [for CI policy checks](https://docs.socket.dev/docs/socket-ci).
 
 The scaffolded `scripts/codebase-consistency-codemod.mjs` helps standardize quote style without broad formatter churn. It is dry-run by default, requires an explicit `--quote single` or `--quote double`, and should only be run with `--write` after confirming the established project standard or asking the user:
 

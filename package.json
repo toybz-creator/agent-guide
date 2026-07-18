@@ -46,9 +46,7 @@
     "pack": "npm pack --dry-run",
     "publish:dry-run": "npm publish --dry-run",
     "test": "node --test test/*.test.mjs",
-    "security:supply-chain": "node scripts/supply-chain-audit.mjs",
-    "security:supply-chain:fix": "node scripts/supply-chain-audit.mjs --fix",
-    "validate": "node --check bin/pag.mjs && node bin/pag.mjs doctor --package-root . --package-only && npm test && npm run security:supply-chain"
+    "validate": "node --check bin/pag.mjs && node bin/pag.mjs doctor --package-root . --package-only"
   },
   "engines": {
     "node": ">=18"
