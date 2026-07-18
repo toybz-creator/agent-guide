@@ -4,7 +4,15 @@
   "description": "A production-grade human language skill guide framework for AI coding agents.",
   "type": "module",
   "license": "MIT",
-  "author": "",
+  "author": "Toyeeb Abdulrahmon <toyeebrahmon0@gmail.com>",
+  "homepage": "https://github.com/toybz-creator/agent-guide#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toybz-creator/agent-guide.git"
+  },
+  "bugs": {
+    "url": "https://github.com/toybz-creator/agent-guide/issues"
+  },
   "keywords": [
     "ai-agent",
     "coding-agent",
@@ -40,7 +48,7 @@
     "test": "node --test test/*.test.mjs",
     "security:supply-chain": "node scripts/supply-chain-audit.mjs",
     "security:supply-chain:fix": "node scripts/supply-chain-audit.mjs --fix",
-    "validate": "node --check bin/pag.mjs && node bin/pag.mjs doctor --package-root . --package-only && npm test"
+    "validate": "node --check bin/pag.mjs && node bin/pag.mjs doctor --package-root . --package-only && npm test && npm run security:supply-chain"
   },
   "engines": {
     "node": ">=18"

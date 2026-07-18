@@ -18,10 +18,10 @@ Thank you for improving Production Agent Guide. This repository ships both an np
    git checkout -b feat/short-description
    ```
 
-3. Install the supported Node.js version (Node 18 or later) and dependencies:
+3. Install a supported Node.js version (18, 20, or 22) and dependencies:
 
    ```bash
-   npm install
+   npm ci
    ```
 
 4. Confirm the starting point:
@@ -39,6 +39,26 @@ Thank you for improving Production Agent Guide. This repository ships both an np
 - Add or update focused tests for CLI behavior changes.
 - Use clear, direct Markdown. Write rules that explain when they apply, the action required, what to avoid, and the completion evidence.
 
+## Choose The Right Change Surface
+
+Use this matrix before editing so the published package remains internally consistent.
+
+| Change | Update and verify |
+| --- | --- |
+| Rule behavior | The canonical rulebook, rule IDs, `instructions.md` routing, affected stack guides, and relevant task-guide validation. |
+| CLI or scaffold behavior | `bin/pag.mjs`, CLI help, README command reference, generated templates, focused tests, and package file list. |
+| Public package contract | `package.json`, README, CHANGELOG, pack output, consumer-style install check, and release notes. |
+| Documentation only | The source-of-truth document, mirrored summaries, local links, examples, and any claims about commands or CI. |
+| Release workflow | `.github/workflows/`, supported Node matrix, lockfile, least-privilege permissions, and a dry-run package check. |
+
+## Versioning, Changelog, And Releases
+
+- Keep `CHANGELOG.md` under `Unreleased` while work is in progress. Move user-facing changes into a versioned section when preparing a release.
+- Use a new npm version for every release-worthy package change; npm versions cannot be overwritten.
+- Describe behavior changes, CLI/scaffold compatibility, and migrations in the changelog and pull request.
+- Commit the package-manager lockfile. CI uses `npm ci` so that validation runs against the reviewed dependency graph.
+- Do not publish from a local machine unless a maintainer explicitly authorizes it. The release workflow publishes from `main` after validation.
+
 ## Validate Your Work
 
 Run the checks that match your change. Before opening a pull request, run at least:
@@ -47,6 +67,7 @@ Run the checks that match your change. Before opening a pull request, run at lea
 npm run validate
 npm run pack
 npm run publish:dry-run
+npm run security:supply-chain
 ```
 
 For changes to the published file list, package metadata, or CLI, also create and inspect a local package archive:
@@ -56,6 +77,15 @@ npm pack
 ```
 
 Do not commit generated `.tgz` archives unless a maintainer explicitly requests a release artifact. Remove the archive after inspection if it is untracked.
+
+For a release or package-contract change, also prove that a consumer can use the packed result:
+
+```bash
+npm pack
+# Install the generated archive into a temporary project, then run:
+npx pag help
+npx pag init --dry-run
+```
 
 ## Open a Pull Request
 
@@ -79,3 +109,7 @@ Do not commit generated `.tgz` archives unless a maintainer explicitly requests 
 ## Reporting Issues
 
 Include the package version or commit, Node.js version, operating system, exact command, expected result, actual result, and a minimal reproduction when reporting a bug. Do not include secrets, access tokens, or private project data.
+
+## Reporting Security Issues
+
+Do not open a public issue for a suspected vulnerability that could expose users, repositories, credentials, or systems. Contact the maintainers privately with the affected version or commit, impact, reproduction steps, and any safe mitigation. Do not include secrets or exploit payloads in the report.

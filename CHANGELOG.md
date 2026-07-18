@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Hardened release validation with a committed lockfile, `npm ci`, supply-chain auditing, Node 18/20/22 CI coverage, least-privilege workflow permissions, and immutable GitHub Action revisions.
+- Added npm repository, homepage, issue-tracker, and author metadata.
+- Expanded README quick start, requirements, CLI reference, consumer-package verification, and migration guidance.
+- Expanded contributor guidance with a change-surface matrix, versioning/release policy, lockfile expectations, and responsible security reporting.
 - Renamed the package, executable command, binary, documentation, and activation paths to Production Agent Guide (`production-agent-guide`) with the short `pag` executable. This is a breaking release for existing consumers.
 - Added `CONTRIBUTING.md` with local setup, quality expectations, validation commands, and pull-request guidance.
 
