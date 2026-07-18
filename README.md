@@ -148,12 +148,19 @@ Check a project at any time:
 npx pag doctor
 ```
 
+List the built-in AI prompts and what each one is for:
+
+```bash
+npx pag skills
+```
+
 ### CLI Reference
 
 | Command                                    | Purpose                                                                       |
 | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | `npx pag init [--dry-run] [--root <path>]` | Create only missing harness files and scripts.                                |
 | `npx pag doctor [--root <path>]`           | Check the package and a downstream harness for missing or inconsistent files. |
+| `npx pag skills`                           | List built-in `pag-*` prompts and their purposes.                             |
 | `npx pag snippet`                          | Print the activation snippet for your agent instruction file.                 |
 | `npx pag help`                             | Print usage and all supported command options.                                |
 

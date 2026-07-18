@@ -32,6 +32,23 @@ test("README activation matches the CLI snippet", () => {
   );
 });
 
+test("skills lists every built-in pag prompt with its purpose", () => {
+  const result = run(["skills"]);
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /1\. pag-review: Review a project/);
+  assert.match(result.stdout, /pag-optimise:/);
+  assert.match(result.stdout, /pag-security:/);
+  assert.match(result.stdout, /pag-deployment:/);
+  assert.match(result.stdout, /pag-guide:/);
+  assert.match(result.stdout, /pag-discovery:/);
+  assert.match(result.stdout, /pag-compare:/);
+  assert.match(result.stdout, /pag-shield:/);
+  assert.match(result.stdout, /pag-idea:/);
+  assert.match(result.stdout, /pag-automations:/);
+  assert.match(result.stdout, /pag-synchronise-project:/);
+  assert.match(result.stdout, /pag-git-assist- <git-command-with-options>:/);
+});
+
 test("init scaffolds the planning-notes, QA-profile, and synchronise-project contracts", () => {
   const root = mkdtempSync(join(tmpdir(), "production-agent-init-"));
   const result = run(["init", "--root", root]);

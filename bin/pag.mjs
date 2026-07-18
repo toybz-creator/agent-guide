@@ -1172,14 +1172,39 @@ function printHelp() {
 Usage:
   pag init [--dry-run] [--root <path>]
   pag doctor [--root <path>] [--package-root <path>] [--package-only]
+  pag skills
   pag snippet
   pag help
 
 Commands:
   init      Create missing harness files and security scripts without overwriting existing files.
   doctor    Check package files, numbered rulebooks, downstream guide files, and security scripts.
+  skills    List the built-in pag-* prompts and their purposes.
   snippet   Print an activation snippet for AGENTS.md or equivalent agent rules files.
 `);
+}
+
+function printSkills() {
+  const skills = [
+    ["pag-review", "Review a project, feature, module, workflow, or implementation in depth."],
+    ["pag-optimise", "Improve a target against a goal such as speed, cost, reliability, UX, or maintainability."],
+    ["pag-security", "Threat-model and harden a target against security, privacy, abuse, and compliance risks."],
+    ["pag-deployment", "Plan or review deployment, release, rollback, infrastructure, CI/CD, and production readiness."],
+    ["pag-guide", "Explain a codebase or feature end to end for junior developers and non-technical stakeholders."],
+    ["pag-discovery", "Study the product, code, docs, dependencies, and ecosystem for improvement opportunities."],
+    ["pag-compare", "Compare a project or feature with strong open-source references and extract actionable insights."],
+    ["pag-shield", "Assess abuse, misuse, leakage, security, operational, and supply-chain protection."],
+    ["pag-idea", "Generate practical next-step ideas for product, engineering, refactoring, hardening, and operations."],
+    ["pag-automations", "Recommend agent skills, plugins, hooks, monitors, and automations for the project and AI-agent surface."],
+    ["pag-synchronise-project", "Synchronise the living harness with verified current project and system evidence."],
+    ["pag-git-assist- <git-command-with-options>", "Review and, only when safe, run the appended Git command under the repository workflow rules."]
+  ];
+
+  console.log("Built-in AI prompts:");
+  console.log("");
+  for (const [index, [command, description]] of skills.entries()) {
+    console.log(`${index + 1}. ${command}: ${description}`);
+  }
 }
 
 function parseArgs(argv) {
@@ -1688,6 +1713,9 @@ switch (args.command) {
     break;
   case "doctor":
     doctor(args);
+    break;
+  case "skills":
+    printSkills();
     break;
   case "task":
     createTask(args);
