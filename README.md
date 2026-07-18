@@ -1,5 +1,7 @@
 # Production Agent Guide
 
+![A conductor robot leading an orchestra of robots](https://raw.githubusercontent.com/toybz-creator/agent-guide/main/assets/robot-orchestra-hero.png)
+
 Production Agent Guide is a reusable rule framework for AI coding agents. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
 
 Use it as the stable base layer for your agent behavior. Put project-specific decisions, preferences, and product context in `harness/` so this package can be updated without losing your project rules.
@@ -26,6 +28,20 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Stack-specific depth:** backend, web frontend, and React Native/Expo rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, native platforms, app stores, and runtime operations.
 
 ## Install
+
+### Quick Start
+
+1. Install the package in the project where your coding agent works.
+
+   ```bash
+   npm install --save-dev production-agent-guide
+   ```
+
+2. Add the activation snippet below to the instruction file your agent actually reads.
+3. Create the non-destructive project harness with `npx pag init`.
+4. Review `harness/verdicts.md`, then ask the agent to run `pag-synchronise-project`.
+
+Run `npx pag help` at any time for the complete CLI command list.
 
 Install from the registry when published:
 
@@ -56,6 +72,14 @@ The CLI can print this snippet:
 ```bash
 npx pag snippet
 ```
+
+### Requirements and Compatibility
+
+- Node.js 18, 20, or 22. The package supports Node.js 18 and later and validates these maintained release lines in CI.
+- npm is used in the examples. Other package managers work when they can run the `pag` binary and maintain a committed lockfile.
+- A project-local `AGENTS.md`, `.cursorrules`, or equivalent instruction file that your coding-agent surface actually loads.
+
+For a pre-publish consumer check, create a local archive with `npm pack`, install that archive into a temporary project, and run `npx pag help` and `npx pag init --dry-run` there.
 
 ## Project Setup
 
@@ -140,6 +164,18 @@ Get project-aware recommendations for agent skills, plugins, hooks, monitors, CI
 ```bash
 npx pag recommend --agent codex
 ```
+
+### CLI Reference
+
+| Command | Purpose |
+| --- | --- |
+| `npx pag init [--dry-run] [--root <path>]` | Create only missing harness files and scripts. |
+| `npx pag doctor [--root <path>]` | Check the package and a downstream harness for missing or inconsistent files. |
+| `npx pag task --id <task-id> [--title <title>]` | Create a six-stage task implementation guide without overwriting an existing one. |
+| `npx pag verify-task --id <task-id> --stage <stage>` | Check lifecycle evidence through a selected stage. |
+| `npx pag recommend [--agent <name>]` | Print agent-specific skills, plugin, automation, and CI suggestions. |
+| `npx pag snippet` | Print the activation snippet for your agent instruction file. |
+| `npx pag help` | Print usage and all supported command options. |
 
 The scaffolded `scripts/supply-chain-audit.mjs` is intended for the project vulnerability test run. Add scripts like these to the downstream project `package.json` when they fit the local test workflow:
 
@@ -260,3 +296,7 @@ Inspect package contents:
 ```bash
 npm run pack
 ```
+
+### Upgrade and Migration
+
+The current package name is `production-agent-guide` and its executable is `pag`. If you use an earlier package name or executable, update your dependency, activation snippet, CI commands, and agent instruction references together. Run `npx pag doctor` after migration to identify missing harness files, then run `pag-synchronise-project` to refresh durable project documentation.
