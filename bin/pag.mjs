@@ -1172,18 +1172,12 @@ function printHelp() {
 Usage:
   pag init [--dry-run] [--root <path>]
   pag doctor [--root <path>] [--package-root <path>] [--package-only]
-  pag task --id <task-id> [--title <title>] [--root <path>]
-  pag verify-task --id <task-id> [--stage <stage>] [--root <path>]
-  pag recommend [--root <path>] [--agent <name>]
   pag snippet
   pag help
 
 Commands:
   init      Create missing harness files and security scripts without overwriting existing files.
   doctor    Check package files, numbered rulebooks, downstream guide files, and security scripts.
-  task      Create a non-destructive six-stage task implementation guide.
-  verify-task Check required task-guide sections through a lifecycle stage.
-  recommend Suggest high-value skills, plugins, and automations for the project and agent surface.
   snippet   Print an activation snippet for AGENTS.md or equivalent agent rules files.
 `);
 }
@@ -1443,9 +1437,6 @@ function validateRulebooks(guideRoot) {
       if (!readme.includes(`\`${file}\``)) {
         issues.push(`README.md does not list required scaffold file: ${file}`);
       }
-    }
-    for (const command of ["task --id", "verify-task --id"]) {
-      if (!readme.includes(command)) issues.push(`README.md does not document CLI command: ${command}`);
     }
   }
 

@@ -22,7 +22,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 - **Enforceable QA profile:** during setup, agents ask which test layers the project requires, record the answer and commands in `harness/verdicts.md`, then write, run, and report the selected coverage after every applicable implementation task. The profile can require unit, integration, E2E, manual browser/computer-use, security, load/stress, accessibility, migration, visual, smoke, or other test layers.
 - **KPI-driven architecture:** agents ask for endpoint hit rates, latency, database/query budgets, queue volume, availability, observability, and growth targets, then plan code and infrastructure toward those targets.
 - **Skill commands:** agents treat commands such as `pag-review`, `pag-optimise`, `pag-security`, `pag-deployment`, `pag-guide`, `pag-automations`, `pag-synchronise-project`, and `pag-git-assist- ...` as binding workflows loaded from `harness/skills.md` and `harness/skills/`.
-- **Automation recommendations:** the `recommend` CLI command and `pag-automations` skill suggest skills, plugins, hooks, monitors, CI checks, alerts, and agent-specific setup for Codex, Claude, Cursor, Antigravity, and similar tools.
+- **Automation guidance:** the `pag-automations` skill helps agents identify useful skills, plugins, hooks, monitors, CI checks, alerts, and agent-specific setup.
 - **Harness growth command:** agents treat `Update harness` as a binding workflow to refresh project memory, cache important official library docs, strengthen local instructions, and add useful automation.
 - **Safer customization:** teams can override decisions in `harness/verdicts.md` without editing this package.
 - **Stack-specific depth:** backend, web frontend, and React Native/Expo rules provide focused guidance for production engineering, API contracts, state management, testing, accessibility, native platforms, app stores, and runtime operations.
@@ -39,7 +39,7 @@ Use it as the stable base layer for your agent behavior. Put project-specific de
 3. Create the non-destructive project harness with `npx pag init`.
 4. Review `harness/verdicts.md`, then ask the agent to run `pag-synchronise-project`.
 
-Run `npx pag help` at any time for the complete CLI command list.
+Run `npx pag help` at any time for the available public CLI commands.
 
 Install from the registry when published:
 
@@ -148,19 +148,12 @@ Check a project at any time:
 npx pag doctor
 ```
 
-Get project-aware recommendations for agent skills, plugins, hooks, monitors, CI checks, alerts, and automation setup:
-
-```bash
-npx pag recommend --agent codex
-```
-
 ### CLI Reference
 
 | Command                                    | Purpose                                                                       |
 | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | `npx pag init [--dry-run] [--root <path>]` | Create only missing harness files and scripts.                                |
 | `npx pag doctor [--root <path>]`           | Check the package and a downstream harness for missing or inconsistent files. |
-| `npx pag recommend [--agent <name>]`       | Print agent-specific skills, plugin, automation, and CI suggestions.          |
 | `npx pag snippet`                          | Print the activation snippet for your agent instruction file.                 |
 | `npx pag help`                             | Print usage and all supported command options.                                |
 
