@@ -2,9 +2,13 @@
 
 ![A conductor robot leading an orchestra of robots](https://raw.githubusercontent.com/toybz-creator/agent-guide/main/assets/robot-orchestra-hero.png)
 
-Production Agent Guide is a reusable rule framework for AI coding agents. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
+Production Agent Guide is a reusable library that provides the guide for a 360 Agentic Harness. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
 
-Use it as the stable base layer for your agent behavior. Put project-specific decisions, preferences, and product context in `harness/` so this package can be updated without losing your project rules.
+The harness gives your agent a durable project operating layer: it carries forward verified context, rules, product decisions, architecture, assets and references, task plans, implementation evidence, known gaps, and team preferences between tasks. It also makes repeatable work automatable through scoped skill commands, project synchronization, QA profiles, documentation updates, tool and library guidance, safety checks, and workflow or monitoring recommendations.
+
+The library is powerful out of the box, but its central advantage is the project-specific `harness/` folder. Customize and extend that folder with your product context, rules, assets, workflows, integrations, and operating requirements. This lets the agent adapt its planning, implementation, verification, and automation to the real needs of each product or project, without changing the reusable library.
+
+Use this package as the stable base layer for agent behavior. Put project-specific decisions, preferences, and product context in `harness/` so the guide can be updated without losing your project's accumulated operating knowledge.
 
 ## What It Gives You
 
