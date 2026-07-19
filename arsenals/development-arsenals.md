@@ -25,6 +25,8 @@ The canonical research, decision, installation, evaluation, and reporting workfl
 | 8 | Pothos | Type-safe GraphQL schema builder. | Strong for complex GraphQL APIs. |
 | 9 | Scalar | Beautiful OpenAPI docs and API client. | Cleaner alternative to Swagger UI. |
 | 10 | Orval | Generates typed API clients from OpenAPI. | Excellent for Angular/React frontend API clients. |
+| 266 | NestJS | Modular Node.js framework for server-side applications. | Strong conventions for dependency injection, controllers, validation, background work, and scalable TypeScript backends. |
+| 267 | Swagger / OpenAPI | API-description specification and NestJS-compatible documentation tooling. | Makes API contracts inspectable, testable, and suitable for generated clients. |
 
 ## Data, databases, and migrations
 
@@ -50,6 +52,8 @@ The canonical research, decision, installation, evaluation, and reporting workfl
 | 28 | DuckDB | Embedded analytics database. | “SQLite for analytics”; brilliant for local data analysis. |
 | 29 | ClickHouse | Columnar analytics database. | Very fast for logs, events, and analytical workloads. |
 | 30 | Meltano | Data integration/ELT platform. | Useful for building analytics pipelines. |
+| 268 | TypeORM | TypeScript ORM and data-mapper for relational databases. | Supports entities, repositories, transactions, migrations, and NestJS integration when an ORM fits the project's persistence boundary. |
+| 269 | PostgreSQL | Open-source relational database. | A dependable transactional source of truth with rich SQL, indexing, extensions, and operational tooling. |
 
 ## Messaging, jobs, workflows, and reliability
 
@@ -65,6 +69,7 @@ The canonical research, decision, installation, evaluation, and reporting workfl
 | 38 | Redpanda | Kafka-compatible streaming platform. | Kafka-like API without ZooKeeper complexity. |
 | 39 | Apache Pulsar | Distributed pub/sub and streaming. | Strong multi-tenant messaging architecture. |
 | 40 | RabbitMQ Streams | Stream processing mode for RabbitMQ. | Adds log-style streaming to RabbitMQ ecosystems. |
+| 270 | Redis | In-memory data store. | Useful for bounded caching, queues, rate limiting, pub/sub, and coordination; keep durable business truth in the system of record. |
 
 ## Testing, mocking, benchmarking, and quality
 
@@ -295,6 +300,10 @@ The canonical research, decision, installation, evaluation, and reporting workfl
 | 208 | Melt UI | Headless UI for Svelte. | Good design-system building block. |
 | 209 | Floating UI | Positioning engine for tooltips/popovers/dropdowns. | Handles annoying UI positioning problems elegantly. |
 | 210 | Vaul | Drawer component library. | Great mobile-style drawers for web apps. |
+| 271 | Next.js | React framework for full-stack web applications. | Provides routing, server rendering, data fetching, image optimization, and deployment conventions. |
+| 272 | Nuxt | Vue framework for full-stack web applications. | Provides file-based routing, server rendering, data fetching, and productive Vue conventions. |
+| 273 | Angular | TypeScript web application framework. | Brings a structured component, dependency-injection, forms, routing, and enterprise application model. |
+| 274 | RxJS | Reactive Extensions library for JavaScript and TypeScript. | Models asynchronous streams, cancellation, composition, and event-heavy state; foundational in Angular. |
 
 ## TypeScript, validation, code generation, and repo hygiene
 
@@ -315,6 +324,8 @@ The canonical research, decision, installation, evaluation, and reporting workfl
 | 223 | Buf | Protobuf tooling. | Linting, breaking-change detection, codegen for protobuf APIs. |
 | 224 | ConnectRPC | Modern RPC framework. | Simpler gRPC-like APIs for browsers and servers. |
 | 225 | Protobuf-ES | TypeScript protobuf implementation. | Strong when using protobuf in JS/TS systems. |
+| 275 | ESLint | Configurable JavaScript and TypeScript linter. | Enforces code-quality and project rules, and can catch many mistakes before runtime. |
+| 276 | Prettier | Opinionated code formatter. | Keeps formatting consistent across code and documentation with minimal review noise. |
 
 ## Testing, reliability, chaos, and performance
 
