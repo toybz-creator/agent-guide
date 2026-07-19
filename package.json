@@ -1,6 +1,6 @@
 {
   "name": "production-agent-guide",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A production-grade human language skill guide framework for AI coding agents.",
   "type": "module",
   "license": "MIT",

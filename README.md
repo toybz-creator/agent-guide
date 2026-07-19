@@ -272,7 +272,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the local development workflow and pu
 
 ## Publishing
 
-GitHub Actions validates every pull request targeting `main`. A push to `main`, including a merged pull request, validates, publishes the version in `package.json` when it is not already on npm, and creates a matching GitHub release. The workflow uses the repository `NPM_TOKEN` secret; do not store npm credentials in the repository.
+GitHub Actions validates every pull request targeting `main`. A push to `main`, including a merged pull request, validates, publishes the version in `package.json` when it is not already on npm, and creates a matching GitHub release. Publishing uses npm trusted publishing through GitHub Actions OIDC, so no npm publishing credential is stored in the repository.
 
 Each npm version is immutable. Update `package.json` to a new version before merging a release-worthy change; commits that retain an already-published version are validated but skip publishing and release creation.
 

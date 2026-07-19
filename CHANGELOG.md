@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Migrated npm publishing to GitHub Actions OIDC trusted publishing; automated releases no longer use a long-lived npm token.
 - Hardened release validation with a committed lockfile, `npm ci`, supply-chain auditing, Node 18/20/22 CI coverage, least-privilege workflow permissions, and immutable GitHub Action revisions.
 - Added npm repository, homepage, issue-tracker, and author metadata.
 - Expanded README quick start, requirements, CLI reference, consumer-package verification, and migration guidance.
