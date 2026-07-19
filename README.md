@@ -45,7 +45,7 @@ Use this package as the stable base layer for agent behavior. Put project-specif
 
 Run `npx pag help` at any time for the available public CLI commands.
 
-Install from the registry when published:
+Install from npm:
 
 ```bash
 npm install --save-dev production-agent-guide
