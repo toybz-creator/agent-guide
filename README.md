@@ -1,5 +1,7 @@
 # Production Agent Guide
 
+[![npm downloads](https://img.shields.io/npm/dm/production-agent-guide.svg)](https://www.npmjs.com/package/production-agent-guide)
+
 ![A conductor robot leading an orchestra of robots](https://raw.githubusercontent.com/toybz-creator/agent-guide/main/assets/robot-orchestra-hero.png)
 
 Production Agent Guide is a reusable library that provides the guide for a 360 Agentic Harness. It teaches an agent how to understand a product, ask the right questions, plan deliberately, build production-grade software, verify the work, and keep project memory up to date.
